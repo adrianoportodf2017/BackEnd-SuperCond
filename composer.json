@@ -1,0 +1,15 @@
+{
+    "name": "adriano.porto/cms",
+    "autoload": {
+        "psr-4": {
+            "AdrianoPorto\\Cms\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "adriano",
+            "email": "adrianobr00@gmail.com"
+        }
+    ],
+    "require": {}
+}
