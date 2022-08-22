@@ -22,20 +22,20 @@ class Createalltables extends Migration
             $table->string('password');
         });
 
-        Schema::create('units', function (Blueprint $table) {
+        Schema::create('unit', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // APTO 801, LOTE  8 QD 27
             $table->integer('id_owner');
         });
 
-        Schema::create('unitspeoples', function (Blueprint $table) {
+        Schema::create('unitpeoples', function (Blueprint $table) {
             $table->id();
             $table->integer('id_unit'); 
             $table->string('name');
             $table->date('birthdate');
         });
 
-        Schema::create('unitsvehicles', function (Blueprint $table) {
+        Schema::create('unitvehicles', function (Blueprint $table) {
             $table->id();
             $table->integer('id_unit'); 
             $table->string('title');
@@ -128,10 +128,10 @@ class Createalltables extends Migration
     public function down()
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('units');
-        Schema::dropIfExists('unitspeoples');
-        Schema::dropIfExists('unitsvehicles');
-        Schema::dropIfExists('unitspets');
+        Schema::dropIfExists('unit');
+        Schema::dropIfExists('unitpeoples');
+        Schema::dropIfExists('unitvehicles');
+        Schema::dropIfExists('unitpets');
         Schema::dropIfExists('walls');
         Schema::dropIfExists('walllikes');
         Schema::dropIfExists('warnings');
