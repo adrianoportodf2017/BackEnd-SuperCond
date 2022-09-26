@@ -113,4 +113,58 @@ Logar usuario no sistema
 
         return $array;
     }
+
+
+    public function validateToken() {
+        $array = ['error' => ''];
+
+        $user = auth()->user();
+        $array['user'] = $user;
+
+        $properties = Unit::select(['id', 'name'])
+        ->where('id_owner', $user['id'])
+        ->get();
+
+        $array['user']['properties'] = $properties;
+
+        return $array;
+    }
+
+
+    public function loginAdmin(Request $request)
+    {
+        $array = ['error' => ''];
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (!$validator->fails()) {
+            $email = $request->input('email');
+            $password = $request->input('password');
+
+            $token = auth()->attempt([
+                'email' => $email,
+                'password' => $password,
+                'profile' => '1'
+            ]);
+
+            if (!$token) {
+                $array['error'] = 'Usuário e/ou senha Inválidos';
+                return $array;
+            }
+            $array['token'] = $token;
+            $user = auth()->user();
+            $array['user'] = $user;
+            /*$properties = Unit::select(['id', 'name'])
+                ->where('id_owner', $user['id'])
+                ->get();
+            $array['users']['properties'] = $properties;*/
+        } else {
+            $array['error'] = $validator->errors()->first();
+            return $array;
+        }
+
+        return $array;
+    }
 }

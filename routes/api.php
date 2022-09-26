@@ -31,11 +31,41 @@ Route::get('/ping', function(){
 
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 
+
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
+//Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
+
+
 
 Route::middleware('auth:api')->group(function(){
+ /**
+ * ************************
+ * ************************
+ * ************************
+ * ************************
+ * API PARA O USO DO ADMINISTRATIVO
+ * ************************
+ * ************************
+ * */
+
+
+
+ 
+
+/**
+ * ************************
+ * ************************
+ * ************************
+ * ************************
+ * API PARA O USO DA  APP
+ * ************************
+ * ************************
+ * */
     Route::post('/auth/validate', [AuthController::class, 'validate']);
+    Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
+
     Route::post('/auth/logout', [AuthController::class, 'logout']);
    
     //Mural de Avisos
@@ -79,16 +109,12 @@ Route::middleware('auth:api')->group(function(){
      Route::delete('/myreservations/{id}', [ReservationController::class, 'delMyReservations']);
 
 
-
-
-
-
-
-
-
-
     
 });
+
+
+
+
 
 
 
