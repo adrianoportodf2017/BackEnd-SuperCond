@@ -167,4 +167,18 @@ Logar usuario no sistema
 
         return $array;
     }
+
+
+    /**
+     * @return array
+     */
+    public function logout() : array
+    {
+        $array = ['error' => ''];
+
+        auth()->logout();
+
+        return $array;
+    }
+
 }
