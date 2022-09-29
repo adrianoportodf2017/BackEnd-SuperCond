@@ -39,6 +39,8 @@ Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
 
 
 
+
+
 Route::middleware('auth:api')->group(function(){
  /**
  * ************************
@@ -67,11 +69,18 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/admin/auth/logout', [AuthController::class, 'logout']);
 
+    Route::get('/admin/walls', [WallController::class, 'getAll']);
+    Route::put('/admin/wall/{id}', [WallController::class, 'update']);
+    Route::post('/admin/walls', [WallController::class, 'insert']);
+
+
+
     Route::post('/auth/logout', [AuthController::class, 'logout']);
    
     //Mural de Avisos
     Route::get('/walls', [WallController::class, 'getAll']);
     Route::get('/walls/{id}/like', [WallController::class, 'like']);
+
 
     //Documentos
     Route::get('/docs', [WallController::class, 'getAll']);

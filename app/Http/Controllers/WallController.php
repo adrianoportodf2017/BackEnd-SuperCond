@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Wall;
 use App\Models\WallLike;
+use Illuminate\Support\Facades\Validator;
+
 class WallController extends Controller
 {
     public function getAll() {
@@ -66,4 +68,60 @@ class WallController extends Controller
 
         return $array;
     }
+
+    public function update($id, Request $request)
+    {
+        
+         $array['id'] =  $id;
+
+        $title = $request->input('title');
+        $body = $request->input('body');   
+       
+        $item = Wall::find($id);
+
+            if ($item) {
+                $item->title = $title;
+                $item->body = $body;
+                $array['error'] = '';
+                $item->save();
+                return $array;            
+            } else {
+                $array['error'] = 'Erro Ao salvar';
+                return $array;
+            }
+        return $array;
+    }
+
+    public function insert(Request $request)
+    {
+        
+       //  $array['id'] =  $id;
+         $array = ['error' => ''];
+
+        
+         $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'body' => 'required'
+        ]);
+
+        if (! $validator->fails()) {
+            $title = $request->input('title');
+            $body = $request->input('body');
+
+
+            $newWall = new Wall();
+
+            $newWall->title = $title;
+            $newWall->body = $body;
+            $newWall->datecreated = date('Y-m-d H:m:s');
+            $newWall->save();
+
+        } else {
+            $array['error'] = $validator->errors()->first();
+            return $array;
+        }
+
+        return $array;
+}
+
 }
