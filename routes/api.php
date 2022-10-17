@@ -36,25 +36,7 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
-
-
-
-
-
 Route::middleware('auth:api')->group(function(){
- /**
- * ************************
- * ************************
- * ************************
- * ************************
- * API PARA O USO DO ADMINISTRATIVO
- * ************************
- * ************************
- * */
-
-
-
- 
 
 /**
  * ************************
@@ -69,14 +51,26 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/admin/auth/logout', [AuthController::class, 'logout']);
 
+   /**WALLS**/
     Route::get('/admin/walls', [WallController::class, 'getAll']);
     Route::put('/admin/wall/{id}', [WallController::class, 'update']);
     Route::post('/admin/walls', [WallController::class, 'insert']);
+    Route::delete('/admin/wall/{id}', [WallController::class, 'delete']);
+  /**<--WALLS-->*/
+   /**WALLS**/
+   Route::get('/admin/docs', [DocController::class, 'getAll']);
+   Route::put('/admin/document/{id}', [DocController::class, 'update']);
+   Route::post('/admin/documents', [DocController::class, 'insert']);
+   Route::delete('/admin/document/{id}', [DocController::class, 'delete']);
+ /**<--WALLS-->*/
 
 
-
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
-   
+  
+  
+  
+  
+  
+  Route::post('/auth/logout', [AuthController::class, 'logout']);
     //Mural de Avisos
     Route::get('/walls', [WallController::class, 'getAll']);
     Route::get('/walls/{id}/like', [WallController::class, 'like']);
