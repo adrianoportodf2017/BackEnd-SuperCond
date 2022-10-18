@@ -66,6 +66,7 @@ class Createalltables extends Migration
             $table->id();
             $table->string('title');
             $table->string('fileurl');
+            $table->datetime('datecreated');
         });
 
         Schema::create('billets', function(Blueprint $table) {
