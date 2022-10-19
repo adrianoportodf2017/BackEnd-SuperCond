@@ -9,5 +9,5 @@ class Reservation extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    public $table = 'reservetions';
+    public $table = 'reservations';
 }
