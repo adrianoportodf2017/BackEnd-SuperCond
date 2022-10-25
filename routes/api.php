@@ -75,6 +75,15 @@ Route::middleware('auth:api')->group(function(){
    Route::delete('/admin/reservation/{id}', [DocController::class, 'delete']);
    /**<--RESERVERTIONS-->*/
 
+
+
+    /**USERS**/
+    Route::get('/admin/users', [UserController::class, 'getAll']);
+    Route::post('/admin/user/{id}', [UserController::class, 'update']);
+    Route::post('/admin/user', [UserController::class, 'insert']);
+    Route::delete('/admin/user/{id}', [UserController::class, 'delete']);
+    /**<--USERS-->*/
+
  
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     //Mural de Avisos
