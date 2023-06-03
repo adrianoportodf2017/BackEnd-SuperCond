@@ -48,7 +48,8 @@ Route::middleware('auth:api')->group(function(){
  * ************************
  * */
 
-    Route::post('/auth/validate', [AuthController::class, 'validate']);
+Route::post('/auth/validate', [AuthController::class, 'validateToken']);
+Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/admin/auth/logout', [AuthController::class, 'logout']);
 

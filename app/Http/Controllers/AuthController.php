@@ -77,15 +77,15 @@ Logar usuario no sistema
         return $array;
     }
 
-    public function login(Request $request)
-    {
+    public function login (Request $request) {
         $array = ['error' => ''];
+
         $validator = Validator::make($request->all(), [
             'cpf' => 'required|digits:11',
-            'password' => 'required',
+            'password' => 'required'
         ]);
 
-        if (!$validator->fails()) {
+        if(!$validator->fails()) {
             $cpf = $request->input('cpf');
             $password = $request->input('password');
 
@@ -94,28 +94,29 @@ Logar usuario no sistema
                 'password' => $password
             ]);
 
-            if (!$token) {
-                $array['error'] = 'Usuário e/ou senha Inválidos';
+            if(!$token) {
+                $array['error'] = 'CPF e/ou senha incorretos!';
                 return $array;
             }
+
             $array['token'] = $token;
+
             $user = auth()->user();
             $array['user'] = $user;
 
             $properties = Unit::select(['id', 'name'])
-                ->where('id_owner', $user['id'])
-                ->get();
-            $array['users']['properties'] = $properties;
+            ->where('id_owner', $user['id'])
+            ->get();
+
+            $array['user']['properties'] = $properties;
+
         } else {
             $array['error'] = $validator->errors()->first();
-            return $array;
         }
 
         return $array;
     }
-
-
-    public function validateToken() {
+     public function validateToken() {
         $array = ['error' => ''];
 
         $user = auth()->user();
@@ -172,13 +173,12 @@ Logar usuario no sistema
     /**
      * @return array
      */
-    public function logout() : array
-    {
+    public function logout() {
         $array = ['error' => ''];
-
         auth()->logout();
-
         return $array;
     }
+
+    
 
 }
