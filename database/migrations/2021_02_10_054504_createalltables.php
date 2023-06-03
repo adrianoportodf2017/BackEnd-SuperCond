@@ -13,11 +13,26 @@ class Createalltables extends Migration
      */
     public function up()
     {
+        
+        Schema::create('condominios', function(Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('codigo')->unique();
+            $table->string('cnpj')->unique()->nullable();;
+            $table->string('adress')->nullable();;
+            $table->string('city')->nullable();;
+            $table->string('zip_code')->nullable();;
+            $table->string('adress_billit')->nullable();;
+            $table->string('description')->nullable();;
+            $table->string('thumb')->nullable();;
+        });
+        
         Schema::create('users', function(Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->string('cpf')->unique();
+            $table->string('profile');
             $table->string('password');
         });
 
@@ -25,6 +40,7 @@ class Createalltables extends Migration
             $table->id();
             $table->string('name');
             $table->integer('id_owner');
+            $table->integer('id_condominio');
         });
 
         Schema::create('unitpeoples', function(Blueprint $table) {
@@ -54,12 +70,16 @@ class Createalltables extends Migration
             $table->string('title');
             $table->string('body');
             $table->datetime('datecreated');
+            $table->integer('id_condominio');
+
         });
 
         Schema::create('walllikes', function(Blueprint $table) {
             $table->id();
             $table->integer('id_wall');
             $table->integer('id_user');
+            $table->integer('id_condominio');
+
         });
 
         Schema::create('docs', function(Blueprint $table) {
@@ -67,6 +87,8 @@ class Createalltables extends Migration
             $table->string('title');
             $table->string('fileurl');
             $table->datetime('datecreated');
+            $table->integer('id_condominio');
+
         });
 
         Schema::create('billets', function(Blueprint $table) {
@@ -74,6 +96,8 @@ class Createalltables extends Migration
             $table->integer('id_unit');
             $table->string('title');
             $table->string('fileurl');
+            $table->integer('id_condominio');
+
         });
 
         Schema::create('warnings', function(Blueprint $table) {
@@ -83,6 +107,8 @@ class Createalltables extends Migration
             $table->string('status')->default('IN_REVIEW'); // IN_REVIEW, RESOLVED
             $table->date('datecreated');
             $table->text('photos');
+            $table->integer('id_condominio');
+
         });
 
         Schema::create('foundandlost', function(Blueprint $table) {
@@ -92,6 +118,8 @@ class Createalltables extends Migration
             $table->string('description');
             $table->string('where');
             $table->date('datecreated');
+            $table->integer('id_condominio');
+
         });
 
         Schema::create('areas', function(Blueprint $table) {
@@ -102,12 +130,16 @@ class Createalltables extends Migration
             $table->string('days'); 
             $table->time('start_time');
             $table->time('end_time');
+            $table->integer('id_condominio');
+
         });
 
         Schema::create('areadisableddays', function(Blueprint $table) {
             $table->id();
             $table->integer('id_area');
             $table->date('day');
+            $table->integer('id_condominio');
+
         });
 
         Schema::create('reservations', function(Blueprint $table) {
@@ -115,6 +147,8 @@ class Createalltables extends Migration
             $table->integer('id_unit');
             $table->integer('id_area');
             $table->datetime('reservation_date');
+            $table->integer('id_condominio');
+
         });
 
 
@@ -127,6 +161,7 @@ class Createalltables extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('condominios');
         Schema::dropIfExists('users');
         Schema::dropIfExists('units');
         Schema::dropIfExists('unitpeoples');

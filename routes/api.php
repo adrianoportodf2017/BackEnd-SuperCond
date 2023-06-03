@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 use App\Http\Controllers\{
     AuthController,
+    CondominiosController,
     BilletController,
     DocController,
     FoundAndLostController,
@@ -52,6 +53,14 @@ Route::post('/auth/validate', [AuthController::class, 'validateToken']);
 Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/admin/auth/logout', [AuthController::class, 'logout']);
+
+
+     /**CONDOMINIOS**/
+     Route::get('/admin/condominios', [CondominiosController::class, 'getAll']);
+     Route::put('/admin/condominio/{id}', [CondominiosController::class, 'update']);
+     Route::post('/admin/condominios', [CondominiosController::class, 'insert']);
+     Route::delete('/admin/condominio/{id}', [CondominiosController::class, 'delete']);
+    /**<--CONDOMINIOS-->*/
 
    /**WALLS**/
     Route::get('/admin/walls', [WallController::class, 'getAll']);
