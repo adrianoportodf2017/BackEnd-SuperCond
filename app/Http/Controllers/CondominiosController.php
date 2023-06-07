@@ -14,7 +14,7 @@ class CondominiosController extends Controller
     {
         $array = ['error' => ''];
 
-        $docs = Condominios::all();      
+        $docs = Condominios::all();
 
         $array['list'] = $docs;
 
@@ -23,112 +23,140 @@ class CondominiosController extends Controller
 
     public function insert(Request $request)
     {
+
+
         $array = ['error' => ''];
-         // var_dump($request->all());
+        $newDoc = new Condominios();
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|min:2',
-            'codigo' => 'required|min:2',
             'cnpj' => 'required|min:2',
-
-            'thumb' => 'required|mimes:jpg,png,pdf,jpeg'
+         
         ]);
+
         if ($validator->fails()) {
             $array['error'] = $validator->errors()->first();
             return $array;
-        } elseif ($request->hasfile('thumb')) {
-            if ($request->file('thumb')->isValid()) {
-                $arquivo = $request->file('thumb')->store('public');
-                $url = asset(Storage::url($arquivo));
-                $name = $request->input('name');
-                $codigo = $request->input('codigo');
-                $cnpj = $request->input('cnpj');
-
-                $newDoc = new Condominios();
-                $newDoc->name = $name;
-                $newDoc->thumb = $url;
-                $newDoc->codigo = $codigo;
-                $newDoc->cnpj = $cnpj;
-
-               // $newDoc->filename = $arquivo;
-                //$newDoc->datecreated = date('Y-m-d H:m:s');
-                $newDoc->save();
-            }
-        } else {
-            $array['error'] = 'Não foi enviando nenhum arquivo';
-        }
-        return $array;
-    }
-    public function update($id, Request $request)
-    {
-        $array['id'] =  $id;
-        if ($request->hasfile('file')) {
-            if ($request->file('file')->isValid()) {
-
-                $validator = Validator::make($request->all(), [
-                    'title' => 'required|min:2',
-                    'file' => 'required|mimes:jpg,png,pdf,jpeg'
+        } elseif ($request->hasfile('Thumb')) {
+            if ($request->file('Thumb')->isValid()) {
+                $validator = Validator::make($request->all(), [                   
+                    'Thumb' => 'required|mimes:jpg,png,pdf,jpeg'
                 ]);
                 if ($validator->fails()) {
                     $array['error'] = $validator->errors()->first();
                     return $array;
-                } else {
-                    $title = $request->input('title');
-                    $arquivo = $request->file('file')->store('public');
-                    $url = asset(Storage::url($arquivo));
-                    $item = Doc::find($id);
-                    if ($item) {
-                        $fileDelete = $item->filename;
-                        $item->title = $title;
-                        $item->fileurl = $url;
-                        $item->filename = $arquivo;
-                        $array['error'] = '';
-                        $item->save();
-                        Storage::delete($fileDelete);
-                        $array['salvo'] = 'salvo com sucesso';
-                        return $array;
-                    } else {
-                        $array['error'] = 'Erro Ao salvar';
-                        return $array;
-                    }
-                }
+                    exit;                    }
+                
+                $arquivo = $request->file('Thumb')->store('public/image/condominios');
+                $newDoc->thumb = $arquivo;
+                $newDoc->name = $request->input('name');
+                // $newDoc->code = $request->input('code');
+                 $newDoc->cnpj = $request->input('cnpj');
+                 $newDoc->description = $request->input('description');
+                 $newDoc->address = $request->input('address');
+                 $newDoc->adress_number = $request->input('adress_number');
+                 $newDoc->city = $request->input('city');
+                 $newDoc->district = $request->input('district');
+                 $newDoc->address_zip = $request->input('address_zip');
+                 $newDoc->state = $request->input('state');
+                 $newDoc->billit = $request->input('billit');
             }
         } else {
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|min:2',
-            ]);
-            if ($validator->fails()) {
-                $array['error'] = $validator->errors()->first();
-                $array['error'] = $request->input('title');
-                return $array;
-            } else {
-                $title = $request->input('title');
-                $item = Doc::find($id);
-                if ($item) {
-                    $fileDelete = $item->fileurl;
-                    $item->title = $title;
-                    $array['error'] = '';
-                    $item->save();
-                    return $array;
-                } else {
-                    $array['error'] = 'Erro Ao salvar';
-                    return $array;
-                }
-            }
+            $newDoc->name = $request->input('name');
+           // $newDoc->code = $request->input('code');
+            $newDoc->cnpj = $request->input('cnpj');
+            $newDoc->description = $request->input('description');
+            $newDoc->address = $request->input('address');
+            $newDoc->adress_number = $request->input('adress_number');
+            $newDoc->city = $request->input('city');
+            $newDoc->district = $request->input('district');
+            $newDoc->address_zip = $request->input('address_zip');
+            $newDoc->state = $request->input('state');
+            $newDoc->billit = $request->input('billit');
         }
+
+        $newDoc->save();
+
         return $array;
     }
 
+    public function update($id, Request $request)
+    {
+        $array = ['error' => ''];
+
+
+        $array['id'] =  $id;
+        $newDoc = Condominios::find($id);
+
+    
+        if (!$newDoc) {
+            $array['error'] = 'Registro não encontrado';
+            return $array;
+        }
+    
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|min:2',
+            'cnpj' => 'required|min:2',
+        ]);
+    
+        if ($validator->fails()) {
+            $array['error'] = $validator->errors()->first();
+            return $array;
+        }
+    
+        if ($request->hasFile('Thumb')) {
+            $validator = Validator::make($request->all(), [
+                'Thumb' => 'required|mimes:jpg,png,pdf,jpeg'
+            ]);
+    
+            if ($validator->fails()) {
+                $array['error'] = $validator->errors()->first();
+                return $array;
+            }
+    
+            $thumbDelete = $newDoc->thumb;
+            $arquivo = $request->file('Thumb')->store('public/image/condominios');
+            $newDoc->thumb = $arquivo;
+            $newDoc->name = $request->input('name');
+            $newDoc->cnpj = $request->input('cnpj');
+            $newDoc->description = $request->input('description');
+            $newDoc->address = $request->input('address');
+            $newDoc->adress_number = $request->input('adress_number');
+            $newDoc->city = $request->input('city');
+            $newDoc->district = $request->input('district');
+            $newDoc->address_zip = $request->input('address_zip');
+            $newDoc->state = $request->input('state');
+            $newDoc->billit = $request->input('billit');    
+            Storage::delete($thumbDelete);
+        } else {
+            $newDoc->name = $request->input('name');
+            $newDoc->cnpj = $request->input('cnpj');
+            $newDoc->description = $request->input('description');
+            $newDoc->address = $request->input('address');
+            $newDoc->adress_number = $request->input('adress_number');
+            $newDoc->city = $request->input('city');
+            $newDoc->district = $request->input('district');
+            $newDoc->address_zip = $request->input('address_zip');
+            $newDoc->state = $request->input('state');
+            $newDoc->billit = $request->input('billit');
+        }
+    
+        $newDoc->save();
+    
+        return $array;
+    }
+    
+    
     public function delete($id)
     {
         $array = ['error' => ''];
-        $item = Doc::find($id);
+        $item = Condominios::find($id);
         if ($item) {
-            $fileDelete = $item->filename;
+            $fileDelete = $item->thumb;
             Storage::delete($fileDelete);
-            Doc::find($id)->delete();
+            Condominios::find($id)->delete();
         } else {
-            $array['error'] = 'Documento inexistente';
+            $array['error'] = 'Error Ao Deletar';
             // return $array;
         }
         return $array;

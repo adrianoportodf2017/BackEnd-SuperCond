@@ -77,7 +77,8 @@ Logar usuario no sistema
         return $array;
     }
 
-    public function login (Request $request) {
+    public function login(Request $request)
+    {
         $array = ['error' => ''];
 
         $validator = Validator::make($request->all(), [
@@ -85,7 +86,7 @@ Logar usuario no sistema
             'password' => 'required'
         ]);
 
-        if(!$validator->fails()) {
+        if (!$validator->fails()) {
             $cpf = $request->input('cpf');
             $password = $request->input('password');
 
@@ -94,7 +95,7 @@ Logar usuario no sistema
                 'password' => $password
             ]);
 
-            if(!$token) {
+            if (!$token) {
                 $array['error'] = 'CPF e/ou senha incorretos!';
                 return $array;
             }
@@ -103,28 +104,33 @@ Logar usuario no sistema
 
             $user = auth()->user();
             $array['user'] = $user;
-
-            $properties = Unit::select(['id', 'name'])
-            ->where('id_owner', $user['id'])
+            $properties = Unit::select(['units.id', 'units.name as unit_name', 'units.id_condominio', 'condominios.name as condominio_name', 'condominios.*'])
+            ->leftJoin('condominios', 'condominios.id', '=', 'units.id_condominio')
+            ->where('units.id_owner', $user['id'])
             ->get();
-
-            $array['user']['properties'] = $properties;
-
+        
+        $array['user']['properties'] = $properties;
+        
+        
+          
         } else {
             $array['error'] = $validator->errors()->first();
         }
 
         return $array;
     }
-     public function validateToken() {
+    public function validateToken()
+    {
         $array = ['error' => ''];
 
         $user = auth()->user();
         $array['user'] = $user;
 
-        $properties = Unit::select(['id', 'name'])
-        ->where('id_owner', $user['id'])
+        $properties = Unit::select(['units.id', 'units.name as unit_name', 'units.id_condominio', 'condominios.name as condominio_name', 'condominios.*'])
+        ->leftJoin('condominios', 'condominios.id', '=', 'units.id_condominio')
+        ->where('units.id_owner', $user['id'])
         ->get();
+    
 
         $array['user']['properties'] = $properties;
 
@@ -173,12 +179,10 @@ Logar usuario no sistema
     /**
      * @return array
      */
-    public function logout() {
+    public function logout()
+    {
         $array = ['error' => ''];
         auth()->logout();
         return $array;
     }
-
-    
-
 }
