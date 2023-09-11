@@ -15,6 +15,35 @@ class UserController extends Controller
         $array['list'] = $users;
         return $array;
     }
+
+    public function search(Request $request)
+{
+    $cpf = $request->input('q');
+    $users = User::where('cpf', $cpf)->first();
+    if($users){
+        $results = [
+            'error' => '',
+            'list' => $users,
+            // Outros dados de resultado aqui...
+        ];
+
+    }else{
+        $results = [
+            'error' => 'Nenhum Usuário encontrado com esse CPF',
+            'list' => '',
+            // Outros dados de resultado aqui...
+        ];
+
+    }
+
+    // Realize a lógica de pesquisa com base no valor de $q
+    // Por exemplo, você pode consultar o banco de dados para encontrar os resultados desejados.
+
+    // Suponha que você deseja retornar um array como resultado de pesquisa para este exemplo:
+  
+
+    return response()->json($results);
+}
    
 
     public function update($id, Request $request)
@@ -23,7 +52,7 @@ class UserController extends Controller
         $array['id'] =  $id;
         $title = $request->input('title');
         $body = $request->input('body');          
-        $item = Wall::find($id);
+        $item = User::find($id);
             if ($item) {
                 $item->title = $title;
                 $item->body = $body;
@@ -72,9 +101,9 @@ class UserController extends Controller
 public function delete($id)
 {        
      $array = ['error' => ''];
-     $item = Wall::find($id);
+     $item = User::find($id);
      if($item){
-        Wall::find($id)->delete();
+        User::find($id)->delete();
      }
      else {
         $array['error'] = 'Aviso inexistente';

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 use App\Http\Controllers\{
     AuthController,
+    AreaController,
     CondominiosController,
     BilletController,
     DocController,
@@ -71,15 +72,36 @@ Route::middleware('auth:api')->group(function () {
 
     /**RESERVARTIONS**/
     Route::get('/admin/reservations', [ReservationController::class, 'getAll']);
-    Route::post('/admin/reservation/{id}', [DocController::class, 'update']);
-    Route::post('/admin/reservation', [DocController::class, 'insert']);
-    Route::delete('/admin/reservation/{id}', [DocController::class, 'delete']);
+    Route::post('/admin/reservations', [ReservationController::class, 'insert']);
+    Route::put('/admin/reservation/{id}', [ReservationController::class, 'update']);
+    Route::delete('/admin/reservation/{id}', [ReservationController::class, 'delete']);
     /**<--RESERVERTIONS-->*/
 
+
+    /**UNITS**/
+    Route::get('/admin/units', [UnitController::class, 'getAll']);
+    Route::get('/unit/{id}', [UnitController::class, 'getInfo']);
+    Route::post('/unit/{id}/addperson', [UnitController::class, 'addPerson']);
+    Route::post('/unit/{id}/addvehicle', [UnitController::class, 'addVehicle']);
+    Route::post('/unit/{id}/addpet', [UnitController::class, 'addPet']);
+    Route::post('/unit/{id}/removeperson', [UnitController::class, 'removePerson']);
+    Route::post('/unit/{id}/removevehicle', [UnitController::class, 'removeVehicle']);
+    Route::post('/unit/{id}/removepet', [UnitController::class, 'removePet']);
+    /**<--UNITS-->*/
+
+    /**AREAS**/
+    Route::get('/admin/areas', [AreaController::class, 'getAll']);
+    Route::post('/admin/areas', [AreaController::class, 'insert']);
+    Route::post('/admin/area/{id}', [AreaController::class, 'update']);
+    Route::delete('/admin/area/{id}', [AreaController::class, 'delete']);
+
+
+    /**<--AREAS-->*/
 
 
     /**USERS**/
     Route::get('/admin/users', [UserController::class, 'getAll']);
+    Route::get('/admin/users/search', [UserController::class, 'search']);
     Route::post('/admin/user/{id}', [UserController::class, 'update']);
     Route::post('/admin/user', [UserController::class, 'insert']);
     Route::delete('/admin/user/{id}', [UserController::class, 'delete']);
