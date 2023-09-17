@@ -17,14 +17,27 @@ class UnitController extends Controller
     public function getAll()
     {
         $array = ['error' => ''];
-
-        $unit = Unit::all();
-
-       $array['list'] = $unit;
-
+    
+        $units = Unit::join('users', 'units.id_owner', '=', 'users.id')
+            ->select('units.*', 'users.name as name_owner', 'users.email', 'users.phone')
+            ->get();
+    
+        $array['list'] = $units;
+    
         return $array;
     }
+    
 
+
+    public function updateUnit(Request $request, $id){
+        $data = $request;
+        $unit = Unit::find($id);
+        $unit->name = $data->input('name');
+        $unit->id_owner = $data->input('id_owner');
+        $unit->save();
+        return response()->json(['error'=> '']);
+
+    }
 
     public function getInfo($id)
     {

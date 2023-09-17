@@ -81,6 +81,7 @@ Route::middleware('auth:api')->group(function () {
     /**UNITS**/
     Route::get('/admin/units', [UnitController::class, 'getAll']);
     Route::get('/unit/{id}', [UnitController::class, 'getInfo']);
+    Route::post('/admin/unit/{id}', [UnitController::class, 'updateUnit']);
     Route::post('/unit/{id}/addperson', [UnitController::class, 'addPerson']);
     Route::post('/unit/{id}/addvehicle', [UnitController::class, 'addVehicle']);
     Route::post('/unit/{id}/addpet', [UnitController::class, 'addPet']);

@@ -143,7 +143,7 @@ Logar usuario no sistema
         $array = ['error' => ''];
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required',
+           // 'password' => 'required',
         ]);
 
         if (!$validator->fails()) {
@@ -152,7 +152,7 @@ Logar usuario no sistema
 
             $token = auth()->attempt([
                 'email' => $email,
-                'password' => $password,
+             //   'password' => $password,
                 'profile' => '1'
             ]);
 
