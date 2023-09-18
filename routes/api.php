@@ -37,6 +37,8 @@ Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'reset'])->name('password.reset');;
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
 
