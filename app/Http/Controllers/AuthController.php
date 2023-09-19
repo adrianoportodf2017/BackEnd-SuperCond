@@ -193,10 +193,15 @@ Logar usuario no sistema
 
         if ($status == Password::RESET_LINK_SENT) {
             return [
-                'status' => __($status)
+                'error' => false,
+                'message' => __($status)
             ];
         } else {
-            echo 'error';
+            return
+                [
+                    'error' => true,
+                    'message' => __($status)
+                ];
         }
     }
 

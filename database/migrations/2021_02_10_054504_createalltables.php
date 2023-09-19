@@ -14,18 +14,23 @@ class Createalltables extends Migration
     public function up()
     {
         
-        Schema::create('condominios', function(Blueprint $table) {
+        Schema::create('condominios', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('codigo')->unique();
-            $table->string('cnpj')->unique()->nullable();;
-            $table->string('adress')->nullable();;
-            $table->string('city')->nullable();;
-            $table->string('zip_code')->nullable();;
-            $table->string('adress_billit')->nullable();;
-            $table->string('description')->nullable();;
-            $table->string('thumb')->nullable();;
+            $table->string('cnpj')->unique()->nullable();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->string('address_billit')->nullable();
+            $table->text('description')->nullable();
+            $table->string('thumb')->nullable();
+            // Adicione as colunas ausentes aqui
+            $table->string('district')->nullable();
+            $table->string('state')->nullable();
+            $table->string('billit')->nullable();
         });
+        
         
         Schema::create('users', function(Blueprint $table) {
             $table->id();
@@ -82,13 +87,14 @@ class Createalltables extends Migration
 
         });
 
-        Schema::create('docs', function(Blueprint $table) {
+        Schema::create('docs', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->string('fileurl');
             $table->datetime('datecreated');
             $table->integer('id_condominio');
-
+            // Adicione as colunas ausentes aqui
+            $table->string('filename')->nullable();
         });
 
         Schema::create('billets', function(Blueprint $table) {
