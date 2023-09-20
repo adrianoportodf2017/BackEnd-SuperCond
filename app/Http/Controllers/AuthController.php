@@ -207,35 +207,38 @@ Logar usuario no sistema
 
     public function reset(Request $request)
     {
-        $request->validate([
+    
+        $array = ['error' => '', 'message' => ''];
+        $validator = Validator::make($request->all(), [
             'token' => 'required',
             'email' => 'required|email',
             'password' => ['required', 'confirmed', RulesPassword::defaults()],
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+        if (!$validator->fails()) {
+            $status = Password::reset(
+                $request->only('email', 'password', 'passwordConfirm', 'token'),
+                function ($user) use ($request) {
+                    $user->forceFill([
+                        'password' => Hash::make($request->password),
+                        'remember_token' => Str::random(60),
+                    ])->save();    
+                    $user->tokens()->delete();    
+                    event(new PasswordReset($user));
+                }
+            );
 
-                $user->tokens()->delete();
-
-                event(new PasswordReset($user));
-            }
-        );
-
-        if ($status == Password::PASSWORD_RESET) {
-            return response([
-                'message' => 'Password reset successfully'
-            ]);
-        }
-
-        return response([
-            'message' => __($status)
-        ], 500);
+            if ($status == Password::PASSWORD_RESET) {
+                $array['message'] = 'Senha Atualizada com sucesso!';
+            }else{
+                $array['message'] = 'Erro ao resetar a senha';
+                $array['error'] = __($status);       
+           }
+        } else {
+            $array['error'] = $validator->errors()->first();
+        } 
+        return $array;
+        
     }
 
 
