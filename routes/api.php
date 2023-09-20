@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     AuthController,
     AreaController,
+    AssembleiaController,
     CondominiosController,
     BilletController,
     DocController,
@@ -48,7 +49,14 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/admin/auth/logout', [AuthController::class, 'logout']);
 
-
+   /**ASSEMBLEIAS**/
+   Route::get('/admin/assembleias', [AssembleiaController::class, 'getAll']);
+   Route::post('/admin/assembleia/{id}', [AssembleiaController::class, 'update']);
+   Route::post('/admin/assembleia', [AssembleiaController::class, 'insert']);
+   Route::delete('/admin/assembleia/{id}', [AssembleiaController::class, 'delete']);
+    
+    
+    
     /**CONDOMINIOS**/
     Route::get('/admin/condominios', [CondominiosController::class, 'getAll']);
     Route::post('/admin/condominio/{id}', [CondominiosController::class, 'update']);

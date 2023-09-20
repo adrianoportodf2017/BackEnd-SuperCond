@@ -39,7 +39,8 @@ class Createalltables extends Migration
             $table->string('cpf')->unique();
             $table->string('profile');
             $table->string('password');
-        });
+            $table->string('remember_token')->nullable();
+                  });
 
         Schema::create('units', function(Blueprint $table) {
             $table->id();
@@ -157,6 +158,28 @@ class Createalltables extends Migration
 
         });
 
+        Schema::create('assembleia', function (Blueprint $table) {
+            $table->id();
+            $table->string('title')->nullable();
+            $table->text('content')->nullable();
+            $table->enum('status', ['ativo', 'inativo'])->default('ativo');
+            $table->integer('order')->nullable();
+            $table->string('thumb')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('documentos_assembleia', function (Blueprint $table) {
+            $table->id();
+            $table->string('title')->nullable();
+            $table->string('thumb')->nullable();
+            $table->text('content')->nullable();
+            $table->string('file_url')->nullable();
+            $table->unsignedBigInteger('assembleia_id')->nullable();
+            $table->timestamps();
+
+            $table->foreign('assembleia_id')->references('id')->on('assembleia')->onDelete('cascade')->nullable();
+        });
+
 
     }
 
@@ -182,5 +205,9 @@ class Createalltables extends Migration
         Schema::dropIfExists('areas');
         Schema::dropIfExists('areadisableddays');
         Schema::dropIfExists('reservations');
+        Schema::dropIfExists('documentos_assembleia');
+        Schema::dropIfExists('assembleia');
+
+
     }
 }
