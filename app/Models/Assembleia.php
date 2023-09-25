@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Assembleia extends Model
 {
     use HasFactory;
-    protected $table = 'assembleia';
+    protected $table = 'assembleias';
 }

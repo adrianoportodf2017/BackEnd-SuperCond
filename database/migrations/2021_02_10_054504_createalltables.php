@@ -36,8 +36,9 @@ class Createalltables extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone')->nullable();
             $table->string('cpf')->unique();
-            $table->string('profile');
+            $table->string('profile')->nullable();
             $table->string('password');
             $table->string('remember_token')->nullable();
                   });
@@ -46,21 +47,21 @@ class Createalltables extends Migration
             $table->id();
             $table->string('name');
             $table->integer('id_owner');
-            $table->integer('id_condominio');
+            $table->integer('id_condominio')->nullable();
         });
 
         Schema::create('unitpeoples', function(Blueprint $table) {
             $table->id();
             $table->integer('id_unit');
             $table->string('name');
-            $table->date('birthdate');
+            $table->date('birthdate')->nullable();
         });
 
         Schema::create('unitvehicles', function(Blueprint $table) {
             $table->id();
             $table->integer('id_unit');
             $table->string('title');
-            $table->string('color');
+            $table->string('color')->nullable();
             $table->string('plate');
         });
 
@@ -68,7 +69,7 @@ class Createalltables extends Migration
             $table->id();
             $table->integer('id_unit');
             $table->string('name');
-            $table->string('race');
+            $table->string('race')->nullable();
         });
 
         Schema::create('walls', function(Blueprint $table) {
@@ -76,7 +77,7 @@ class Createalltables extends Migration
             $table->string('title');
             $table->string('body');
             $table->datetime('datecreated');
-            $table->integer('id_condominio');
+            $table->integer('id_condominio')->nullable();
 
         });
 
@@ -84,7 +85,7 @@ class Createalltables extends Migration
             $table->id();
             $table->integer('id_wall');
             $table->integer('id_user');
-            $table->integer('id_condominio');
+            $table->integer('id_condominio')->nullable();
 
         });
 
@@ -93,7 +94,7 @@ class Createalltables extends Migration
             $table->string('title');
             $table->string('fileurl');
             $table->datetime('datecreated');
-            $table->integer('id_condominio');
+            $table->integer('id_condominio')->nullable();
             // Adicione as colunas ausentes aqui
             $table->string('filename')->nullable();
         });
@@ -103,7 +104,8 @@ class Createalltables extends Migration
             $table->integer('id_unit');
             $table->string('title');
             $table->string('fileurl');
-            $table->integer('id_condominio');
+            $table->string('content')->nullable();
+            $table->integer('id_condominio')->nullable();
 
         });
 
@@ -113,19 +115,19 @@ class Createalltables extends Migration
             $table->string('title');
             $table->string('status')->default('IN_REVIEW'); // IN_REVIEW, RESOLVED
             $table->date('datecreated');
-            $table->text('photos');
-            $table->integer('id_condominio');
+            $table->text('photos')->nullable();
+            $table->integer('id_condominio')->nullable();
 
         });
 
         Schema::create('foundandlost', function(Blueprint $table) {
             $table->id();
             $table->string('status')->default('LOST');  // LOST, RECOVERED
-            $table->string('photo');
+            $table->text('photos');
             $table->string('description');
             $table->string('where');
             $table->date('datecreated');
-            $table->integer('id_condominio');
+            $table->integer('id_condominio')->nullable();
 
         });
 
@@ -137,7 +139,7 @@ class Createalltables extends Migration
             $table->string('days'); 
             $table->time('start_time');
             $table->time('end_time');
-            $table->integer('id_condominio');
+            $table->integer('id_condominio')->nullable();
 
         });
 
@@ -145,7 +147,7 @@ class Createalltables extends Migration
             $table->id();
             $table->integer('id_area');
             $table->date('day');
-            $table->integer('id_condominio');
+            $table->integer('id_condominio')->nullable();
 
         });
 
@@ -154,30 +156,32 @@ class Createalltables extends Migration
             $table->integer('id_unit');
             $table->integer('id_area');
             $table->datetime('reservation_date');
-            $table->integer('id_condominio');
+            $table->integer('id_condominio')->nullable();
 
         });
 
-        Schema::create('assembleia', function (Blueprint $table) {
+        Schema::create('assembleias', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
             $table->text('content')->nullable();
-            $table->enum('status', ['ativo', 'inativo'])->default('ativo');
+            $table->enum('status', ['1', '0'])->default('1');
             $table->integer('order')->nullable();
+            $table->string('year')->nullable();
             $table->string('thumb')->nullable();
             $table->timestamps();
         });
 
-        Schema::create('documentos_assembleia', function (Blueprint $table) {
+        Schema::create('assembleiadocuments', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
             $table->string('thumb')->nullable();
             $table->text('content')->nullable();
+            $table->enum('status', ['1', '0'])->default('1');
             $table->string('file_url')->nullable();
             $table->unsignedBigInteger('assembleia_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('assembleia_id')->references('id')->on('assembleia')->onDelete('cascade')->nullable();
+            
         });
 
 
@@ -205,8 +209,8 @@ class Createalltables extends Migration
         Schema::dropIfExists('areas');
         Schema::dropIfExists('areadisableddays');
         Schema::dropIfExists('reservations');
-        Schema::dropIfExists('documentos_assembleia');
-        Schema::dropIfExists('assembleia');
+        Schema::dropIfExists('assembleiadocuments');
+        Schema::dropIfExists('assembleias');
 
 
     }

@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
 
 use App\Models\User;
 
@@ -20,14 +22,22 @@ class DatabaseSeeder extends Seeder
 
 
 
+        DB::table('users')->insert([
+            'name' => 'Adriano Alves',
+            'email' => 'adrianobr00@gmail.com',
+            'cpf' => '12345678901', // adicionado um valor aleatório para a coluna cpf
+            'profile' => 1,
+            'password' => Hash::make('0307199216@Dr'),
+        ]);
+
         DB::table('condominios')->insert([
             'name' => 'Condomínio ABC',
-            'codigo' => 'ABC123',
-            'cnpj' => '11.111.111/0001-11',
-            'adress' => 'Rua ABC, 123',
+            'codigo' => 'ABC12822783',
+            'cnpj' => '11.531.111/0001-11',
+            'address' => 'Rua ABC, 123',
             'city' => 'São Paulo',
             'zip_code' => '12345-678',
-            'adress_billit' => 'Rua ABC, 123',
+            'address_billit' => 'Rua ABC, 123',
             'description' => 'Condomínio de luxo',
             'thumb' => 'condominio-abc.jpg',
         ]);
@@ -104,6 +114,23 @@ class DatabaseSeeder extends Seeder
             'body' => 'Cuidado com blablalba  lorem ipsim',
             'datecreated' => '2020-12-20 18:00:00',
             'id_condominio' => 1
+
+        ]);
+
+        /*  INSERINDO Assebleias  */
+
+        DB::table('assembleias')->insert([
+            'title' => 'AGO 2023',
+            'content' => 'assembleias geral ordinaria 2023',
+            'created_at' => '2023-12-20 18:00:00',
+
+        ]);
+
+
+        DB::table('assembleias')->insert([
+            'title' => 'AGe 2022',
+            'content' => 'assembleias geral extraordinaria 2022',
+            'created_at' => '2022-12-20 18:00:00',
 
         ]);
     }

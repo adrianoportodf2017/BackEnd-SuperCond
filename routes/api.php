@@ -17,6 +17,7 @@ use App\Http\Controllers\{
     AuthController,
     AreaController,
     AssembleiaController,
+    DocumentosAssembleiaController,
     CondominiosController,
     BilletController,
     DocController,
@@ -54,6 +55,17 @@ Route::middleware('auth:api')->group(function () {
    Route::post('/admin/assembleia/{id}', [AssembleiaController::class, 'update']);
    Route::post('/admin/assembleia', [AssembleiaController::class, 'insert']);
    Route::delete('/admin/assembleia/{id}', [AssembleiaController::class, 'delete']);
+   Route::post('/admin/assembleia/{id}/status', [AssembleiaController::class, 'updateStatus']);
+
+    /**DOCUMENTOS ASSEMBLEIAS**/
+    Route::get('/admin/documentos/assembleias', [DocumentosAssembleiaController::class, 'getAll']);
+    Route::get('/admin/documentos/assembleia/{id}/documentos', [DocumentosAssembleiaController::class, 'getDocumentsAssembleia']);
+    Route::post('/admin/documentos/assembleia/{id}', [DocumentosAssembleiaController::class, 'update']);
+    Route::post('/admin/documentos/assembleia', [DocumentosAssembleiaController::class, 'insert']);
+    Route::delete('/admin/documentos/assembleia/{id}', [DocumentosAssembleiaController::class, 'delete']);
+    Route::post('/admin/documentos/assembleia/{id}/status', [DocumentosAssembleiaController::class, 'updateStatus']);
+ 
+
     
     
     

@@ -25,6 +25,7 @@ class AssembleiaController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
+            'year' => 'required',
             //'file' => 'required|mimes:jpg,png,pdf,jpeg'
         ]);
         if ($validator->fails()) {
@@ -43,11 +44,14 @@ class AssembleiaController extends Controller
                 $content = $request->input('content');
                 $status = $request->input('status');
                 $order = $request->input('order');
+                $year = $request->input('year');
+
                 $newAssembleia = new Assembleia();
                 $newAssembleia->title = $title;
                 $newAssembleia->content = $content;
                 $newAssembleia->status = $status;
                 $newAssembleia->order = $order;
+                $newAssembleia->year = $year;
                 $newAssembleia->thumb = $url;
                 $newAssembleia->created_at = date('Y-m-d H:m:s');
                 $newAssembleia->save();
@@ -61,11 +65,13 @@ class AssembleiaController extends Controller
             $content = $request->input('content');
             $status = $request->input('status');
             $order = $request->input('order');
+            $year = $request->input('year');
             $newAssembleia = new Assembleia();
             $newAssembleia->title = $title;
             $newAssembleia->content = $content;
             $newAssembleia->status = $status;
             $newAssembleia->order = $order;
+            $newAssembleia->year = $year;
             $newAssembleia->created_at = date('Y-m-d H:m:s');
             $newAssembleia->save();
         }
@@ -74,7 +80,7 @@ class AssembleiaController extends Controller
     public function update($id, Request $request)
     {
         $array = ['error' => ''];
-        // var_dump($_POST);die;
+        // var_dump($request->input());die;
         $array['id'] =  $id;
         $assembleia = Assembleia::find($id);
         if (!$assembleia) {
@@ -107,10 +113,13 @@ class AssembleiaController extends Controller
             $content = $request->input('content');
             $status = $request->input('status');
             $order = $request->input('order');
+            $year = $request->input('year');
+
             $assembleia->title = $title;
             $assembleia->content = $content;
             $assembleia->status = $status;
             $assembleia->order = $order;
+            $assembleia->year = $year;
             $assembleia->thumb = $url;
             $assembleia->save();
             // Converta a URL em um caminho relativo ao sistema de arquivos
@@ -119,19 +128,22 @@ class AssembleiaController extends Controller
             // Use o caminho relativo para excluir o arquivo
             //var_dump($relativePath);die;
             //   Storage::delete('public/image/areas/G4RCjcZN9gMoDxvZ7BsSPkV9Egl1smtyKrNO2tVe.png');
-           Storage::delete('public' . $relativePath);
+            Storage::delete('public' . $relativePath);
         } else {
             $title = $request->input('title');
             $content = $request->input('content');
             $status = $request->input('status');
             $order = $request->input('order');
+            $year = $request->input('year');
+
             $assembleia->title = $title;
             $assembleia->content = $content;
             $assembleia->status = $status;
             $assembleia->order = $order;
-            $assembleia->save();
+            $assembleia->year = $year;
 
-        }     
+            $assembleia->save();
+        }
 
         return $array;
     }
@@ -140,19 +152,36 @@ class AssembleiaController extends Controller
     {
         $array = ['error' => ''];
         $item = Assembleia::find($id);
-        if ($item) {       
+        if ($item) {
             // Converta a URL em um caminho relativo ao sistema de arquivos
             $relativePath = str_replace(asset(''), '', $item->thumb);
             $relativePath = str_replace('storage', '', $relativePath);
             // Use o caminho relativo para excluir o arquivo
             //var_dump($relativePath);die;
             //   Storage::delete('public/image/areas/G4RCjcZN9gMoDxvZ7BsSPkV9Egl1smtyKrNO2tVe.png');
-           Storage::delete('public' . $relativePath);
-           Assembleia::find($id)->delete();
+            Storage::delete('public' . $relativePath);
+            Assembleia::find($id)->delete();
         } else {
             $array['error'] = 'Documento inexistente';
             // return $array;
         }
         return $array;
+    }
+
+    public function updateStatus($id, Request $request)
+    {
+        $array = ['error' => ''];
+        $validator = Validator::make($request->all(), [
+            'status' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $array['error'] = $validator->errors()->first();
+            return $array;
+        } else {
+            $item = Assembleia::find($id);
+            $item->status = $request->input('status');
+            $item->save();
+            return $request->input();
+        }
     }
 }

@@ -13,10 +13,10 @@ class CondominiosTableSeeder extends Seeder
             'name' => 'Condomínio ABC',
             'codigo' => 'ABC123',
             'cnpj' => '11.111.111/0001-11',
-            'adress' => 'Rua ABC, 123',
+            'address' => 'Rua ABC, 123',
             'city' => 'São Paulo',
             'zip_code' => '12345-678',
-            'adress_billit' => 'Rua ABC, 123',
+            'address_billit' => 'Rua ABC, 123',
             'description' => 'Condomínio de luxo',
             'thumb' => 'condominio-abc.jpg',
         ]);
