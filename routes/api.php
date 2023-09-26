@@ -59,7 +59,7 @@ Route::middleware('auth:api')->group(function () {
 
     /**DOCUMENTOS ASSEMBLEIAS**/
     Route::get('/admin/documentos/assembleias', [DocumentosAssembleiaController::class, 'getAll']);
-    Route::get('/admin/documentos/assembleia/{id}/documentos', [DocumentosAssembleiaController::class, 'getDocumentsAssembleia']);
+    Route::get('/admin/documentos/assembleia/{id}/documentos', [DocumentosAssembleiaController::class, 'getDocumentosAssembleia']);
     Route::post('/admin/documentos/assembleia/{id}', [DocumentosAssembleiaController::class, 'update']);
     Route::post('/admin/documentos/assembleia', [DocumentosAssembleiaController::class, 'insert']);
     Route::delete('/admin/documentos/assembleia/{id}', [DocumentosAssembleiaController::class, 'delete']);

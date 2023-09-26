@@ -18,7 +18,7 @@ class DocumentosAssembleiaController extends Controller
         return $array;
     }
 
-    public function getDocumentsAssembleia($id)
+    public function getDocumentosAssembleia($id)
     {
         $array = ['error' => ''];
         $docs = DocumentosAssembleia::where('assembleia_id', $id)->get();
@@ -43,7 +43,7 @@ class DocumentosAssembleiaController extends Controller
                     'file' => 'required|mimes:jpg,png,jpeg,pdf'
                 ]);
                 if ($request->file('file')->isValid()) {
-                    $arquivo_documents = $request->file('file')->store('public/image/assembleias/documents');
+                    $arquivo_documents = $request->file('file')->store('public/upload/documentos_assembleias/documentos');
                     $url_documents = asset(Storage::url($arquivo_documents));
                 }
             } else {
@@ -56,7 +56,7 @@ class DocumentosAssembleiaController extends Controller
                 ]);
 
                 if ($request->file('thumb')->isValid()) {
-                    $arquivo = $request->file('thumb')->store('public/image/assembleias');
+                    $arquivo = $request->file('thumb')->store('public/upload/documentos_assembleias/thumbs');
                     $url = asset(Storage::url($arquivo));
                 }
             } else {
@@ -83,69 +83,75 @@ class DocumentosAssembleiaController extends Controller
         $array = ['error' => ''];
         // var_dump($request->input());die;
         $array['id'] =  $id;
-        $assembleia = DocumentosAssembleia::find($id);
-        if (!$assembleia) {
+        $doc = DocumentosAssembleia::find($id);
+        if (!$doc) {
             $array['error'] = 'Registro não encontrado';
             return $array;
+            exit();
         }
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
+            //'year' => 'required',
         ]);
-
         if ($validator->fails()) {
             $array['error'] = $validator->errors()->first();
             return $array;
-        }
+        } else {
+            if ($request->hasfile('file')) {
 
-        if ($request->hasFile('thumb')) {
-            $validator = Validator::make($request->all(), [
-                'thumb' => 'required|mimes:jpg,png,pdf,jpeg'
-            ]);
+                $validator = Validator::make($request->all(), [
+                    'file' => 'required|mimes:jpg,png,jpeg,pdf'
+                ]);
+                if ($request->file('file')->isValid()) {
+                    $fileDelete = $doc->file_url;
 
-            if ($validator->fails()) {
-                $array['error'] = $validator->errors()->first();
-                return $array;
+                    $arquivo_documents = $request->file('file')->store('public/upload/documentos_assembleias/documents');
+                    $url_documents = asset(Storage::url($arquivo_documents));
+                    // Converta a URL em um caminho relativo ao sistema de arquivos
+                    $relativePath = str_replace(asset(''), '', $fileDelete);
+                    $relativePath = str_replace('storage', '', $relativePath);
+                    // Use o caminho relativo para excluir o arquivo        
+                    Storage::delete('public' . $relativePath);
+                } else {
+                    $array['error'] = $validator->errors()->first();
+                    return $array;
+                }
+            } else {
+                $url_documents = null;
+            }
+            if ($request->hasfile('thumb')) {
+
+                $validator = Validator::make($request->all(), [
+                    'thumb' => 'required|mimes:jpg,png,jpeg'
+                ]);
+
+                if ($request->file('thumb')->isValid()) {
+                    $fileDeletethumb = $doc->thumb;
+
+                    $thumb = $request->file('thumb')->store('public/upload/documentos_assembleias/thumbs');
+                    $url = asset(Storage::url($thumb));
+                    $relativePathThumb = str_replace(asset(''), '', $fileDeletethumb);
+                    $relativePathThumb = str_replace('storage', '', $relativePathThumb);
+                    // Use o caminho relativo para excluir o arquivo        
+                    Storage::delete('public' . $relativePathThumb);
+                } else {
+                    $array['error'] = $validator->errors()->first();
+                    return $array;
+                }
+            } else {
+                $url = null;
             }
 
-            $thumbDelete = $assembleia->thumb;
-            $arquivo = $request->file('thumb')->store('public/image/assembleias');
-            $url = asset(Storage::url($arquivo));
             $title = $request->input('title');
             $content = $request->input('content');
             $status = $request->input('status');
-            $order = $request->input('order');
-            $year = $request->input('year');
-
-            $assembleia->title = $title;
-            $assembleia->content = $content;
-            $assembleia->status = $status;
-            $assembleia->order = $order;
-            $assembleia->year = $year;
-            $assembleia->thumb = $url;
-            $assembleia->save();
-            // Converta a URL em um caminho relativo ao sistema de arquivos
-            $relativePath = str_replace(asset(''), '', $thumbDelete);
-            $relativePath = str_replace('storage', '', $relativePath);
-            // Use o caminho relativo para excluir o arquivo
-            //var_dump($relativePath);die;
-            //   Storage::delete('public/image/areas/G4RCjcZN9gMoDxvZ7BsSPkV9Egl1smtyKrNO2tVe.png');
-            Storage::delete('public' . $relativePath);
-        } else {
-            $title = $request->input('title');
-            $content = $request->input('content');
-            $status = $request->input('status');
-            $order = $request->input('order');
-            $year = $request->input('year');
-
-            $assembleia->title = $title;
-            $assembleia->content = $content;
-            $assembleia->status = $status;
-            $assembleia->order = $order;
-            $assembleia->year = $year;
-
-            $assembleia->save();
+            $doc->title = $title;
+            $doc->content = $content;
+            $doc->status = $status;
+            $doc->file_url = $url_documents;
+            $doc->thumb = $url;
+            $doc->save();
         }
-
         return $array;
     }
 
@@ -156,6 +162,12 @@ class DocumentosAssembleiaController extends Controller
         if ($item) {
             // Converta a URL em um caminho relativo ao sistema de arquivos
             $relativePath = str_replace(asset(''), '', $item->thumb);
+            $relativePath = str_replace('storage', '', $relativePath);
+            // Use o caminho relativo para excluir o arquivo
+            //var_dump($relativePath);die;
+            //   Storage::delete('public/image/areas/G4RCjcZN9gMoDxvZ7BsSPkV9Egl1smtyKrNO2tVe.png');
+            Storage::delete('public' . $relativePath);
+            $relativePath = str_replace(asset(''), '', $item->file_url);
             $relativePath = str_replace('storage', '', $relativePath);
             // Use o caminho relativo para excluir o arquivo
             //var_dump($relativePath);die;
