@@ -25,7 +25,7 @@ class AssembleiaController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
-            'year' => 'required',
+            //'file' => 're            'year' => 'required',
             //'file' => 'required|mimes:jpg,png,pdf,jpeg'
         ]);
         if ($validator->fails()) {

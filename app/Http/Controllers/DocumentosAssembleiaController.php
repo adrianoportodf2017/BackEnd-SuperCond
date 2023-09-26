@@ -27,16 +27,21 @@ class DocumentosAssembleiaController extends Controller
     }
 
     public function insert(Request $request)
-    {
+    {        //return var_dump($_FILES);exit;
+
+
         $array = ['error' => ''];
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
             //'year' => 'required',
         ]);
+
         if ($validator->fails()) {
             $array['error'] = $validator->errors()->first();
             return $array;
         } else {
+
+
             if ($request->hasfile('file')) {
 
                 $validator = Validator::make($request->all(), [
