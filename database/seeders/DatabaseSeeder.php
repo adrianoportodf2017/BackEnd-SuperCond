@@ -6,6 +6,8 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
+
 
 
 use App\Models\User;
@@ -19,6 +21,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $faker = Faker::create();
+
 
 
 
@@ -103,17 +107,17 @@ class DatabaseSeeder extends Seeder
         /*  INSERINDO AVISOS   */
 
         DB::table('walls')->insert([
-            'title' => 'Título de Aviso de Teste',
-            'body' => 'Lorem ipsum blablalba  lorem ipsim',
-            'datecreated' => '2020-12-20 15:00:00',
+            'title' => $faker->sentence,
+            'content' => $faker->paragraph,
+            'created_at' => $faker->dateTime,
             'id_condominio' => 1
 
         ]);
         DB::table('walls')->insert([
-            'title' => 'Alerta geral para todos',
-            'body' => 'Cuidado com blablalba  lorem ipsim',
-            'datecreated' => '2020-12-20 18:00:00',
-            'id_condominio' => 1
+            'title' => $faker->sentence,
+            'content' => $faker->paragraph,
+            'created_at' => $faker->dateTime,
+            'id_condominio' => 1,
 
         ]);
 
@@ -121,17 +125,143 @@ class DatabaseSeeder extends Seeder
 
         DB::table('assembleias')->insert([
             'title' => 'AGO 2023',
-            'content' => 'assembleias geral ordinaria 2023',
+            'content' => $faker->paragraph,
             'created_at' => '2023-12-20 18:00:00',
+            'created_at' => now(),
+            'updated_at' => now(),
 
         ]);
 
 
         DB::table('assembleias')->insert([
             'title' => 'AGe 2022',
-            'content' => 'assembleias geral extraordinaria 2022',
+            'content' => $faker->paragraph,
             'created_at' => '2022-12-20 18:00:00',
+            'created_at' => now(),
+            'updated_at' => now(),
 
         ]);
+
+
+        DB::table('classifieds')->insert([
+            [
+                'title' => 'Classificado 1',
+                'content' => $faker->paragraph,
+                'thumb' => 'imagem1.jpg',
+                'photos' => json_encode(['foto1.jpg', 'foto2.jpg']),
+                'price' => '100.00',
+                'address' => 'Endereço 1',
+                'contact' => 'Contato 1',
+                'user_id' => 1, // ID do usuário relacionado
+                'category_id' => 1, // ID da categoria relacionada
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'Classificado 2',
+                'content' => $faker->paragraph,
+                'thumb' => 'imagem2.jpg',
+                'photos' => json_encode(['foto3.jpg', 'foto4.jpg']),
+                'price' => '50.00',
+                'address' => 'Endereço 2',
+                'contact' => 'Contato 2',
+                'user_id' => 2, // ID do usuário relacionado
+                'category_id' => 2, // ID da categoria relacionada
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            // Adicione mais registros conforme necessário
+        ]);
+
+        // Exemplo de seed para notícias
+        for ($i = 1; $i <= 10; $i++) {
+            DB::table('news')->insert([
+                'title' => 'Notícia ' . $i,
+                'content' => $faker->paragraph,
+                'thumb' => 'imagem-noticia-' . $i . '.jpg',
+                'slug' => 'noticia-' . $i,
+                'category_id' => rand(1, 5), // Supondo que você tenha 5 categorias diferentes
+                'comments_count' => rand(0, 100),
+                'likes_count' => rand(0, 100),
+                'views_count' => rand(100, 10000),
+                'author_id' => rand(1, 10), // Supondo que você tenha 10 autores diferentes
+                'publish_date' => now()->subDays(rand(1, 365)),
+                'tags' => 'tag' . rand(1, 5), // Supondo que você tenha 5 tags diferentes
+                'highlight' => rand(0, 1),
+                'status' => 'published',
+                'additional_images' => json_encode(['imagem1.jpg', 'imagem2.jpg']),
+                'external_url' => null,
+                'shares_count' => rand(0, 100),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        for ($i = 1; $i <= 10; $i++) {
+            DB::table('photos')->insert([
+                'title' => 'Título da Galeria ' . $i,
+                'content' => 'Conteúdo da Galeria ' . $faker->paragraph,
+                'status' => 'published',
+                'likes_count' => rand(0, 100),
+                'comments_count' => rand(0, 100),
+                'tags' => 'tag' . rand(1, 5), // Supondo que você tenha 5 tags diferentes
+                'thumb' => 'imagem-galeria-' . $i . '.jpg',
+                'photos' => json_encode(['imagem1.jpg', 'imagem2.jpg']),
+                'shares_count' => rand(0, 100),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+
+        foreach (range(1, 10) as $index) {
+            $startDate = $faker->dateTimeBetween('-30 days', '+30 days');
+            $expirationDate = $faker->dateTimeBetween($startDate, '+60 days');
+
+            $options = ['Option 1', 'Option 2', 'Option 3']; // Opções de resposta em formato JSON
+
+            $pollData = [
+                'title' => 'Enquete ' . $index,
+                'content' => $faker->paragraph,
+                'status' => 'active',
+                'date_start' => $startDate,
+                'date_expiration' => $expirationDate,
+                'type' => 'single_choice',
+                'options' => json_encode($options),
+                'likes_count' => $faker->numberBetween(0, 100),
+                'votes_count' => $faker->numberBetween(0, 1000),
+                'max_votes' => $faker->numberBetween(1, 5), // Número máximo de votos permitidos por usuário
+                'is_public' => true,
+                'participants' => json_encode([]), // Lista de usuários que participaram da enquete
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            DB::table('polls')->insert($pollData);
+        }
+
+        foreach (range(1, 10) as $index) {
+            $serviceProviderData = [
+                'name' => $faker->company,
+                'email' => $faker->unique()->safeEmail,
+                'phone' => $faker->phoneNumber,
+                'service_type' => $faker->word,
+                'description' => $faker->paragraph,
+                'address' => $faker->address,
+                'city' => $faker->city,
+                'state' => $faker->stateAbbr,
+                'zip_code' => $faker->postcode,
+                'website' => $faker->url, // Adicionado campo para website
+                'social_media' => json_encode(['facebook' => $faker->url, 'instagram' => $faker->url]), // Adicionado campo para redes sociais
+                'work_hours' => $faker->sentence, // Adicionado campo para horário de trabalho
+                'availability' => $faker->sentence, // Adicionado campo para disponibilidade
+                'average_rating' => $faker->randomFloat(1, 1, 5), // Adicionado campo para média de avaliações
+                'total_ratings' => $faker->numberBetween(1, 100), // Adicionado campo para total de avaliações
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            DB::table('serviceproviders')->insert($serviceProviderData);
+        }
     }
 }
