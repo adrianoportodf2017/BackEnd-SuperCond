@@ -50,24 +50,35 @@ class DatabaseSeeder extends Seeder
         DB::table('units')->insert([
             'name' => 'APT 100',
             'id_owner' => 1,
-            'id_condominio' => 1
+            'id_condominio' => 1,
+            'address' => $faker->address,
+            'notes' => $faker->paragraph
         ]);
         DB::table('units')->insert([
             'name' => 'APT 101',
             'id_owner' => 1,
-            'id_condominio' => 1
+            'id_condominio' => 1,
+            'address' => $faker->address,
+            'notes' => $faker->paragraph
+
 
         ]);
         DB::table('units')->insert([
             'name' => 'APT 200',
             'id_owner' => '0',
-            'id_condominio' => 1
+            'id_condominio' => 1,
+            'address' => $faker->address,
+            'notes' => $faker->paragraph
+
 
         ]);
         DB::table('units')->insert([
             'name' => 'APT 201',
             'id_owner' => '0',
-            'id_condominio' => 1
+            'id_condominio' => 1,
+            'address' => $faker->address,
+            'notes' => $faker->paragraph
+
 
         ]);
 

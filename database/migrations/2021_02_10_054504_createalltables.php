@@ -50,6 +50,8 @@ class Createalltables extends Migration
         Schema::create('units', function(Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('address')->nullable();
+            $table->text('notes')->nullable();
             $table->integer('id_owner');
             $table->integer('id_condominio')->nullable();
             $table->timestamps();
@@ -61,6 +63,7 @@ class Createalltables extends Migration
             $table->integer('id_unit');
             $table->string('name');
             $table->date('birthdate')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
 
         });
@@ -70,7 +73,8 @@ class Createalltables extends Migration
             $table->integer('id_unit');
             $table->string('title');
             $table->string('color')->nullable();
-            $table->string('plate');
+            $table->string('plate')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
 
         });
@@ -80,6 +84,7 @@ class Createalltables extends Migration
             $table->integer('id_unit');
             $table->string('name');
             $table->string('race')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
 
         });

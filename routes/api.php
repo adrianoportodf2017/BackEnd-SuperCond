@@ -44,6 +44,16 @@ Route::post('/admin/auth/reset-password', [AuthController::class, 'reset'])->nam
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
 
+     /**USERS**/
+     Route::get('/admin/users', [UserController::class, 'getAll']);
+     Route::get('/admin/users/{id}', [UserController::class, 'getById']);
+     Route::get('/admin/users/cpf', [UserController::class, 'getByCpf']);
+     Route::put('/admin/user/{id}', [UserController::class, 'update']);
+     Route::post('/admin/user', [UserController::class, 'insert']);
+     Route::delete('/admin/user/{id}', [UserController::class, 'delete']);
+     /**<--USERS-->*/
+ 
+
 
     Route::post('/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -102,21 +112,24 @@ Route::middleware('auth:api')->group(function () {
 
     /**UNITS**/
     Route::get('/admin/units', [UnitController::class, 'getAll']);
-    Route::get('/unit/{id}', [UnitController::class, 'getInfo']);
-    Route::post('/admin/unit/{id}', [UnitController::class, 'updateUnit']);
-    Route::post('/unit/{id}/addperson', [UnitController::class, 'addPerson']);
-    Route::post('/unit/{id}/addvehicle', [UnitController::class, 'addVehicle']);
-    Route::post('/unit/{id}/addpet', [UnitController::class, 'addPet']);
-    Route::post('/unit/{id}/removeperson', [UnitController::class, 'removePerson']);
-    Route::post('/unit/{id}/removevehicle', [UnitController::class, 'removeVehicle']);
-    Route::post('/unit/{id}/removepet', [UnitController::class, 'removePet']);
+    Route::get('/admin/unit/owner/{id}', [UnitController::class, 'getUnitByOwner']);
+    Route::get('/admin/unit/{id}', [UnitController::class, 'getById']);
+    Route::post('/admin/unit', [UnitController::class, 'insert']);
+    Route::delete('/admin/unit/{id}', [UnitController::class, 'delete']);
+    Route::put('/admin/unit/{id}', [UnitController::class, 'updateUnit']);
+
+
     /**<--UNITS-->*/
 
     /**AREAS**/
+
     Route::get('/admin/areas', [AreaController::class, 'getAll']);
     Route::post('/admin/areas', [AreaController::class, 'insert']);
     Route::post('/admin/area/{id}', [AreaController::class, 'update']);
     Route::delete('/admin/area/{id}', [AreaController::class, 'delete']);
+
+
+    //*********************************************************************************************** */
 
 
     Route::get('/admin/news', [NewsController::class, 'index']); // Listar todas as notícias
@@ -177,14 +190,7 @@ Route::middleware('auth:api')->group(function () {
 
 
 
-    /**USERS**/
-    Route::get('/admin/users', [UserController::class, 'getAll']);
-    Route::get('/admin/users/search', [UserController::class, 'search']);
-    Route::post('/admin/user/{id}', [UserController::class, 'update']);
-    Route::post('/admin/user', [UserController::class, 'insert']);
-    Route::delete('/admin/user/{id}', [UserController::class, 'delete']);
-    /**<--USERS-->*/
-
+   
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
@@ -222,7 +228,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/foundandlost/{id}', [FoundAndLostController::class, 'update']);
 
     //Unidade
-    Route::get('/unit/{id}', [UnitController::class, 'getInfo']);
+    Route::get('/unit/{id}', [UnitController::class, 'getInfo']);  
     Route::post('/unit/{id}/addperson', [UnitController::class, 'addPerson']);
     Route::post('/unit/{id}/addvehicle', [UnitController::class, 'addVehicle']);
     Route::post('/unit/{id}/addpet', [UnitController::class, 'addPet']);
