@@ -8,8 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Billet extends Model
 {
     use HasFactory;
-    public $timestamps = false;
     public $table = 'billets';
-    
-
 }

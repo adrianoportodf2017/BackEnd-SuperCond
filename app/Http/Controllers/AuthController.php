@@ -112,8 +112,8 @@ Logar usuario no sistema
 
             $user = auth()->user();
             $array['user'] = $user;
-            $properties = Unit::select(['units.id', 'units.name as unit_name', 'units.id_condominio', 'condominios.name as condominio_name', 'condominios.*'])
-                ->leftJoin('condominios', 'condominios.id', '=', 'units.id_condominio')
+            $properties = Unit::select(['units.id', 'units.name as unit_name', 'units.condominio_id', 'condominios.name as condominio_name', 'condominios.*'])
+                ->leftJoin('condominios', 'condominios.id', '=', 'units.condominio_id')
                 ->where('units.id_owner', $user['id'])
                 ->get();
 
@@ -131,8 +131,8 @@ Logar usuario no sistema
         $user = auth()->user();
         $array['user'] = $user;
 
-        $properties = Unit::select(['units.id', 'units.name as unit_name', 'units.id_condominio', 'condominios.name as condominio_name', 'condominios.*'])
-            ->leftJoin('condominios', 'condominios.id', '=', 'units.id_condominio')
+        $properties = Unit::select(['units.id', 'units.name as unit_name', 'units.condominio_id', 'condominios.name as condominio_name', 'condominios.*'])
+            ->leftJoin('condominios', 'condominios.id', '=', 'units.condominio_id')
             ->where('units.id_owner', $user['id'])
             ->get();
 

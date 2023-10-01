@@ -53,7 +53,7 @@ class Createalltables extends Migration
             $table->string('address')->nullable();
             $table->text('notes')->nullable();
             $table->integer('id_owner');
-            $table->integer('id_condominio')->nullable();
+            $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
         });
@@ -93,7 +93,7 @@ class Createalltables extends Migration
             $table->id();
             $table->string('title');
             $table->string('content');
-            $table->integer('id_condominio')->nullable();
+            $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
 
@@ -103,7 +103,7 @@ class Createalltables extends Migration
             $table->id();
             $table->integer('id_wall');
             $table->integer('id_user');
-            $table->integer('id_condominio')->nullable();
+            $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
 
@@ -113,7 +113,9 @@ class Createalltables extends Migration
             $table->id();
             $table->string('title');
             $table->string('fileurl');
-            $table->integer('id_condominio')->nullable();
+            $table->string('content')->nullable();
+            $table->integer('condominio_id')->nullable();
+            $table->unsignedBigInteger('category_id')->nullable(); // Chave estrangeira para categoria
             // Adicione as colunas ausentes aqui
             $table->string('filename')->nullable();
             $table->timestamps();
@@ -122,23 +124,31 @@ class Createalltables extends Migration
 
         Schema::create('billets', function(Blueprint $table) {
             $table->id();
-            $table->integer('id_unit');
             $table->string('title');
-            $table->string('fileurl');
-            $table->string('content')->nullable();
-            $table->integer('id_condominio')->nullable();
+            $table->text('content')->nullable();
+            $table->string('price')->nullable();
+            $table->string('date_vue')->nullable();
+            $table->unsignedBigInteger('unit_id')->nullable();
+            $table->unsignedBigInteger('owner_id')->nullable();
+            $table->string('date_payment')->nullable();
+            $table->string('status')->nullable();
+            $table->string('fileurl')->nullable();
+            $table->string('filename')->nullable();
             $table->timestamps();
 
 
         });
 
         Schema::create('warnings', function(Blueprint $table) {
-            $table->id();
-            $table->integer('id_unit');
-            $table->string('title');
+            $table->id();          
+            $table->string('title')->nullable();
+            $table->text('contend')->nullable();
+            $table->text('notes')->nullable();
+            $table->string('id_unit')->nullable();
+            $table->string('id_owner')->nullable();
             $table->string('status')->default('IN_REVIEW'); // IN_REVIEW, RESOLVED
-            $table->text('photos')->nullable();
-            $table->integer('id_condominio')->nullable();
+            $table->text('photos')->nullable()/**Aqui podemos colocar varias fotos, serão urls finais, apois o upload na pasta storage*/;
+            $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
 
@@ -150,7 +160,7 @@ class Createalltables extends Migration
             $table->text('photos');
             $table->string('description');
             $table->string('where');
-            $table->integer('id_condominio')->nullable();
+            $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
 
@@ -164,7 +174,7 @@ class Createalltables extends Migration
             $table->string('days'); 
             $table->time('start_time');
             $table->time('end_time');
-            $table->integer('id_condominio')->nullable();
+            $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
 
@@ -174,7 +184,7 @@ class Createalltables extends Migration
             $table->id();
             $table->integer('id_area');
             $table->date('day');
-            $table->integer('id_condominio')->nullable();
+            $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
 
@@ -185,7 +195,7 @@ class Createalltables extends Migration
             $table->integer('id_unit');
             $table->integer('id_area');
             $table->datetime('reservation_date');
-            $table->integer('id_condominio')->nullable();
+            $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
 

@@ -50,14 +50,14 @@ class DatabaseSeeder extends Seeder
         DB::table('units')->insert([
             'name' => 'APT 100',
             'id_owner' => 1,
-            'id_condominio' => 1,
+            'condominio_id' => 1,
             'address' => $faker->address,
             'notes' => $faker->paragraph
         ]);
         DB::table('units')->insert([
             'name' => 'APT 101',
             'id_owner' => 1,
-            'id_condominio' => 1,
+            'condominio_id' => 1,
             'address' => $faker->address,
             'notes' => $faker->paragraph
 
@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
         DB::table('units')->insert([
             'name' => 'APT 200',
             'id_owner' => '0',
-            'id_condominio' => 1,
+            'condominio_id' => 1,
             'address' => $faker->address,
             'notes' => $faker->paragraph
 
@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
         DB::table('units')->insert([
             'name' => 'APT 201',
             'id_owner' => '0',
-            'id_condominio' => 1,
+            'condominio_id' => 1,
             'address' => $faker->address,
             'notes' => $faker->paragraph
 
@@ -91,7 +91,7 @@ class DatabaseSeeder extends Seeder
             'days' => '1,2,4,5',
             'start_time' => '06:00:00',
             'end_time' => '22:00:00',
-            'id_condominio' => 1
+            'condominio_id' => 1
 
         ]);
         DB::table('areas')->insert([
@@ -101,7 +101,7 @@ class DatabaseSeeder extends Seeder
             'days' => '1,2,3,4,5',
             'start_time' => '07:00:00',
             'end_time' => '23:00:00',
-            'id_condominio' => 1
+            'condominio_id' => 1
 
         ]);
         DB::table('areas')->insert([
@@ -111,7 +111,7 @@ class DatabaseSeeder extends Seeder
             'days' => '4,5,6',
             'start_time' => '09:00:00',
             'end_time' => '22:00:00',
-            'id_condominio' => 1
+            'condominio_id' => 1
 
         ]);
 
@@ -121,14 +121,14 @@ class DatabaseSeeder extends Seeder
             'title' => $faker->sentence,
             'content' => $faker->paragraph,
             'created_at' => $faker->dateTime,
-            'id_condominio' => 1
+            'condominio_id' => 1
 
         ]);
         DB::table('walls')->insert([
             'title' => $faker->sentence,
             'content' => $faker->paragraph,
             'created_at' => $faker->dateTime,
-            'id_condominio' => 1,
+            'condominio_id' => 1,
 
         ]);
 
@@ -274,5 +274,75 @@ class DatabaseSeeder extends Seeder
 
             DB::table('serviceproviders')->insert($serviceProviderData);
         }
+
+        $docs = [];
+        for ($i = 0; $i < 10; $i++) {
+            $docs[] = [
+                'title' => $faker->sentence(5),
+                'content' => $faker->paragraph(10),
+                'category_id' => $faker->numberBetween(1, 5),
+                'fileurl' => $faker->imageUrl(),
+                'filename' => $faker->word(),
+            ];
+        }
+
+        DB::table('docs')->insert($docs);
+
+
+        $units = [];
+        for ($i = 0; $i < 10; $i++) {
+            $units[] = [
+                'name' => $faker->name(),
+                'id_owner' => $faker->numberBetween(1, 5),
+                'address' => $faker->address(),
+                'address' => $faker->address,
+                'notes' => $faker->paragraph
+            ];
+        }
+
+        DB::table('units')->insert($units);
+    
+        $bill = [];
+    for ($i = 0; $i < 100; $i++) {
+        $unit_id = $faker->numberBetween(1, 10);
+        $owner_id = $faker->numberBetween(1, 10);
+
+        $bill[] = [
+            'title' => $faker->sentence(5),
+            'content' => $faker->paragraph(10),
+            'price' => $faker->randomFloat(2, 100, 1000),
+            'date_vue' => $faker->date(),
+            'unit_id' => $unit_id,
+            'owner_id' => $owner_id,
+            'date_payment' => $faker->date(),
+            'status' => $faker->randomElement(['pago', 'pendente']),
+            'fileurl' => $faker->imageUrl(800, 600),
+            'filename' => $faker->imageUrl(800, 600),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
     }
+    DB::table('billets')->insert($bill);
+  
+
+
+    for ($i = 0; $i < 100; $i++) {
+        $unit_id = $faker->numberBetween(1, 10);
+        $owner_id = $faker->numberBetween(1, 10);
+        $condominio_id = $faker->numberBetween(1, 10);
+
+        $warning[] = [
+            'title' => $faker->sentence(5),
+            'contend' => $faker->paragraph(10),
+            'notes' => $faker->paragraph(5),
+            'id_unit' => $unit_id,
+            'id_owner' => $owner_id,
+            'photos' => $faker->imageUrl(800, 600).','. $faker->imageUrl(800, 600).','.$faker->imageUrl(800, 600),
+            'condominio_id' => $condominio_id,
+        ];
+
+           }
+           DB::table('warnings')->insert($warning);
+}
 }

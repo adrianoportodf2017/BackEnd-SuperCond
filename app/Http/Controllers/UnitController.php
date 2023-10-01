@@ -10,119 +10,203 @@ use App\Models\UnitPet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Exception;
+
 
 class UnitController extends Controller
 {
 
     public function getAll()
     {
-        $array = ['error' => ''];
-
+        // Buscar todas as unidades
         $units = Unit::join('users', 'units.id_owner', '=', 'users.id')
             ->select('units.*', 'users.name as name_owner', 'users.email', 'users.phone')
             ->get();
 
-        $array['list'] = $units;
+        // Retornar uma mensagem de erro se não houver unidades
+        if (!$units) {
+            return response()->json([
+                'error' => 'Nenhuma unidade encontrada',
+                'code' => 404,
+            ], 404);
+        }
 
-        return $array;
+        // Retornar uma resposta de sucesso com a lista de unidades
+        return response()->json([
+            'error' => '', 
+
+            'success' => true,
+            'list' => $units,
+        ], 200);
     }
 
     public function getById($id)
     {
-        $array = ['error' => ''];
-
+        // Buscar a unidade pelo ID
         $unit = Unit::find($id);
 
-        if ($unit) {
-            $peoples = UnitPeople::where('id_unit', $id)->get();
-            $vehicles = UnitVehicle::where('id_unit', $id)->get();
-            $pets = UnitPet::where('id_unit', $id)->get();
-
-            foreach ($peoples as $pKey => $pValue) {
-                $peoples[$pKey]['birthdate'] = date('d/m/Y', strtotime($pValue['birthdate']));
-            }
-
-            $array['unit'] = $unit;
-            $array['peoples'] = $peoples;
-            $array['vehicles'] = $vehicles;
-            $array['pets'] = $pets;
-        } else {
-            $array['error'] = 'Propriedade inexistente';
-            return $array;
+        // Retornar uma mensagem de erro se a unidade não for encontrada
+        if (!$unit) {
+            return response()->json([
+                'error' => 'Unidade não encontrada',
+                'code' => 404,
+            ], 404);
         }
 
-        return $array;
+        // Buscar as pessoas, veículos e animais da unidade
+        $peoples = UnitPeople::where('id_unit', $id)->get();
+        $vehicles = UnitVehicle::where('id_unit', $id)->get();
+        $pets = UnitPet::where('id_unit', $id)->get();
+
+        // Formatar as datas de nascimento das pessoas
+        foreach ($peoples as $pKey => $pValue) {
+            $peoples[$pKey]['birthdate'] = date('d/m/Y', strtotime($pValue['birthdate']));
+        }
+
+        // Retornar uma resposta de sucesso com os dados da unidade
+        return response()->json([
+            'error' => '', 
+            'success' => true,
+            'unit' => $unit,
+            'peoples' => $peoples,
+            'vehicles' => $vehicles,
+            'pets' => $pets,
+        ], 200);
     }
 
 
     public function getUnitByOwner($id)
     {
 
+        // Buscar as unidades do proprietário pelo ID
         $units = Unit::where('id_owner', $id)->get();
-        if ($units) {
-            $cont = '0';
-            foreach ($units as $unit) {
-                $cont = $cont + 1;
 
-                $peoples = UnitPeople::where('id_unit', $unit->id)->get();
-                $vehicles = UnitVehicle::where('id_unit', $unit->id)->get();
-                $pets = UnitPet::where('id_unit', $unit->id)->get();
-
-                foreach ($peoples as $pKey => $pValue) {
-                    $peoples[$pKey]['birthdate'] = date('d/m/Y', strtotime($pValue['birthdate']));
-                }
-
-                $array[$cont] = $unit;
-                $array[$cont]['peoples'] = $peoples;
-                $array[$cont]['vehicles'] = $vehicles;
-                $array[$cont]['pets'] = $pets;
-            }
-        } else {
-            $array['error'] = 'Propriedade inexistente';
-            return $array;
+        // Retornar uma mensagem de erro se não houver unidades para o proprietário
+        if (!$units) {
+            return response()->json([
+                'error' => 'Nenhuma unidade encontrada para este proprietário',
+                'code' => 404,
+            ], 404);
         }
-        return $array;
+
+        // Criar um array para armazenar os dados das unidades
+        $array = [];
+
+        // Iterar sobre as unidades e adicionar os dados ao array
+        foreach ($units as $unit) {
+            $array[] = [
+                'id' => $unit->id,
+                'name' => $unit->name,
+                'id_owner' => $unit->id_owner,
+                'address' => $unit->address,
+                'peoples' => UnitPeople::where('id_unit', $unit->id)->get(),
+                'vehicles' => UnitVehicle::where('id_unit', $unit->id)->get(),
+                'pets' => UnitPet::where('id_unit', $unit->id)->get(),
+            ];
+        }
+
+        // Retornar uma resposta de sucesso com os dados das unidades
+        return response()->json([
+            'error' => '', 
+            'success' => true,
+            'list' => $array,
+        ], 200);
     }
+
 
     public function insert(Request $request)
     {
-        $array = ['error' => ''];
+        // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'id_owner' => 'required',
         ]);
-        if (!$validator->fails()) {
-            $name = $request->input('name');
-            $id_owner = $request->input('id_owner');
-            $address = $request->input('address');
 
-            $newUser = new Unit();
-            $newUser->name = $name;
-            $newUser->id_owner = $id_owner;
-            $newUser->address = $address;
-            $newUser->save();
-        } else {
-            $array['error'] = $validator->errors()->first();
-            return $array;
+        // Retornar uma mensagem de erro se a validação falhar
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 422,
+            ], 422);
         }
-        return $array;
+
+        // Criar uma nova unidade
+        $newUnit = new Unit();
+        $newUnit->name = $request->input('name');
+        $newUnit->id_owner = $request->input('id_owner');
+        $newUnit->address = $request->input('address');
+
+        // Salvar a unidade no banco de dados
+        try {
+            $newUnit->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao salvar unidade!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso
+        return response()->json([
+            'success' => true,
+            'unit' => $newUnit,
+        ], 201);
     }
 
     public function updateUnit(Request $request, $id)
     {
-        $data = $request;
+        // Buscar a unidade pelo ID
         $unit = Unit::find($id);
-        if ($unit) {
-            $unit->name = $data->input('name');
-            $unit->id_owner = $data->input('id_owner');
-            $unit->save();
-        } else {
 
-            return response()->json(['error' => 'Não Foi Possível salvar esta unidade']);
+        // Retornar uma mensagem de erro se a unidade não for encontrada
+        if (!$unit) {
+            return response()->json([
+                'error' => 'Unidade não encontrada',
+                'code' => 404,
+            ], 404);
         }
-        return response()->json(['error' => '']);
-    }
 
+        // Validar os dados da requisição
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'id_owner' => 'required',
+        ]);
+
+        // Retornar uma mensagem de erro se a validação falhar
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 422,
+            ], 422);
+        }
+
+        // Atualizar os dados da unidade
+        $unit->name = $request->input('name');
+        $unit->id_owner = $request->input('id_owner');
+        $unit->address = $request->input('address');
+
+
+        // Salvar a unidade no banco de dados
+        try {
+            $unit->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao atualizar unidade!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso
+        return response()->json([
+            'error' => '', 
+            'success' => true,
+            'unit' => $unit,
+        ], 200);
+    }
 
 
 
@@ -265,17 +349,38 @@ class UnitController extends Controller
 
     public function delete($id)
     {
-        $array = ['error' => ''];
-        $item = Unit::find($id);
-        if ($item) {
-            Unit::find($id)->delete();
-            UnitPet::where('id_unit', $id)->delete();
-            UnitVehicle::where('id_unit', $id)->delete();
-            UnitPeople::where('id_unit', $id)->delete();
-        } else {
-            $array['error'] = 'Aviso inexistente';
-            // return $array;
+        // Buscar a unidade pelo ID
+        $unit = Unit::find($id);
+    
+        // Retornar uma mensagem de erro se a unidade não for encontrada
+        if (!$unit) {
+            return response()->json([
+                'error' => 'Unidade não encontrada',
+                'code' => 404,
+            ], 404);
         }
-        return $array;
+    
+        // Deletar a unidade do banco de dados
+        try {
+            $unit->delete();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao deletar unidade!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+    
+        // Deletar as pessoas, veículos e animais da unidade
+        UnitPet::where('id_unit', $id)->delete();
+        UnitVehicle::where('id_unit', $id)->delete();
+        UnitPeople::where('id_unit', $id)->delete();
+    
+        // Retornar uma resposta de sucesso
+        return response()->json([
+            'error' => '', 
+            'success' => true,
+        ], 200);
     }
 }

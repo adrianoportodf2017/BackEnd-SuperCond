@@ -88,19 +88,35 @@ Route::middleware('auth:api')->group(function () {
 
     /**WALLS**/
     Route::get('/admin/walls', [WallController::class, 'getAll']);
+    Route::get('/admin/wall/{id}', [WallController::class, 'getById']);
     Route::put('/admin/wall/{id}', [WallController::class, 'update']);
-    Route::post('/admin/walls', [WallController::class, 'insert']);
+    Route::post('/admin/wall', [WallController::class, 'insert']);
     Route::delete('/admin/wall/{id}', [WallController::class, 'delete']);
     /**<--WALLS-->*/
 
 
     /**DOCS**/
     Route::get('/admin/docs', [DocController::class, 'getAll']);
+    Route::get('/admin/doc/{id}', [DocController::class, 'getById']);
     Route::post('/admin/doc/{id}', [DocController::class, 'update']);
-    Route::post('/admin/docs', [DocController::class, 'insert']);
+    Route::post('/admin/doc', [DocController::class, 'insert']);
     Route::delete('/admin/doc/{id}', [DocController::class, 'delete']);
     /**<--DOCS-->*/
 
+     /**BOLETOS**/
+     Route::get('/admin/billets', [BilletController::class, 'getAll']);
+     Route::get('/admin/billet/{id}', [BilletController::class, 'getById']);
+     Route::post('/admin/billet/{id}', [BilletController::class, 'update']);
+     Route::post('/admin/billet', [BilletController::class, 'insert']);
+     Route::delete('/admin/billet/{id}', [BilletController::class, 'delete']);
+
+      /**Ocorrencias**/
+      Route::get('/admin/warnings', [WarningController::class, 'getAll']);
+      Route::get('/admin/warning/{id}', [WarningController::class, 'getById']);
+      Route::post('/admin/warning/{id}', [WarningController::class, 'update']);
+      Route::post('/admin/warning', [WarningController::class, 'insert']);
+      Route::delete('/admin/warning/{id}', [WarningController::class, 'delete']);
+ 
 
     /**RESERVARTIONS**/
     Route::get('/admin/reservations', [ReservationController::class, 'getAll']);
