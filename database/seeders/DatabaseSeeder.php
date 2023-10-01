@@ -338,7 +338,7 @@ class DatabaseSeeder extends Seeder
             'notes' => $faker->paragraph(5),
             'id_unit' => $unit_id,
             'id_owner' => $owner_id,
-            'photos' => $faker->imageUrl(800, 600).','. $faker->imageUrl(800, 600).','.$faker->imageUrl(800, 600),
+            'photos' => $faker->imageUrl(800, 600).' , '. $faker->imageUrl(800, 600).' , '.$faker->imageUrl(800, 600),
             'condominio_id' => $condominio_id,
         ];
 
