@@ -16,8 +16,8 @@ class ReservationController extends Controller
     {
         $array = ['error' => ''];
         $reservations = Reservation::select('reservations.*', 'units.name as name_unit', 'areas.title as name_area')
-            ->join('units', 'units.id', '=', 'reservations.id_unit')
-            ->join('users', 'users.id', '=', 'units.id_owner')
+            ->join('units', 'units.id', '=', 'reservations.unit_id')
+            ->join('users', 'users.id', '=', 'units.owner_id')
             ->join('areas', 'areas.id', '=', 'reservations.id_area')
             ->get();
         $array['list'] = $reservations;
@@ -30,7 +30,7 @@ class ReservationController extends Controller
        // var_dump($request->input());
         $validator = Validator::make($request->all(), [
             'reservation_date' => 'required',
-            'id_unit' => 'required',
+            'unit_id' => 'required',
             'id_area' => 'required',
         ]);
 
@@ -44,7 +44,7 @@ class ReservationController extends Controller
 
         $date = $dates['0'];
         $time = $dates['1'];
-        $property = $request->input('id_unit');
+        $property = $request->input('unit_id');
         $idArea = $request->input('id_area');
 
         $area = Area::find($idArea);
@@ -87,7 +87,7 @@ class ReservationController extends Controller
 
         $newRes = new Reservation();
         $newRes->id_area = $idArea;
-        $newRes->id_unit = $property;
+        $newRes->unit_id = $property;
         $newRes->reservation_date = $dateRes;
         $newRes->save();
 

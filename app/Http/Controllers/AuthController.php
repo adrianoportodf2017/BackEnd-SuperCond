@@ -72,7 +72,7 @@ Logar usuario no sistema
             $array['user'] = $user;
 
             $properties = Unit::select(['id', 'name'])
-                ->where('id_owner', $user['id'])
+                ->where('owner_id', $user['id'])
                 ->get();
             $array['users']['properties'] = $properties;
         } else {
@@ -114,7 +114,7 @@ Logar usuario no sistema
             $array['user'] = $user;
             $properties = Unit::select(['units.id', 'units.name as unit_name', 'units.condominio_id', 'condominios.name as condominio_name', 'condominios.*'])
                 ->leftJoin('condominios', 'condominios.id', '=', 'units.condominio_id')
-                ->where('units.id_owner', $user['id'])
+                ->where('units.owner_id', $user['id'])
                 ->get();
 
             $array['user']['properties'] = $properties;
@@ -133,7 +133,7 @@ Logar usuario no sistema
 
         $properties = Unit::select(['units.id', 'units.name as unit_name', 'units.condominio_id', 'condominios.name as condominio_name', 'condominios.*'])
             ->leftJoin('condominios', 'condominios.id', '=', 'units.condominio_id')
-            ->where('units.id_owner', $user['id'])
+            ->where('units.owner_id', $user['id'])
             ->get();
 
 
@@ -169,7 +169,7 @@ Logar usuario no sistema
             $user = auth()->user();
             $array['user'] = $user;
             /*$properties = Unit::select(['id', 'name'])
-                ->where('id_owner', $user['id'])
+                ->where('owner_id', $user['id'])
                 ->get();
             $array['users']['properties'] = $properties;*/
         } else {

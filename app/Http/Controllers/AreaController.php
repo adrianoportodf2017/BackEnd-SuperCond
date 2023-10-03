@@ -282,7 +282,7 @@ class AreaController extends Controller
             return $array;
         }
 
-        $isDisabled = AreaDisabledDay::where('id_unit', $id)->where('day', $date)->first();
+        $isDisabled = AreaDisabledDay::where('unit_id', $id)->where('day', $date)->first();
         if ($isDisabled) {
             $array['error'] = 'Dia indisponível!';
             return $array;
@@ -312,7 +312,7 @@ class AreaController extends Controller
         }
 
         $toRemove = [];
-        $reservations = Reservation::where('id_unit', $id)->whereBetween('reservation_date', [
+        $reservations = Reservation::where('unit_id', $id)->whereBetween('reservation_date', [
             $date . ' 00:00:00',
             $date . ' 23:59:59'
         ])->get();

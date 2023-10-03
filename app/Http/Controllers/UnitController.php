@@ -19,7 +19,7 @@ class UnitController extends Controller
     public function getAll()
     {
         // Buscar todas as unidades
-        $units = Unit::join('users', 'units.id_owner', '=', 'users.id')
+        $units = Unit::join('users', 'units.owner_id', '=', 'users.id')
             ->select('units.*', 'users.name as name_owner', 'users.email', 'users.phone')
             ->get();
 
@@ -54,9 +54,9 @@ class UnitController extends Controller
         }
 
         // Buscar as pessoas, veículos e animais da unidade
-        $peoples = UnitPeople::where('id_unit', $id)->get();
-        $vehicles = UnitVehicle::where('id_unit', $id)->get();
-        $pets = UnitPet::where('id_unit', $id)->get();
+        $peoples = UnitPeople::where('unit_id', $id)->get();
+        $vehicles = UnitVehicle::where('unit_id', $id)->get();
+        $pets = UnitPet::where('unit_id', $id)->get();
 
         // Formatar as datas de nascimento das pessoas
         foreach ($peoples as $pKey => $pValue) {
@@ -79,7 +79,7 @@ class UnitController extends Controller
     {
 
         // Buscar as unidades do proprietário pelo ID
-        $units = Unit::where('id_owner', $id)->get();
+        $units = Unit::where('owner_id', $id)->get();
 
         // Retornar uma mensagem de erro se não houver unidades para o proprietário
         if (!$units) {
@@ -97,11 +97,11 @@ class UnitController extends Controller
             $array[] = [
                 'id' => $unit->id,
                 'name' => $unit->name,
-                'id_owner' => $unit->id_owner,
+                'owner_id' => $unit->owner_id,
                 'address' => $unit->address,
-                'peoples' => UnitPeople::where('id_unit', $unit->id)->get(),
-                'vehicles' => UnitVehicle::where('id_unit', $unit->id)->get(),
-                'pets' => UnitPet::where('id_unit', $unit->id)->get(),
+                'peoples' => UnitPeople::where('unit_id', $unit->id)->get(),
+                'vehicles' => UnitVehicle::where('unit_id', $unit->id)->get(),
+                'pets' => UnitPet::where('unit_id', $unit->id)->get(),
             ];
         }
 
@@ -119,7 +119,7 @@ class UnitController extends Controller
         // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'id_owner' => 'required',
+            'owner_id' => 'required',
         ]);
 
         // Retornar uma mensagem de erro se a validação falhar
@@ -133,7 +133,7 @@ class UnitController extends Controller
         // Criar uma nova unidade
         $newUnit = new Unit();
         $newUnit->name = $request->input('name');
-        $newUnit->id_owner = $request->input('id_owner');
+        $newUnit->owner_id = $request->input('owner_id');
         $newUnit->address = $request->input('address');
 
         // Salvar a unidade no banco de dados
@@ -171,7 +171,7 @@ class UnitController extends Controller
         // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'id_owner' => 'required',
+            'owner_id' => 'required',
         ]);
 
         // Retornar uma mensagem de erro se a validação falhar
@@ -184,7 +184,7 @@ class UnitController extends Controller
 
         // Atualizar os dados da unidade
         $unit->name = $request->input('name');
-        $unit->id_owner = $request->input('id_owner');
+        $unit->owner_id = $request->input('owner_id');
         $unit->address = $request->input('address');
 
 
@@ -225,7 +225,7 @@ class UnitController extends Controller
             $birthdate = $request->input('birthdate');
 
             $newPerson = new UnitPeople();
-            $newPerson->id_unit = $id;
+            $newPerson->unit_id = $id;
             $newPerson->name = $name;
             $newPerson->birthdate = $birthdate;
             $newPerson->save();
@@ -253,7 +253,7 @@ class UnitController extends Controller
             $plate = $request->input('plate');
 
             $newVehicle = new UnitVehicle();
-            $newVehicle->id_unit = $id;
+            $newVehicle->unit_id = $id;
             $newVehicle->title = $title;
             $newVehicle->color = $color;
             $newVehicle->plate = $plate;
@@ -280,7 +280,7 @@ class UnitController extends Controller
             $race = $request->input('race');
 
             $newPet = new UnitPet();
-            $newPet->id_unit = $id;
+            $newPet->unit_id = $id;
             $newPet->name = $name;
             $newPet->race = $race;
             $newPet->save();
@@ -301,7 +301,7 @@ class UnitController extends Controller
 
         if ($idItem) {
             UnitPeople::where('id', $idItem)
-                ->where('id_unit', $id)
+                ->where('unit_id', $id)
                 ->delete();
         } else {
             $array['error'] = 'ID inexistente';
@@ -319,7 +319,7 @@ class UnitController extends Controller
 
         if ($idItem) {
             UnitVehicle::where('id', $idItem)
-                ->where('id_unit', $id)
+                ->where('unit_id', $id)
                 ->delete();
         } else {
             $array['error'] = 'ID inexistente';
@@ -337,7 +337,7 @@ class UnitController extends Controller
 
         if ($idItem) {
             UnitPet::where('id', $idItem)
-                ->where('id_unit', $id)
+                ->where('unit_id', $id)
                 ->delete();
         } else {
             $array['error'] = 'ID inexistente';
@@ -373,9 +373,9 @@ class UnitController extends Controller
         }
     
         // Deletar as pessoas, veículos e animais da unidade
-        UnitPet::where('id_unit', $id)->delete();
-        UnitVehicle::where('id_unit', $id)->delete();
-        UnitPeople::where('id_unit', $id)->delete();
+        UnitPet::where('unit_id', $id)->delete();
+        UnitVehicle::where('unit_id', $id)->delete();
+        UnitPeople::where('unit_id', $id)->delete();
     
         // Retornar uma resposta de sucesso
         return response()->json([

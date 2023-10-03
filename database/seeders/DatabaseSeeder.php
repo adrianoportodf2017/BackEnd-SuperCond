@@ -49,14 +49,14 @@ class DatabaseSeeder extends Seeder
 
         DB::table('units')->insert([
             'name' => 'APT 100',
-            'id_owner' => 1,
+            'owner_id' => 1,
             'condominio_id' => 1,
             'address' => $faker->address,
             'notes' => $faker->paragraph
         ]);
         DB::table('units')->insert([
             'name' => 'APT 101',
-            'id_owner' => 1,
+            'owner_id' => 1,
             'condominio_id' => 1,
             'address' => $faker->address,
             'notes' => $faker->paragraph
@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
         ]);
         DB::table('units')->insert([
             'name' => 'APT 200',
-            'id_owner' => '0',
+            'owner_id' => '0',
             'condominio_id' => 1,
             'address' => $faker->address,
             'notes' => $faker->paragraph
@@ -74,7 +74,7 @@ class DatabaseSeeder extends Seeder
         ]);
         DB::table('units')->insert([
             'name' => 'APT 201',
-            'id_owner' => '0',
+            'owner_id' => '0',
             'condominio_id' => 1,
             'address' => $faker->address,
             'notes' => $faker->paragraph
@@ -293,7 +293,7 @@ class DatabaseSeeder extends Seeder
         for ($i = 0; $i < 10; $i++) {
             $units[] = [
                 'name' => $faker->name(),
-                'id_owner' => $faker->numberBetween(1, 5),
+                'owner_id' => $faker->numberBetween(1, 5),
                 'address' => $faker->address(),
                 'address' => $faker->address,
                 'notes' => $faker->paragraph
@@ -334,10 +334,10 @@ class DatabaseSeeder extends Seeder
 
         $warning[] = [
             'title' => $faker->sentence(5),
-            'contend' => $faker->paragraph(10),
+            'content' => $faker->paragraph(10),
             'notes' => $faker->paragraph(5),
-            'id_unit' => $unit_id,
-            'id_owner' => $owner_id,
+            'unit_id' => $unit_id,
+            'owner_id' => $owner_id,
             'photos' => $faker->imageUrl(800, 600).' , '. $faker->imageUrl(800, 600).' , '.$faker->imageUrl(800, 600),
             'condominio_id' => $condominio_id,
         ];

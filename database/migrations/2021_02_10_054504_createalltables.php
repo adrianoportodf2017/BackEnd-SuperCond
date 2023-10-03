@@ -52,7 +52,7 @@ class Createalltables extends Migration
             $table->string('name');
             $table->string('address')->nullable();
             $table->text('notes')->nullable();
-            $table->integer('id_owner');
+            $table->integer('owner_id');
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
@@ -60,7 +60,7 @@ class Createalltables extends Migration
 
         Schema::create('unitpeoples', function(Blueprint $table) {
             $table->id();
-            $table->integer('id_unit');
+            $table->integer('unit_id');
             $table->string('name');
             $table->date('birthdate')->nullable();
             $table->text('notes')->nullable();
@@ -70,7 +70,7 @@ class Createalltables extends Migration
 
         Schema::create('unitvehicles', function(Blueprint $table) {
             $table->id();
-            $table->integer('id_unit');
+            $table->integer('unit_id');
             $table->string('title');
             $table->string('color')->nullable();
             $table->string('plate')->nullable();
@@ -81,7 +81,7 @@ class Createalltables extends Migration
 
         Schema::create('unitpets', function(Blueprint $table) {
             $table->id();
-            $table->integer('id_unit');
+            $table->integer('unit_id');
             $table->string('name');
             $table->string('race')->nullable();
             $table->text('notes')->nullable();
@@ -142,10 +142,10 @@ class Createalltables extends Migration
         Schema::create('warnings', function(Blueprint $table) {
             $table->id();          
             $table->string('title')->nullable();
-            $table->text('contend')->nullable();
+            $table->text('content')->nullable();
             $table->text('notes')->nullable();
-            $table->string('id_unit')->nullable();
-            $table->string('id_owner')->nullable();
+            $table->string('unit_id')->nullable();
+            $table->string('owner_id')->nullable();
             $table->string('status')->default('IN_REVIEW'); // IN_REVIEW, RESOLVED
             $table->text('photos')->nullable()/**Aqui podemos colocar varias fotos, serão urls finais, apois o upload na pasta storage*/;
             $table->integer('condominio_id')->nullable();
@@ -192,7 +192,7 @@ class Createalltables extends Migration
 
         Schema::create('reservations', function(Blueprint $table) {
             $table->id();
-            $table->integer('id_unit');
+            $table->integer('unit_id');
             $table->integer('id_area');
             $table->datetime('reservation_date');
             $table->integer('condominio_id')->nullable();

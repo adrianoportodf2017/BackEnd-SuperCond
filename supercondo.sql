@@ -77,7 +77,7 @@ INSERT INTO `areas` (`id`, `allowed`, `title`, `cover`, `days`, `start_time`, `e
 DROP TABLE IF EXISTS `billets`;
 CREATE TABLE IF NOT EXISTS `billets` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_unit` int(11) NOT NULL,
+  `unit_id` int(11) NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `fileurl` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
 DROP TABLE IF EXISTS `reservetions`;
 CREATE TABLE IF NOT EXISTS `reservetions` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_unit` int(11) NOT NULL,
+  `unit_id` int(11) NOT NULL,
   `id_area` int(11) NOT NULL,
   `reservation_date` datetime NOT NULL,
   PRIMARY KEY (`id`)
@@ -223,7 +223,7 @@ CREATE TABLE IF NOT EXISTS `reservetions` (
 DROP TABLE IF EXISTS `unitpeoples`;
 CREATE TABLE IF NOT EXISTS `unitpeoples` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_unit` int(11) NOT NULL,
+  `unit_id` int(11) NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `birthdate` date NOT NULL,
   PRIMARY KEY (`id`)
@@ -239,7 +239,7 @@ DROP TABLE IF EXISTS `units`;
 CREATE TABLE IF NOT EXISTS `units` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `id_owner` int(11) NOT NULL,
+  `owner_id` int(11) NOT NULL,
   `id_condominio` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -248,7 +248,7 @@ CREATE TABLE IF NOT EXISTS `units` (
 -- Extraindo dados da tabela `units`
 --
 
-INSERT INTO `units` (`id`, `name`, `id_owner`, `id_condominio`) VALUES
+INSERT INTO `units` (`id`, `name`, `owner_id`, `id_condominio`) VALUES
 (1, 'APT 100', 1, '1'),
 (2, 'APT 101', 1, '2'),
 (3, 'APT 200', 0, '3'),
@@ -271,7 +271,7 @@ INSERT INTO `units` (`id`, `name`, `id_owner`, `id_condominio`) VALUES
 DROP TABLE IF EXISTS `unitspets`;
 CREATE TABLE IF NOT EXISTS `unitspets` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_unit` int(11) NOT NULL,
+  `unit_id` int(11) NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `race` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
@@ -286,7 +286,7 @@ CREATE TABLE IF NOT EXISTS `unitspets` (
 DROP TABLE IF EXISTS `unitvehicles`;
 CREATE TABLE IF NOT EXISTS `unitvehicles` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_unit` int(11) NOT NULL,
+  `unit_id` int(11) NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `color` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `plate` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -376,7 +376,7 @@ INSERT INTO `walls` (`id`, `title`, `body`, `datecreated`) VALUES
 DROP TABLE IF EXISTS `warnings`;
 CREATE TABLE IF NOT EXISTS `warnings` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_unit` int(11) NOT NULL,
+  `unit_id` int(11) NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'IN_REVIEW',
   `datacreated` datetime NOT NULL,

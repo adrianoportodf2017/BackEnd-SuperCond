@@ -71,7 +71,7 @@ class BilletController extends Controller
     public function insert(Request $request)
     {
 
-        // title, content, price, date_vue, file, unit_id, onwer_id, date_payment, status
+        // title, content, price, date_vue, file, unit_id, owner_id, date_payment, status
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
@@ -113,7 +113,7 @@ class BilletController extends Controller
         $url = asset(Storage::url($arquivo));
 
         // Criar um novo boleto
-        // title, content, price, date_vue, file, unit_id, onwer_id, date_payment, status
+        // title, content, price, date_vue, file, unit_id, owner_id, date_payment, status
 
         $newBillet = new Billet();
         $newBillet->title = $request->input('title');

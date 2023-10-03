@@ -9,7 +9,7 @@ class UnitPet extends Model
 {
     use HasFactory;
     protected $hidden = [
-        'id_unit'
+        'unit_id'
     ];
 
     public $timestamps = false;
