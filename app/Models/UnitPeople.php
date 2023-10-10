@@ -13,5 +13,5 @@ class UnitPeople extends Model
     ];
 
     public $timestamps = false;
-    public $table = 'unitpeoples';
+    public $table = 'unit_peoples';
 }

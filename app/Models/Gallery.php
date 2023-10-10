@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
-
-class Poll extends Model
+class Gallery extends Model
 {
     use HasFactory;
-    public function questions()
+    protected $table = 'gallery';
+
+    public function midias()
     {
-        return $this->hasMany(QuestionPoll::class, 'poll_id', 'id');
+        return $this->morphMany(Midia::class, 'mediable');
     }
 }

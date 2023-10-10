@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Classified extends Model
 {
     use HasFactory;
+
+    public function midias()
+{
+    return $this->morphMany(Midia::class, 'mediable');
 }
+}
+
+

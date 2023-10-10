@@ -3,82 +3,222 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\News;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Exception;
+
+
 
 class NewsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function getAll()
     {
-        //
+        $array = ['error' => ''];
+        $docs = News::all();
+        $array['list'] = $docs;
+        return $array;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function insert(Request $request)
     {
-        //
+        $array = ['error' => ''];
+
+        // Validar os dados da request
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:2',
+            'content' => 'required|min:2',
+            //'file' => 're            'year' => 'required',
+            //'file' => 'required|mimes:jpg,png,pdf,jpeg'
+        ]);
+
+        if ($validator->fails()) {
+            $array['error'] = $validator->errors()->first();
+            return response()->json($array, 400);
+        }
+
+        if ($request->hasfile('thumb')) {
+
+            $validator = Validator::make($request->all(), [
+                'thumb' => 'required|mimes:jpg,png,jpeg'
+            ]);
+
+            if ($request->file('thumb')->isValid()) {
+                $arquivo = $request->file('thumb')->store('public/image/noticias');
+                $url = asset(Storage::url($arquivo));
+            } else {
+                $array['error'] = $validator->errors()->first();
+            }
+        } else {
+            $url  = '';
+        }
+
+        // Verificar se o slug já existe
+        $slug = $request->input('slug');
+        $news = News::where('slug', $slug)->first();
+
+        if ($news) {
+            $i = 1;
+            while ($news) {
+                $newSlug = $slug . '-' . $i;
+                $news = News::where('slug', $newSlug)->first();
+                $i++;
+            }
+
+            $slug = $newSlug;
+        }
+
+        // Criar uma nova notícia
+        $new = new News();
+        $new->title = $request->input('title');
+        $new->content = $request->input('content');
+        $new->slug = $slug;
+        $new->thumb =  $url;
+        $new->category_id = $request->input('category_id');
+        $new->author_id = $request->input('author_id');
+        $new->tags = $request->input('tags');
+        $new->highlight = $request->input('highlight');
+        $new->status = $request->input('status');
+
+        // Salvar o documento no banco de dados
+        try {
+            $new->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao salvar Notícia!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso com os dados da notícia
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $new,
+        ], 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function update($id, Request $request)
     {
-        //
+        $array = ['error' => ''];
+        $array['id'] =  $id;
+        $new = News::find($id);
+        if (!$new) {
+            $array['error'] = 'Registro não encontrado';
+            return $array;
+        }
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:2',
+            'content' => 'required|min:2',
+       
+        ]);
+
+        if ($validator->fails()) {
+            $array['error'] = $validator->errors()->first();
+            return response()->json($array, 400);
+        }
+
+        if ($request->hasfile('thumb')) {
+
+            $validator = Validator::make($request->all(), [
+                'thumb' => 'required|mimes:jpg,png,jpeg'
+            ]);
+
+            if ($request->file('thumb')->isValid()) {
+                $arquivo = $request->file('thumb')->store('public/image/noticias');
+                $url = asset(Storage::url($arquivo));
+                $thumbDelete = $new->thumb;
+                // Converta a URL em um caminho relativo ao sistema de arquivos
+                $relativePath = str_replace(asset(''), '', $thumbDelete);
+                $relativePath = str_replace('storage', '', $relativePath);
+                Storage::delete('public' . $relativePath);
+            } else {
+                $array['error'] = $validator->errors()->first();
+            }
+        } else {
+            $url  = '';
+        }
+
+        $new->title = $request->input('title');
+        $new->content = $request->input('content');
+        $new->thumb =  $url;
+        $new->category_id = $request->input('category_id');
+        $new->author_id = $request->input('author_id');
+        $new->tags = $request->input('tags');
+        $new->highlight = $request->input('highlight');
+        $new->status = $request->input('status');
+          // Salvar o documento no banco de dados
+          try {
+            $new->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao salvar Notícia!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso com os dados da notícia
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $new,
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+    public function delete($id)
+{
+    $array = ['error' => ''];
+
+    // Verificar se o documento existe
+    $item = News::find($id);
+
+    if (!$item) {
+        return response()->json([
+            'error' => 'Documento inexistente',
+            'code' => 404,
+        ], 404);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+    // Excluir a imagem de thumbnail
+    if ($item->thumb) {
+        $relativePath = str_replace(asset(''), '', $item->thumb);
+        $relativePath = str_replace('storage', '', $relativePath);
+        Storage::delete('public' . $relativePath);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    // Excluir o documento do banco de dados
+    $item->delete();
+
+    // Retornar uma resposta de sucesso
+    return response()->json([
+        'error' => '',
+        'success' => true,
+    ], 204);
+}
+
+    public function updateStatus($id, Request $request)
     {
-        //
+        $array = ['error' => ''];
+        $validator = Validator::make($request->all(), [
+            'status' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $array['error'] = $validator->errors()->first();
+            return $array;
+        } else {
+            $item = News::find($id);
+            $item->status = $request->input('status');
+            $item->save();
+            return $request->input();
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function midias()
     {
-        //
-    }
+        return $this->morphMany(Midia::class, 'mediable');
+    } 
 }

@@ -14,91 +14,97 @@ class ReservationController extends Controller
 {
     public function getAll()
     {
-        $array = ['error' => ''];
-        $reservations = Reservation::select('reservations.*', 'units.name as name_unit', 'areas.title as name_area')
-            ->join('units', 'units.id', '=', 'reservations.unit_id')
-            ->join('users', 'users.id', '=', 'units.owner_id')
-            ->join('areas', 'areas.id', '=', 'reservations.id_area')
-            ->get();
-        $array['list'] = $reservations;
-        return $array;
+        $reservations = Reservation::all();
+         // Retornar uma mensagem de erro se a unidade não for encontrada
+         if (!$reservations) {
+            return response()->json([
+                'error' => 'Nenhum Reserva não encontrada',
+                'code' => 404,
+            ], 404);
+        }
+    
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $reservations,
+        ], 200);
     }
+
+    public function getById($id)
+    {
+        // Buscar a unidade pelo ID
+        $reservation = Reservation::find($id);
+
+        // Retornar uma mensagem de erro se a unidade não for encontrada
+        if (!$reservation) {
+            return response()->json([
+                'error' => 'Reserva não encontrada',
+                'code' => 404,
+            ], 404);
+        }
+
+        // Buscar unidades relacionada a reserva
+        $unit = Unit::where('unit_id', $id)->get();
+
+    
+        // Retornar uma resposta de sucesso com os dados da unidade
+        return response()->json([
+            'error' => '', 
+            'success' => true,
+            'unit' => $unit,
+             ], 200);
+    }
+
     public function insert(Request $request)
     {
         $array = ['error' => ''];
-        // echo 'teste';
-       // var_dump($request->input());
+    
+        // Validar os dados da request
         $validator = Validator::make($request->all(), [
             'reservation_date' => 'required',
             'unit_id' => 'required',
             'id_area' => 'required',
         ]);
-
+    
         if ($validator->fails()) {
             $array['error'] = $validator->errors()->first();
-            return $array;
+            return response()->json($array, 400);
         }
+    
+        // Criar uma nova reserva
+        $reservation = new Reservation();
+        $reservation->id_area = $request->input('id_area');
+        $reservation->unit_id = $request->input('unit_id');
+        $reservation->reservation_date = $request->input('reservation_date');
+        $reservation->save();
+    
+        // Retornar uma resposta de sucesso com os dados da reserva
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'data' => [
+                'id' => $reservation->id,
+                'id_area' => $reservation->id_area,
+                'unit_id' => $reservation->unit_id,
+                'reservation_date' => $reservation->reservation_date,
+            ],
+        ], 201);
+    }
+    
+    // $reservation = Reservation::create($array);
 
-        //  $user = Auth::user();
-        $dates = explode(' ', $request->input('reservation_date'));
 
-        $date = $dates['0'];
-        $time = $dates['1'];
-        $property = $request->input('unit_id');
-        $idArea = $request->input('id_area');
-
-        $area = Area::find($idArea);
-        $unit = Unit::where('id', $property)->first();
-
-        if (!$area && !$unit) {
-            $array['error'] = 'Dados inválidos';
-            return $array;
+    public function delete($id)
+    {
+        $array = ['error' => ''];
+        $item = Reservation::find($id);
+        if ($item) {
+            Reservation::find($id)->delete();
+        } else {
+            $array['error'] = 'Reserva inexistente';
+            // return $array;
         }
-
-        $timeRes = strtotime($time);
-        $start = strtotime($area['start_time']);
-        $end = strtotime($area['end_time']);
-
-        if ($timeRes < $start || $timeRes > $end) {
-            $array['error'] = 'Horário de reserva inválido';
-            return $array;
-        }
-
-        $allowedDays = explode(',', $area['days']);
-        $weekday = date('w', strtotime($date));
-
-        if (!in_array($weekday, $allowedDays)) {
-            $array['error'] = 'Dia inválido';
-            return $array;
-        }
-
-       /* $isDisabled = AreaDisabledDay::where('id_area', $idArea)->where('day', $date)->first();
-        if ($isDisabled) {
-            $array['error'] = 'Dia indiponivel';
-            return $array;
-        }*/
-
-        $dateRes = $date . ' ' . $time;
-        $isReserved = Reservation::where('id_area', $idArea)->where('reservation_date', $dateRes)->first();
-        if ($isReserved) {
-            $array['error'] = 'Horário já reservado neste dia';
-            return $array;
-        }
-
-        $newRes = new Reservation();
-        $newRes->id_area = $idArea;
-        $newRes->unit_id = $property;
-        $newRes->reservation_date = $dateRes;
-        $newRes->save();
-
-        $array['list'][] = [
-            'id_area' => $area['id'],
-            'title' => $area['title'],
-            'cover' => asset('storage/' . $area['cover']),
-            'date' => $dateRes . ' as ' . date('H:i', strtotime('+1 hour', strtotime($dateRes)))
-        ];
-
         return $array;
     }
-    // $reservation = Reservation::create($array);
+
 }

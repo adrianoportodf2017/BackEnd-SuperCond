@@ -9,5 +9,5 @@ class WallLike extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    public $table = 'walllikes';
+    public $table = 'wall_likes';
 }

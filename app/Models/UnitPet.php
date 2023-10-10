@@ -13,6 +13,6 @@ class UnitPet extends Model
     ];
 
     public $timestamps = false;
-    public $table = 'unitpets';
+    public $table = 'unit_pets';
 }
 

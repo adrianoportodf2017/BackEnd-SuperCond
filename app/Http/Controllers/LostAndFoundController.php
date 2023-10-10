@@ -32,7 +32,7 @@ class LostAndFoundController extends Controller
         $result = [];
         foreach ($lostAndFounds as $lostAndFound) {
             $lostAndFound->photos_array = json_decode($lostAndFound->photos);
-            $result[]['warnings'] = $lostAndFound;
+            $result[] = $lostAndFound;
         }
 
         return response()->json([

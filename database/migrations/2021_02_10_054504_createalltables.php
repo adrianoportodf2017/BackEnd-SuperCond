@@ -233,10 +233,10 @@ class Createalltables extends Migration
             $table->string('title')->nullable();
             $table->text('content')->nullable();
             $table->string('thumb')->nullable();
-            $table->string('photos')->nullable(); // Usar JSON para armazenar várias fotos
             $table->string('price')->nullable(); // Decimal para preço com duas casas decimais
             $table->string('address')->nullable();
             $table->string('contact')->nullable();
+            $table->string('status')->nullable()->default('NÃO VENDIDO');;
             $table->unsignedBigInteger('user_id')->nullable(); // Chave estrangeira para usuário
             $table->unsignedBigInteger('category_id')->nullable(); // Chave estrangeira para categoria
             $table->timestamps();
@@ -264,17 +264,32 @@ class Createalltables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('photos', function (Blueprint $table) {
+        Schema::create('gallery', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
             $table->text('content')->nullable();
-            $table->string('status')->default('published'); // Status (publicada, rascunho, arquivada, etc.)
+            $table->string('status')->default('published')->nullable(); // Status (publicada, rascunho, arquivada, etc.)
             $table->integer('likes_count')->default(0); // Contador de curtidas
             $table->integer('comments_count')->default(0); // Contador de comentários
             $table->string('tags')->nullable(); // Tags ou categorias adicionais
             $table->string('thumb')->nullable();
-            $table->json('photos')->nullable(); // Usar JSON para armazenar várias fotos
+            $table->string('thumb_file')->nullable();
             $table->integer('shares_count')->default(0); // Contador de compartilhamentos
+            $table->timestamps();
+        });
+
+
+        Schema::create('midias', function (Blueprint $table) {
+            $table->id();
+            $table->string('title')->nullable();
+            $table->string('content')->nullable();
+            $table->string('url')->nullable();
+            $table->string('file')->nullable();
+            $table->string('type')->nullable();
+            $table->string('user_id')->nullable();
+            $table->string('status')->default('ativo'); // Status (publicada, rascunho, arquivada, etc.)
+            $table->unsignedBigInteger('mediable_id')->nullable();
+            $table->string('mediable_type')->nullable();
             $table->timestamps();
         });
 
@@ -288,12 +303,28 @@ class Createalltables extends Migration
             $table->string('date_start')->nullable(); // Data de início da enquete
             $table->string('date_expiration')->nullable(); // Data de expiração da enquete
             $table->string('type')->default('single_choice'); // Tipo de enquete (escolha única, múltipla escolha, etc.)
-            $table->json('options')->nullable(); // Opções de resposta em formato JSON
             $table->string('likes_count')->default(0); // Contador de curtidas
             $table->string('votes_count')->default(0); // Contador de votos totais
             $table->string('max_votes')->nullable(); // Número máximo de votos permitidos por usuário
             $table->boolean('is_public')->default(true); // Indicador de se a enquete é pública ou privada
             $table->json('participants')->nullable(); // Lista de usuários que participaram da enquete (pode ser uma lista de IDs de usuário em formato JSON)
+            $table->timestamps();
+        });
+
+        Schema::create('questions_polls', function (Blueprint $table) {
+            $table->id();
+            $table->string('title')->nullable();
+            $table->text('content')->nullable();
+            $table->string('type')->nullable();/**  Text, chekbox*/
+            $table->string('poll_id')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('votes_polls', function (Blueprint $table) {
+            $table->id();
+            $table->text('answer')->nullable();
+            $table->string('question_poll_id')->nullable();
+            $table->string('user_id')->nullable();
             $table->timestamps();
         });
 
@@ -347,7 +378,8 @@ class Createalltables extends Migration
         Schema::dropIfExists('assembleias');
         Schema::dropIfExists('classifieds');
         Schema::dropIfExists('news');
-        Schema::dropIfExists('photos');
+        Schema::dropIfExists('gallery');
+        Schema::dropIfExists('midias');
         Schema::dropIfExists('polls');
         Schema::dropIfExists('service_providers');
 

@@ -159,7 +159,6 @@ class DatabaseSeeder extends Seeder
                 'title' => 'Classificado 1',
                 'content' => $faker->paragraph,
                 'thumb' => 'imagem1.jpg',
-                'photos' => json_encode(['foto1.jpg', 'foto2.jpg']),
                 'price' => '100.00',
                 'address' => 'Endereço 1',
                 'contact' => 'Contato 1',
@@ -172,7 +171,6 @@ class DatabaseSeeder extends Seeder
                 'title' => 'Classificado 2',
                 'content' => $faker->paragraph,
                 'thumb' => 'imagem2.jpg',
-                'photos' => json_encode(['foto3.jpg', 'foto4.jpg']),
                 'price' => '50.00',
                 'address' => 'Endereço 2',
                 'contact' => 'Contato 2',
@@ -209,7 +207,7 @@ class DatabaseSeeder extends Seeder
         }
 
         for ($i = 1; $i <= 10; $i++) {
-            DB::table('photos')->insert([
+            DB::table('gallery')->insert([
                 'title' => 'Título da Galeria ' . $i,
                 'content' => 'Conteúdo da Galeria ' . $faker->paragraph,
                 'status' => 'published',
@@ -217,7 +215,7 @@ class DatabaseSeeder extends Seeder
                 'comments_count' => rand(0, 100),
                 'tags' => 'tag' . rand(1, 5), // Supondo que você tenha 5 tags diferentes
                 'thumb' => 'imagem-galeria-' . $i . '.jpg',
-                'photos' => json_encode(['imagem1.jpg', 'imagem2.jpg']),
+                'thumb_file' => 'imagem-galeria-' . $i . '.jpg',
                 'shares_count' => rand(0, 100),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -228,17 +226,13 @@ class DatabaseSeeder extends Seeder
         foreach (range(1, 10) as $index) {
             $startDate = $faker->dateTimeBetween('-30 days', '+30 days');
             $expirationDate = $faker->dateTimeBetween($startDate, '+60 days');
-
-            $options = ['Option 1', 'Option 2', 'Option 3']; // Opções de resposta em formato JSON
-
-            $pollData = [
+           $pollData = [
                 'title' => 'Enquete ' . $index,
                 'content' => $faker->paragraph,
                 'status' => 'active',
                 'date_start' => $startDate,
                 'date_expiration' => $expirationDate,
                 'type' => 'single_choice',
-                'options' => json_encode($options),
                 'likes_count' => $faker->numberBetween(0, 100),
                 'votes_count' => $faker->numberBetween(0, 1000),
                 'max_votes' => $faker->numberBetween(1, 5), // Número máximo de votos permitidos por usuário
@@ -250,6 +244,29 @@ class DatabaseSeeder extends Seeder
 
             DB::table('polls')->insert($pollData);
         }
+
+
+        foreach (range(1, 10) as $index) {
+            DB::table('questions_polls')->insert([
+                'title' => $faker->sentence(4),
+                'content' => $faker->paragraph(3),
+                'type' => $faker->randomElement(['Text', 'Checkbox']),
+                'poll_id' => $faker->numberBetween(1, 5), // Substitua pelo ID da enquete correspondente
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        foreach (range(1, 10) as $index) {
+            DB::table('votes_polls')->insert([
+                'answer' => $faker->sentence(6),
+                'question_poll_id' => $faker->numberBetween(1, 10), // Substitua pelo ID da pergunta correspondente
+                'user_id' => $faker->numberBetween(1, 20), // Substitua pelo ID do usuário correspondente
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
 
         foreach (range(1, 10) as $index) {
             $serviceProviderData = [
