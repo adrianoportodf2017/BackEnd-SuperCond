@@ -21,7 +21,7 @@ use App\Http\Controllers\{
     CondominiosController,
     BilletController,
     DocController,
-    FoundAndLostController,
+    LostAndFoundController,
     ReservationController,
     UnitController,
     UserController,
@@ -116,6 +116,23 @@ Route::middleware('auth:api')->group(function () {
       Route::post('/admin/warning/{id}', [WarningController::class, 'update']);
       Route::post('/admin/warning', [WarningController::class, 'insert']);
       Route::delete('/admin/warning/{id}', [WarningController::class, 'delete']);
+
+    
+          /**Achados e Perdidos    * **/
+      Route::get('/admin/lost-and-found', [LostAndFoundController::class, 'getAll']); // Listar todos os achados e perdidos
+      Route::get('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'getById']); // Obter um achado e perdido específico
+      Route::post('/admin/lost-and-found', [LostAndFoundController::class, 'insert']); // Criar um novo achado e perdido
+      Route::post('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'update']); // Atualizar um achado e perdido existente
+      Route::delete('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'delete']); // Excluir um achado e perdido
+ 
+
+   /**AREAS**/
+
+   Route::get('/admin/areas', [AreaController::class, 'getAll']);
+   Route::get('/admin/area/{id}', [AreaController::class, 'getById']); // Obter um achado e perdido específico
+   Route::post('/admin/area', [AreaController::class, 'insert']);
+   Route::post('/admin/area/{id}', [AreaController::class, 'update']);
+   Route::delete('/admin/area/{id}', [AreaController::class, 'delete']);
  
 
     /**RESERVARTIONS**/
@@ -137,13 +154,7 @@ Route::middleware('auth:api')->group(function () {
 
     /**<--UNITS-->*/
 
-    /**AREAS**/
-
-    Route::get('/admin/areas', [AreaController::class, 'getAll']);
-    Route::post('/admin/areas', [AreaController::class, 'insert']);
-    Route::post('/admin/area/{id}', [AreaController::class, 'update']);
-    Route::delete('/admin/area/{id}', [AreaController::class, 'delete']);
-
+ 
 
     //*********************************************************************************************** */
 
@@ -198,11 +209,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/admin/incidents/{id}', [IncidentsController::class, 'update']); // Atualizar uma ocorrência existente
     Route::delete('/admin/incidents/{id}', [IncidentsController::class, 'destroy']); // Excluir uma ocorrência
 
-    Route::get('/admin/lost-and-found', [LostAndFoundController::class, 'index']); // Listar todos os achados e perdidos
-    Route::get('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'show']); // Obter um achado e perdido específico
-    Route::post('/admin/lost-and-found', [LostAndFoundController::class, 'store']); // Criar um novo achado e perdido
-    Route::put('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'update']); // Atualizar um achado e perdido existente
-    Route::delete('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'destroy']); // Excluir um achado e perdido
+
 
 
 

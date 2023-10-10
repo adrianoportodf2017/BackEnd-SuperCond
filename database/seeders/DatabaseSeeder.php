@@ -87,7 +87,7 @@ class DatabaseSeeder extends Seeder
         DB::table('areas')->insert([
             'allowed' => '1',
             'title' => 'Academia',
-            'cover' => 'gym.jpg',
+            'photos' => 'gym.jpg',
             'days' => '1,2,4,5',
             'start_time' => '06:00:00',
             'end_time' => '22:00:00',
@@ -97,7 +97,7 @@ class DatabaseSeeder extends Seeder
         DB::table('areas')->insert([
             'allowed' => '1',
             'title' => 'Piscina',
-            'cover' => 'pool.jpg',
+            'photos' => 'pool.jpg',
             'days' => '1,2,3,4,5',
             'start_time' => '07:00:00',
             'end_time' => '23:00:00',
@@ -107,7 +107,7 @@ class DatabaseSeeder extends Seeder
         DB::table('areas')->insert([
             'allowed' => '1',
             'title' => 'Churrasqueira',
-            'cover' => 'barbecue.jpg',
+            'photos' => 'barbecue.jpg',
             'days' => '4,5,6',
             'start_time' => '09:00:00',
             'end_time' => '22:00:00',
@@ -272,7 +272,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ];
 
-            DB::table('serviceproviders')->insert($serviceProviderData);
+            DB::table('service_providers')->insert($serviceProviderData);
         }
 
         $docs = [];
@@ -301,48 +301,59 @@ class DatabaseSeeder extends Seeder
         }
 
         DB::table('units')->insert($units);
-    
+
         $bill = [];
-    for ($i = 0; $i < 100; $i++) {
-        $unit_id = $faker->numberBetween(1, 10);
-        $owner_id = $faker->numberBetween(1, 10);
+        for ($i = 0; $i < 100; $i++) {
+            $unit_id = $faker->numberBetween(1, 10);
+            $owner_id = $faker->numberBetween(1, 10);
 
-        $bill[] = [
-            'title' => $faker->sentence(5),
-            'content' => $faker->paragraph(10),
-            'price' => $faker->randomFloat(2, 100, 1000),
-            'date_vue' => $faker->date(),
-            'unit_id' => $unit_id,
-            'owner_id' => $owner_id,
-            'date_payment' => $faker->date(),
-            'status' => $faker->randomElement(['pago', 'pendente']),
-            'fileurl' => $faker->imageUrl(800, 600),
-            'filename' => $faker->imageUrl(800, 600),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
+            $bill[] = [
+                'title' => $faker->sentence(5),
+                'content' => $faker->paragraph(10),
+                'price' => $faker->randomFloat(2, 100, 1000),
+                'date_vue' => $faker->date(),
+                'unit_id' => $unit_id,
+                'owner_id' => $owner_id,
+                'date_payment' => $faker->date(),
+                'status' => $faker->randomElement(['pago', 'pendente']),
+                'fileurl' => $faker->imageUrl(800, 600),
+                'filename' => $faker->imageUrl(800, 600),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        DB::table('billets')->insert($bill);
 
+
+
+        for ($i = 0; $i < 100; $i++) {
+            $unit_id = $faker->numberBetween(1, 10);
+            $owner_id = $faker->numberBetween(1, 10);
+            $condominio_id = $faker->numberBetween(1, 10);
+
+            $warning[] = [
+                'title' => $faker->sentence(5),
+                'content' => $faker->paragraph(10),
+                'notes' => $faker->paragraph(5),
+                'unit_id' => $unit_id,
+                'owner_id' => $owner_id,
+                'photos' => $faker->imageUrl(800, 600) . ' , ' . $faker->imageUrl(800, 600) . ' , ' . $faker->imageUrl(800, 600),
+                'condominio_id' => $condominio_id,
+            ];
+        }
+        DB::table('warnings')->insert($warning);
+
+
+        for ($i = 1; $i <= 10; $i++) {
+            DB::table('lost_end_found')->insert([
+                'title' => $faker->sentence(5),
+                'content' => $faker->paragraph(10),
+                'where' => $faker->sentence(5),
+                'notes' => $faker->paragraph(5),
+                'photos' => $faker->imageUrl(800, 600) . ' , ' . $faker->imageUrl(800, 600) . ' , ' . $faker->imageUrl(800, 600),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
-    DB::table('billets')->insert($bill);
-  
-
-
-    for ($i = 0; $i < 100; $i++) {
-        $unit_id = $faker->numberBetween(1, 10);
-        $owner_id = $faker->numberBetween(1, 10);
-        $condominio_id = $faker->numberBetween(1, 10);
-
-        $warning[] = [
-            'title' => $faker->sentence(5),
-            'content' => $faker->paragraph(10),
-            'notes' => $faker->paragraph(5),
-            'unit_id' => $unit_id,
-            'owner_id' => $owner_id,
-            'photos' => $faker->imageUrl(800, 600).' , '. $faker->imageUrl(800, 600).' , '.$faker->imageUrl(800, 600),
-            'condominio_id' => $condominio_id,
-        ];
-
-           }
-           DB::table('warnings')->insert($warning);
-}
 }

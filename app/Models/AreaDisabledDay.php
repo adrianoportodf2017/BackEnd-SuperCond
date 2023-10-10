@@ -9,5 +9,5 @@ class AreaDisabledDay extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    public $table = 'areadisableddays';
+    public $table = 'area_disabled_days';
 }

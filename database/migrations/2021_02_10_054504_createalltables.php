@@ -58,7 +58,7 @@ class Createalltables extends Migration
 
         });
 
-        Schema::create('unitpeoples', function(Blueprint $table) {
+        Schema::create('unit_peoples', function(Blueprint $table) {
             $table->id();
             $table->integer('unit_id');
             $table->string('name');
@@ -68,7 +68,7 @@ class Createalltables extends Migration
 
         });
 
-        Schema::create('unitvehicles', function(Blueprint $table) {
+        Schema::create('unit_vehicles', function(Blueprint $table) {
             $table->id();
             $table->integer('unit_id');
             $table->string('title');
@@ -79,7 +79,7 @@ class Createalltables extends Migration
 
         });
 
-        Schema::create('unitpets', function(Blueprint $table) {
+        Schema::create('unit_pets', function(Blueprint $table) {
             $table->id();
             $table->integer('unit_id');
             $table->string('name');
@@ -99,7 +99,7 @@ class Createalltables extends Migration
 
         });
 
-        Schema::create('walllikes', function(Blueprint $table) {
+        Schema::create('wall_likes', function(Blueprint $table) {
             $table->id();
             $table->integer('id_wall');
             $table->integer('id_user');
@@ -154,12 +154,15 @@ class Createalltables extends Migration
 
         });
 
-        Schema::create('foundandlost', function(Blueprint $table) {
+        Schema::create('lost_end_found', function(Blueprint $table) {
             $table->id();
+            $table->text('title')->nullable();
             $table->string('status')->default('LOST');  // LOST, RECOVERED
-            $table->text('photos');
-            $table->string('description');
-            $table->string('where');
+            $table->text('content')->nullable();
+            $table->string('where')->nullable();
+            $table->text('photos')->nullable()/**Aqui podemos colocar varias fotos, serão urls finais, apois o upload na pasta storage*/;
+            $table->text('notes')->nullable();
+            $table->string('owner_id')->nullable();
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
@@ -170,7 +173,7 @@ class Createalltables extends Migration
             $table->id();
             $table->integer('allowed')->default(1);
             $table->string('title');
-            $table->string('cover');
+            $table->string('photos');
             $table->string('days'); 
             $table->time('start_time');
             $table->time('end_time');
@@ -180,7 +183,7 @@ class Createalltables extends Migration
 
         });
 
-        Schema::create('areadisableddays', function(Blueprint $table) {
+        Schema::create('area_disabled_days', function(Blueprint $table) {
             $table->id();
             $table->integer('id_area');
             $table->date('day');
@@ -212,7 +215,7 @@ class Createalltables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('assembleiadocuments', function (Blueprint $table) {
+        Schema::create('assembleia_documents', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
             $table->string('thumb')->nullable();
@@ -294,7 +297,7 @@ class Createalltables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('serviceproviders', function (Blueprint $table) {
+        Schema::create('service_providers', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
             $table->string('email')->nullable();
@@ -328,25 +331,25 @@ class Createalltables extends Migration
         Schema::dropIfExists('condominios');
         Schema::dropIfExists('users');
         Schema::dropIfExists('units');
-        Schema::dropIfExists('unitpeoples');
-        Schema::dropIfExists('unitvehicles');
-        Schema::dropIfExists('unitpets');
+        Schema::dropIfExists('unit_peoples');
+        Schema::dropIfExists('unit_vehicles');
+        Schema::dropIfExists('unit_pets');
         Schema::dropIfExists('walls');
-        Schema::dropIfExists('walllikes');
+        Schema::dropIfExists('wall_likes');
         Schema::dropIfExists('docs');
         Schema::dropIfExists('billets');
         Schema::dropIfExists('warnings');
-        Schema::dropIfExists('foundandlost');
+        Schema::dropIfExists('lost_end_found');
         Schema::dropIfExists('areas');
-        Schema::dropIfExists('areadisableddays');
+        Schema::dropIfExists('area_disabled_days');
         Schema::dropIfExists('reservations');
-        Schema::dropIfExists('assembleiadocuments');
+        Schema::dropIfExists('assembleia_documents');
         Schema::dropIfExists('assembleias');
         Schema::dropIfExists('classifieds');
         Schema::dropIfExists('news');
         Schema::dropIfExists('photos');
         Schema::dropIfExists('polls');
-        Schema::dropIfExists('serviceproviders');
+        Schema::dropIfExists('service_providers');
 
 
 

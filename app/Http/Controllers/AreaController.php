@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Reservation;
 use App\Models\AreaDisabledDay;
 use Illuminate\Support\Facades\Storage;
+use Exception;
 
 
 
@@ -29,8 +30,37 @@ class AreaController extends Controller
         return $array;;
     }
 
-    public function insert(Request $request)
+    /**
+     * Obtém um Área comun pelo ID.
+     *
+     * @param int $id O ID do área a ser obtido.
+     *
+     * @return \App\Models\Area
+     */
+    public function getById($id)
     {
+        $area = Area::where('id', $id)->first();
+
+        if (!$area) {
+            return response()->json([
+                'error' => "Item com ID {$id} não encontrado",
+                'code' => 404,
+            ], 404);
+        }
+        $area->photos_array = json_decode($area->photos);
+        return response()->json([
+            'error' => '',
+            'list' => json_decode($area),
+            // Outros dados de resultado aqui...
+        ], 200);
+    }
+
+
+    public function insert(Request $request)
+    {      //  return var_dump($request->file()); die;
+
+        // Validar os dados da requisição
+
 
         $array = ['error' => ''];
         $newArea = new Area();
@@ -40,41 +70,69 @@ class AreaController extends Controller
             'title' => 'required|min:2',
             'start_time' => 'required|min:2',
             'end_time' => 'required|min:2',
+            'file.*' => 'mimes:jpg,png,jpeg',
         ]);
 
+
+        // Retornar uma mensagem de erro se a validação falhar
         if ($validator->fails()) {
-            $array['error'] = $validator->errors()->first();
-            return $array;
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 422,
+            ], 422);
         }
-        if ($request->hasFile('cover')) {
-            $validator = Validator::make($request->all(), [
-                'cover' => 'required|mimes:jpg,png,jpeg'
-            ]);
 
-            if ($validator->fails()) {
-                $array['error'] = $validator->errors()->first();
-                return $array;
+        // Verificar se o arquivo existe
+        if ($request->hasfile('file')) {            
+            // Verificar se o arquivo é válido
+            $files = $request->file('file');
+            foreach ($files as $file) {
+                if (!$file->isValid()) {
+                    return response()->json([
+                        'error' => 'O arquivo enviado não é válido',
+                        'code' => 400,
+                    ], 400);
+                }
             }
+            $cont = '0';
+            $file = [];
+            foreach ($files as  $key) {
+                $arquivo = $key->store('public/lostAndFound/' . $request->input('owner_id'));
+                $file[$cont] = $arquivo;
+                $cont++;
+            }
+            $json_files = json_encode($file);
+        }else{
+            $json_files = '';
 
-            $arquivo = $request->file('cover')->store('public/image/areas');
-            $url = asset(Storage::url($arquivo));
-            $newArea->cover = $url;
-            $newArea->title = $request->input('title');
-            $newArea->allowed = $request->input('allowed');
-            $newArea->days = $request->input('days');
-            $newArea->start_time = $request->input('start_time');
-            $newArea->end_time = $request->input('end_time');
-        } else {
-            $newArea->title = $request->input('title');
-            $newArea->allowed = $request->input('allowed');
-            $newArea->days = $request->input('days');
-            $newArea->start_time = $request->input('start_time');
-            $newArea->end_time = $request->input('end_time');
         }
 
-        $newArea->save();
+            $newArea->photos = $json_files;
+            $newArea->title = $request->input('title');
+            $newArea->allowed = $request->input('allowed');
+            $newArea->days = $request->input('days');
+            $newArea->start_time = $request->input('start_time');
+            $newArea->end_time = $request->input('end_time');
 
-        return $array;
+
+        // Salvar o documento no banco de dados
+        try {
+            $newArea->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao salvar Área!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'document' => $newArea,
+        ], 201);
     }
 
 
@@ -123,11 +181,11 @@ class AreaController extends Controller
             $relativePath = str_replace(asset(''), '', $coverDelete);
             $relativePath = str_replace('storage', '', $relativePath);
             // Use o caminho relativo para excluir o arquivo
-           //var_dump($relativePath);die;
-          //   Storage::delete('public/image/areas/G4RCjcZN9gMoDxvZ7BsSPkV9Egl1smtyKrNO2tVe.png');
+            //var_dump($relativePath);die;
+            //   Storage::delete('public/image/areas/G4RCjcZN9gMoDxvZ7BsSPkV9Egl1smtyKrNO2tVe.png');
 
 
-           Storage::delete('public'.$relativePath);
+            Storage::delete('public' . $relativePath);
         } else {
             $area->title = $request->input('title');
             $area->allowed = $request->input('allowed');
@@ -147,12 +205,12 @@ class AreaController extends Controller
         $item = Area::find($id);
         if ($item) {
             $fileDelete = $item->cover;
-               // Converta a URL em um caminho relativo ao sistema de arquivos
-               $relativePath = str_replace(asset(''), '', $fileDelete);
-               $relativePath = str_replace('storage', '', $relativePath);
-               // Use o caminho relativo para excluir o arquivo
-               Storage::delete('public'.$relativePath);
-               Area::find($id)->delete();
+            // Converta a URL em um caminho relativo ao sistema de arquivos
+            $relativePath = str_replace(asset(''), '', $fileDelete);
+            $relativePath = str_replace('storage', '', $relativePath);
+            // Use o caminho relativo para excluir o arquivo
+            Storage::delete('public' . $relativePath);
+            Area::find($id)->delete();
         } else {
             $array['error'] = 'Error Ao Deletar';
             // return $array;
