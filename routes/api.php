@@ -200,25 +200,22 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/admin/polls', [PollsController::class, 'getAll']); // Listar todas as enquetes
     Route::get('/admin/poll/{id}', [PollsController::class, 'getById']); // Obter uma enquete específica
     Route::post('/admin/poll', [PollsController::class, 'insert']); // Criar uma nova enquete
-    Route::put('/admin/poll/{id}', [PollsController::class, 'update']); // Atualizar uma enquete existente
+    Route::post('/admin/poll/{id}', [PollsController::class, 'update']); // Atualizar uma enquete existente
     Route::delete('/admin/poll/{id}', [PollsController::class, 'delete']); // Excluir uma enquete
 
         /**<--Enquetes Perguntas-->*/
 
-    Route::get('/admin/polls/questions', [PollsController::class, 'getQuestionsAll']); // Listar todas as opções de uma enquete
-    Route::get('/admin/poll/question/{id}', [PollsController::class, 'getQuestionById']); // Obter uma questao específica
-    Route::post('/admin/poll/question', [PollsController::class, 'insertQuestion']); // Criar uma nova questao realacionada a uma enquete
-    Route::post('/admin/poll/question/{id}', [PollsController::class, 'updateQuestion']); // Atualizar uma questao existente
-    Route::delete('/admin/poll/question/{id}', [PollsController::class, 'deleteQuestion']); // Excluir uma questao
+    Route::get('/admin/polls/questions/{id}', [PollsController::class, 'getQuestionsAll']); // Listar todas as opções de uma enquete
+    Route::get('/admin/poll/question/{id}', [PollsController::class, 'getQuestionById']); // Obter uma opções específica
+    Route::post('/admin/poll/{id}/question', [PollsController::class, 'insertQuestion']); // Criar uma nova opções realacionada a uma enquete
+    Route::post('/admin/poll/question/{id}', [PollsController::class, 'updateQuestion']); // Atualizar uma opções existente
+    Route::delete('/admin/poll/question/{id}', [PollsController::class, 'deleteQuestion']); // Excluir uma opções
 
 
         /**<--Enquetes Respostas-->*/
 
-        Route::get('/admin/polls/answers', [PollsController::class, 'getAnswersAll']); // Listar todas as respostas de uma enquete
-        Route::get('/admin/poll/answer/{id}', [PollsController::class, 'getAnswerById']); // Obter uma respostas específica
-        Route::post('/admin/poll/answer', [PollsController::class, 'insertAnswer']); // Criar uma nova respostas realacionada a uma enquete
-        Route::post('/admin/poll/answer/{id}', [PollsController::class, 'updateAnswer']); // Atualizar uma respostas existente
-        Route::delete('/admin/poll/answer/{id}', [PollsController::class, 'deleteAnswer']); // Excluir uma respostas
+        Route::get('/admin/poll/{id}/answers', [PollsController::class, 'getAnswersByPoll']); // Listar todas as respostas de uma enquete
+        Route::post('/admin/poll/{id}/answer', [PollsController::class, 'insertAnswer']); // Criar uma nova respostas realacionada a uma enquete
 
 
     Route::get('/admin/partners', [PartnersController::class, 'index']); // Listar todos os convênios/parceiros

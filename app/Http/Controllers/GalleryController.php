@@ -84,7 +84,7 @@ class GalleryController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
-            'file' =>  'max:2M',
+            'file' =>  'max:10M',
             'file.*' => 'mimes:jpg,png,jpeg',
             'thumb' => 'mimes:jpg,png,jpeg',
 
@@ -366,6 +366,12 @@ class GalleryController extends Controller
         // Buscar o aviso a ser deletado
         $gallery = Gallery::find($id);
 
+        $midias =  $gallery->midias;
+        foreach ($midias  as $midia) {
+            $midia->delete();
+            $midia = $midia->file;
+            Storage::delete($midia);
+        }
         // Se o aviso não for encontrado, retornar uma mensagem de erro
         if (!$gallery) {
             return response()->json([

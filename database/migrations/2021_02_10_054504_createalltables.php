@@ -299,10 +299,11 @@ class Createalltables extends Migration
             $table->text('content')->nullable();
             $table->string('status')->default('active');
             $table->string('thumb')->nullable();
+            $table->string('thumb_file')->nullable();
             // Status (ativo, inativo, encerrado, etc.)
             $table->string('date_start')->nullable(); // Data de início da enquete
             $table->string('date_expiration')->nullable(); // Data de expiração da enquete
-            $table->string('type')->default('single_choice'); // Tipo de enquete (escolha única, múltipla escolha, etc.)
+            $table->string('type')->default('single_choice')->nullable(); // Tipo de enquete (escolha única, múltipla escolha, etc.)
             $table->string('likes_count')->default(0); // Contador de curtidas
             $table->string('votes_count')->default(0); // Contador de votos totais
             $table->string('max_votes')->nullable(); // Número máximo de votos permitidos por usuário
