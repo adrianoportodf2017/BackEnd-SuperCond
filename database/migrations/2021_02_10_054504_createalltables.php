@@ -160,7 +160,6 @@ class Createalltables extends Migration
             $table->string('status')->default('LOST');  // LOST, RECOVERED
             $table->text('content')->nullable();
             $table->string('where')->nullable();
-            $table->text('photos')->nullable()/**Aqui podemos colocar varias fotos, serão urls finais, apois o upload na pasta storage*/;
             $table->text('notes')->nullable();
             $table->string('owner_id')->nullable();
             $table->integer('condominio_id')->nullable();
@@ -173,7 +172,6 @@ class Createalltables extends Migration
             $table->id();
             $table->integer('allowed')->default(1);
             $table->string('title');
-            $table->string('photos');
             $table->string('days'); 
             $table->time('start_time');
             $table->time('end_time');

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Area extends Model
 {
     use HasFactory;
-    public $timestamps = false;
     public $table = 'areas';
+    public function midias()
+    {
+        return $this->morphMany(Midia::class, 'mediable');
+    }
 }

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\LostAndFound;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Midia;
+
 use Exception;
 
 
@@ -17,21 +19,21 @@ class LostAndFoundController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function getAll()
+     public function getAll()
     {
         $lostAndFounds =  LostAndFound::all();
 
         // Retornar uma mensagem de erro se não houver ocorrencias
         if (!$lostAndFounds) {
             return response()->json([
-                'error' => 'Nenhum Achado e perdido encontrado',
+                'error' => 'Nenhuma Ocorrência Encontrada',
                 'code' => 404,
             ], 404);
         }
         // Retornar uma resposta de sucesso com a lista de ocorrencias
         $result = [];
         foreach ($lostAndFounds as $lostAndFound) {
-            $lostAndFound->photos_array = json_decode($lostAndFound->photos);
+            $lostAndFound->midias  = $lostAndFound->midias;
             $result[] = $lostAndFound;
         }
 
@@ -48,20 +50,21 @@ class LostAndFoundController extends Controller
      *
      * @return \App\Models\Doc
      */
-    public function getById($id)
+    
+     public function getById($id)
     {
-        $lostAndFound = LostAndFound::where('id', $id)->first();
+        $lost = LostAndFound::where('id', $id)->first();
 
-        if (!$lostAndFound) {
+        if (!$lost) {
             return response()->json([
-                'error' => "Item com ID {$id} não encontrado",
+                'error' => "Ocorrência não encontrado",
                 'code' => 404,
             ], 404);
         }
-        $lostAndFound->photos_array = json_decode($lostAndFound->photos);
+        $lost->midias = $lost->midias;
         return response()->json([
             'error' => '',
-            'list' => json_decode($lostAndFound),
+            'list' => $lost,
             // Outros dados de resultado aqui...
         ], 200);
     }
@@ -110,22 +113,12 @@ class LostAndFoundController extends Controller
                 ], 400);
             }
         }
-        $cont = '0';
-        $file = [];
-        foreach ($files as  $key) {
-            $arquivo = $key->store('public/lostAndFound/' . $request->input('owner_id'));
-            $file[$cont] = $arquivo;
-            $cont++;
-        }
-        $json_files = json_encode($file);
-
-        // Criar um novo documento
+           // Criar um novo documento
         $newLostAndFound = new LostAndFound();
         $newLostAndFound->title = $request->input('title');
         $newLostAndFound->content = $request->input('content');
         $newLostAndFound->notes = $request->input('notes');
         $newLostAndFound->owner_id = $request->input('owner_id');
-        $newLostAndFound->photos = $json_files;
         $newLostAndFound->status = 'Não Encontrado';
 
 
@@ -142,12 +135,32 @@ class LostAndFoundController extends Controller
         }
 
         // Retornar uma resposta de sucesso
+        if ($request->file('file')) {
+            $files = $request->file('file');
+            foreach ($files as  $key) {
+                $arquivo = $key->store('public/lostAndFound/' . $newLostAndFound->id);
+                $url = asset(Storage::url($arquivo));
+                $midia = new Midia([
+                    'title' => $newLostAndFound->title,
+                    'url' => $url,
+                    'file' => $arquivo,
+                    'status' => 'ativo', // Status da mídia
+                    'type' => 'imagem', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                    'user_id' => $request->input('user_id')
+                ]);
+                // Associar a mídia a uma entidade (por exemplo, Document)
+                // Salvar o documento no banco de dados
+                $newLostAndFound->midias()->save($midia);
+            }
+        }
+        $newLostAndFound->midias = $newLostAndFound->midias;
         return response()->json([
             'error' => '',
             'success' => true,
-            'document' => $newLostAndFound,
+            'list' => $newLostAndFound,
         ], 201);
     }
+
     public function update($id, Request $request)
     {
         $array['id'] =  $id;
@@ -193,6 +206,128 @@ class LostAndFoundController extends Controller
         ], 200);
     }
     /**
+     * Inserir nova midia.
+     *
+     * @param int $id O ID do documento a ser excluído.
+     *
+     * @return \Illuminate\Http\JsonResponse 
+     * */
+
+     public function insertMidia($id, Request $request)
+    {
+        $lost = LostAndFound::find($id);
+
+        $validator = Validator::make($request->all(), [
+            'file' =>  'max:2M',
+            'file.*' => 'mimes:jpg,png,jpeg',
+            'user_id' => 'required',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 400,
+            ], 400);
+        }
+        // Se o aviso não for encontrado, retornar uma mensagem de erro
+        if (!$lost) {
+            return response()->json([
+                'error' => 'Ocorrência inexistente',
+                'code' => 404,
+            ], 404);
+        }
+        // Verificar se o arquivo existe
+        if (!$request->hasfile('file')) {
+            return response()->json([
+                'error' => 'Nenhum arquivo enviado',
+                'code' => 400,
+            ], 400);
+        }
+
+        // Verificar se o arquivo é válido
+        $files = $request->file('file');
+
+        foreach ($files as $file) {
+            if (!$file->isValid()) {
+                return response()->json([
+                    'error' => 'O arquivo enviado não é válido',
+                    'code' => 400,
+                ], 400);
+            }
+        }
+        foreach ($files as  $key) {
+            $arquivo = $key->store('public/lostAndFound/' . $id);
+            $url = asset(Storage::url($arquivo));
+            $midia = new Midia([
+                'title' => $lost->title,
+                'url' => $url,
+                'file' => $arquivo,
+                'status' => 'ativo', // Status da mídia
+                'type' => 'imagem', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                'user_id' => $request->input('user_id')
+            ]);
+            // Associar a mídia a uma entidade (por exemplo, Document)
+            // Salvar o documento no banco de dados
+            try {
+                $lost->midias()->save($midia);
+            } catch (Exception $e) {
+                // Tratar o erro
+                return response()->json([
+                    'error' => 'Erro ao salvar Imagem na galeria!',
+                    'detail' => $e->getMessage(),
+                    'code' => 500,
+                ], 500);
+            }
+
+            // Retornar uma resposta de sucesso
+            $lost->midias = $lost->midias;
+            return response()->json([
+                'error' => '',
+                'success' => true,
+                'list' => $lost,
+            ], 200);
+        }
+    }
+
+    public function deleteMidia($id, Request $request)
+    {
+        // Buscar o aviso a ser deletado
+        $midia = Midia::find($id);
+
+
+
+        // Se o aviso não for encontrado, retornar uma mensagem de erro
+        if (!$midia) {
+            return response()->json([
+                'error' => 'Arquivo inexistente',
+                'code' => 404,
+            ], 404);
+        }
+
+        // Tentar deletar o aviso
+        try {
+            $midia->delete();
+            $midia = $midia->file;
+            Storage::delete($midia);
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao deletar Arquivo!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso
+        return response()->json([
+            'error' => '',
+            'success' => true,
+        ], 200);
+    }
+
+
+    /**
      * Exclui um documento.
      *
      * @param int $id O ID do documento a ser excluído.
@@ -203,10 +338,16 @@ class LostAndFoundController extends Controller
     public function delete($id)
     {
         // Buscar o aviso a ser deletado
-        $lostAndFound = LostAndFound::find($id);
+        $lost = LostAndFound::find($id);
 
+        $midias =  $lost->midias;
+        foreach ($midias  as $midia) {
+            $midia->delete();
+            $midia = $midia->file;
+            Storage::delete($midia);
+        }
         // Se o aviso não for encontrado, retornar uma mensagem de erro
-        if (!$lostAndFound) {
+        if (!$lost) {
             return response()->json([
                 'error' => 'Ocorrência inexistente',
                 'code' => 404,
@@ -215,16 +356,11 @@ class LostAndFoundController extends Controller
 
         // Tentar deletar o aviso
         try {
-            $lostAndFound->delete();
-            $fileDelete = $lostAndFound->filename;
-            $lostAndFound->photos_array = json_decode($lostAndFound->photos);
-            foreach ($lostAndFound->photos_array as $photos) {
-                Storage::delete($photos);
-            }
-        } catch (Exception $e) {
+            $lost->delete();
+           } catch (Exception $e) {
             // Tratar o erro
             return response()->json([
-                'error' => 'Erro ao deletar Achados e perdidos!',
+                'error' => 'Erro ao deletar Ocorrência de achados e perdidos!',
                 'detail' => $e->getMessage(),
                 'code' => 500,
             ], 500);

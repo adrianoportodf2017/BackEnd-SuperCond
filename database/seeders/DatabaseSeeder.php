@@ -87,7 +87,6 @@ class DatabaseSeeder extends Seeder
         DB::table('areas')->insert([
             'allowed' => '1',
             'title' => 'Academia',
-            'photos' => 'gym.jpg',
             'days' => '1,2,4,5',
             'start_time' => '06:00:00',
             'end_time' => '22:00:00',
@@ -97,7 +96,6 @@ class DatabaseSeeder extends Seeder
         DB::table('areas')->insert([
             'allowed' => '1',
             'title' => 'Piscina',
-            'photos' => 'pool.jpg',
             'days' => '1,2,3,4,5',
             'start_time' => '07:00:00',
             'end_time' => '23:00:00',
@@ -107,7 +105,6 @@ class DatabaseSeeder extends Seeder
         DB::table('areas')->insert([
             'allowed' => '1',
             'title' => 'Churrasqueira',
-            'photos' => 'barbecue.jpg',
             'days' => '4,5,6',
             'start_time' => '09:00:00',
             'end_time' => '22:00:00',
@@ -367,7 +364,6 @@ class DatabaseSeeder extends Seeder
                 'content' => $faker->paragraph(10),
                 'where' => $faker->sentence(5),
                 'notes' => $faker->paragraph(5),
-                'photos' => $faker->imageUrl(800, 600) . ' , ' . $faker->imageUrl(800, 600) . ' , ' . $faker->imageUrl(800, 600),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

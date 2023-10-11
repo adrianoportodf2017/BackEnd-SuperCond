@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Area;
+use App\Models\Midia;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -22,12 +23,27 @@ class AreaController extends Controller
 
     public function getAll()
     {
+        $areas =  Area::all();
 
-        $array = ['error' => ''];
-        $areas = Area::all();
-        // $areas['cover'] = asset(Storage::url($areas['cover']));
-        $array['list'] = $areas;
-        return $array;;
+        // Retornar uma mensagem de erro se não houver ocorrencias
+        if (!$areas) {
+            return response()->json([
+                'error' => 'Nenhuma Área Comun Encontrada',
+                'code' => 404,
+            ], 404);
+        }
+        // Retornar uma resposta de sucesso com a lista de ocorrencias
+        $result = [];
+        foreach ($areas as $area) {
+            $area->midias  = $area->midias;
+            $result[] = $area;
+        }
+
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $result,
+        ], 200);
     }
 
     /**
@@ -47,10 +63,10 @@ class AreaController extends Controller
                 'code' => 404,
             ], 404);
         }
-        $area->photos_array = json_decode($area->photos);
+        $area->midias = $area->midias;
         return response()->json([
             'error' => '',
-            'list' => json_decode($area),
+            'list' => $area,
             // Outros dados de resultado aqui...
         ], 200);
     }
@@ -82,37 +98,13 @@ class AreaController extends Controller
             ], 422);
         }
 
-        // Verificar se o arquivo existe
-        if ($request->hasfile('file')) {            
-            // Verificar se o arquivo é válido
-            $files = $request->file('file');
-            foreach ($files as $file) {
-                if (!$file->isValid()) {
-                    return response()->json([
-                        'error' => 'O arquivo enviado não é válido',
-                        'code' => 400,
-                    ], 400);
-                }
-            }
-            $cont = '0';
-            $file = [];
-            foreach ($files as  $key) {
-                $arquivo = $key->store('public/lostAndFound/' . $request->input('owner_id'));
-                $file[$cont] = $arquivo;
-                $cont++;
-            }
-            $json_files = json_encode($file);
-        }else{
-            $json_files = '';
 
-        }
 
-            $newArea->photos = $json_files;
-            $newArea->title = $request->input('title');
-            $newArea->allowed = $request->input('allowed');
-            $newArea->days = $request->input('days');
-            $newArea->start_time = $request->input('start_time');
-            $newArea->end_time = $request->input('end_time');
+        $newArea->title = $request->input('title');
+        $newArea->allowed = $request->input('allowed');
+        $newArea->days = $request->input('days');
+        $newArea->start_time = $request->input('start_time');
+        $newArea->end_time = $request->input('end_time');
 
 
         // Salvar o documento no banco de dados
@@ -128,13 +120,31 @@ class AreaController extends Controller
         }
 
         // Retornar uma resposta de sucesso
+        if ($request->file('file')) {
+            $files = $request->file('file');
+            foreach ($files as  $key) {
+                $arquivo = $key->store('public/areas/' . $newArea->id);
+                $url = asset(Storage::url($arquivo));
+                $midia = new Midia([
+                    'title' => $newArea->title,
+                    'url' => $url,
+                    'file' => $arquivo,
+                    'status' => 'ativo', // Status da mídia
+                    'type' => 'imagem', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                    'user_id' => $request->input('user_id')
+                ]);
+                // Associar a mídia a uma entidade (por exemplo, Document)
+                // Salvar o documento no banco de dados
+                $newArea->midias()->save($midia);
+            }
+        }
+        $newArea->midias = $newArea->midias;
         return response()->json([
             'error' => '',
             'success' => true,
-            'document' => $newArea,
+            'list' => $newArea,
         ], 201);
     }
-
 
     public function update($id, Request $request)
     {
@@ -157,66 +167,194 @@ class AreaController extends Controller
             $array['error'] = $validator->errors()->first();
             return $array;
         }
-
-        if ($request->hasFile('cover')) {
-            $validator = Validator::make($request->all(), [
-                'cover' => 'required|mimes:jpg,png,pdf,jpeg'
-            ]);
-
-            if ($validator->fails()) {
-                $array['error'] = $validator->errors()->first();
-                return $array;
-            }
-
-            $coverDelete = $area->cover;
-            $arquivo = $request->file('cover')->store('public/image/areas');
-            $url = asset(Storage::url($arquivo));
-            $area->cover = $url;
-            $area->title = $request->input('title');
-            $area->allowed = $request->input('allowed');
-            $area->days = $request->input('days');
-            $area->start_time = $request->input('start_time');
-            $area->end_time = $request->input('end_time');
-            // Converta a URL em um caminho relativo ao sistema de arquivos
-            $relativePath = str_replace(asset(''), '', $coverDelete);
-            $relativePath = str_replace('storage', '', $relativePath);
-            // Use o caminho relativo para excluir o arquivo
-            //var_dump($relativePath);die;
-            //   Storage::delete('public/image/areas/G4RCjcZN9gMoDxvZ7BsSPkV9Egl1smtyKrNO2tVe.png');
+        $area->title = $request->input('title');
+        $area->allowed = $request->input('allowed');
+        $area->days = $request->input('days');
+        $area->start_time = $request->input('start_time');
+        $area->end_time = $request->input('end_time');
 
 
-            Storage::delete('public' . $relativePath);
-        } else {
-            $area->title = $request->input('title');
-            $area->allowed = $request->input('allowed');
-            $area->days = $request->input('days');
-            $area->start_time = $request->input('start_time');
-            $area->end_time = $request->input('end_time');
+        // Salvar o documento no banco de dados
+        try {
+            $area->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao salvar Área comum!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
         }
 
-        $area->save();
-
-        return $array;
+        // Retornar uma resposta de sucesso
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $area,
+        ], 200);
     }
+
+    public function insertMidia($id, Request $request)
+    {
+        $area = Area::find($id);
+
+        $validator = Validator::make($request->all(), [
+            'file' =>  'max:10M',
+            'file.*' => 'mimes:jpg,png,jpeg',
+            'user_id' => 'required',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 400,
+            ], 400);
+        }
+        // Se o aviso não for encontrado, retornar uma mensagem de erro
+        if (!$area) {
+            return response()->json([
+                'error' => 'Área inexistente',
+                'code' => 404,
+            ], 404);
+        }
+        // Verificar se o arquivo existe
+        if (!$request->hasfile('file')) {
+            return response()->json([
+                'error' => 'Nenhum arquivo enviado',
+                'code' => 400,
+            ], 400);
+        }
+
+        // Verificar se o arquivo é válido
+        $files = $request->file('file');
+
+        foreach ($files as $file) {
+            if (!$file->isValid()) {
+                return response()->json([
+                    'error' => 'O arquivo enviado não é válido',
+                    'code' => 400,
+                ], 400);
+            }
+        }
+        foreach ($files as  $key) {
+            $arquivo = $key->store('public/areas/' . $id);
+            $url = asset(Storage::url($arquivo));
+            $midia = new Midia([
+                'title' => $area->title,
+                'url' => $url,
+                'file' => $arquivo,
+                'status' => 'ativo', // Status da mídia
+                'type' => 'imagem', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                'user_id' => $request->input('user_id')
+            ]);
+            // Associar a mídia a uma entidade (por exemplo, Document)
+            // Salvar o documento no banco de dados
+            try {
+                $area->midias()->save($midia);
+            } catch (Exception $e) {
+                // Tratar o erro
+                return response()->json([
+                    'error' => 'Erro ao salvar Imagem na galeria!',
+                    'detail' => $e->getMessage(),
+                    'code' => 500,
+                ], 500);
+            }
+
+            // Retornar uma resposta de sucesso
+            $area->midias = $area->midias;
+            return response()->json([
+                'error' => '',
+                'success' => true,
+                'list' => $area,
+            ], 200);
+        }
+    }
+
+    public function deleteMidia($id, Request $request)
+    {
+        // Buscar o aviso a ser deletado
+        $midia = Midia::find($id);
+
+
+
+        // Se o aviso não for encontrado, retornar uma mensagem de erro
+        if (!$midia) {
+            return response()->json([
+                'error' => 'Arquivo inexistente',
+                'code' => 404,
+            ], 404);
+        }
+
+        // Tentar deletar o aviso
+        try {
+            $midia->delete();
+            $midia = $midia->file;
+            Storage::delete($midia);
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao deletar Arquivo!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso
+        return response()->json([
+            'error' => '',
+            'success' => true,
+        ], 200);
+    }
+
+
+    /**
+     * Exclui um Area.
+     *
+     * @param int $id O ID do area a ser excluído.
+     *
+     * @return \Illuminate\Http\JsonResponse 
+     * */
 
     public function delete($id)
     {
-        $array = ['error' => ''];
-        $item = Area::find($id);
-        if ($item) {
-            $fileDelete = $item->cover;
-            // Converta a URL em um caminho relativo ao sistema de arquivos
-            $relativePath = str_replace(asset(''), '', $fileDelete);
-            $relativePath = str_replace('storage', '', $relativePath);
-            // Use o caminho relativo para excluir o arquivo
-            Storage::delete('public' . $relativePath);
-            Area::find($id)->delete();
-        } else {
-            $array['error'] = 'Error Ao Deletar';
-            // return $array;
+        // Buscar o aviso a ser deletado
+        $area = Area::find($id);
+
+        $midias =  $area->midias;
+        foreach ($midias  as $midia) {
+            $midia->delete();
+            $midia = $midia->file;
+            Storage::delete($midia);
         }
-        return $array;
+        // Se o aviso não for encontrado, retornar uma mensagem de erro
+        if (!$area) {
+            return response()->json([
+                'error' => 'Área inexistente',
+                'code' => 404,
+            ], 404);
+        }
+
+        // Tentar deletar o aviso
+        try {
+            $area->delete();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao deletar A´rea!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso
+        return response()->json([
+            'error' => '',
+            'success' => true,
+        ], 200);
     }
+
+
 
 
     public function getAllDates()

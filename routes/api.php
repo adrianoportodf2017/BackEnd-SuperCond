@@ -129,6 +129,8 @@ Route::middleware('auth:api')->group(function () {
       Route::post('/admin/lost-and-found', [LostAndFoundController::class, 'insert']); // Criar um novo achado e perdido
       Route::post('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'update']); // Atualizar um achado e perdido existente
       Route::delete('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'delete']); // Excluir um achado e perdido
+      Route::post('/admin/lost-and-found/midia/{id}', [LostAndFoundController::class, 'insertMidia']); // Inserir uma nova mídia
+      Route::delete('/admin/lost-and-found/midia/{id}', [LostAndFoundController::class, 'deleteMidia']); // Deletar uma  mídia
  
 
    /**AREAS**/
@@ -138,6 +140,8 @@ Route::middleware('auth:api')->group(function () {
    Route::post('/admin/area', [AreaController::class, 'insert']);
    Route::post('/admin/area/{id}', [AreaController::class, 'update']);
    Route::delete('/admin/area/{id}', [AreaController::class, 'delete']);
+   Route::post('/admin/area/midia/{id}', [AreaController::class, 'insertMidia']); // Inserir uma nova mídia
+   Route::delete('/admin/area/midia/{id}', [AreaController::class, 'deleteMidia']); // Deletar uma  mídia
  
 
     /**RESERVARTIONS**/
