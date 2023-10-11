@@ -289,6 +289,31 @@ class DatabaseSeeder extends Seeder
             DB::table('service_providers')->insert($serviceProviderData);
         }
 
+
+        foreach (range(1, 10) as $index) {
+            $benefits = [
+                'name' => $faker->company,
+                'email' => $faker->unique()->safeEmail,
+                'phone' => $faker->phoneNumber,
+                'service_type' => $faker->word,
+                'description' => $faker->paragraph,
+                'address' => $faker->address,
+                'city' => $faker->city,
+                'state' => $faker->stateAbbr,
+                'zip_code' => $faker->postcode,
+                'website' => $faker->url, // Adicionado campo para website
+                'social_media' => json_encode(['facebook' => $faker->url, 'instagram' => $faker->url]), // Adicionado campo para redes sociais
+                'work_hours' => $faker->sentence, // Adicionado campo para horário de trabalho
+                'availability' => $faker->sentence, // Adicionado campo para disponibilidade
+                'average_rating' => $faker->randomFloat(1, 1, 5), // Adicionado campo para média de avaliações
+                'total_ratings' => $faker->numberBetween(1, 100), // Adicionado campo para total de avaliações
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            DB::table('benefits')->insert($benefits);
+        }
+
         $docs = [];
         for ($i = 0; $i < 10; $i++) {
             $docs[] = [

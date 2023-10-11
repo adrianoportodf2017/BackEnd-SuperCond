@@ -3,25 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\ServiceProvider;
+use App\Models\Benefits;
 use App\Models\Midia;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Exception;
 
-
-
-class ServiceProvidersController extends Controller
+class BenefitsController extends Controller
 {
     public function getAll()
     {
-        $polls = ServiceProvider::all();
+        $polls = Benefits::all();
 
 
         // Retornar uma mensagem de erro se não houver ocorrencias
         if (!$polls) {
             return response()->json([
-                'error' => 'Nenhuma Prestador de Serviço Encontrado',
+                'error' => 'Nenhuma Benefício Encontrado',
                 'code' => 404,
             ], 404);
         }
@@ -37,13 +35,13 @@ class ServiceProvidersController extends Controller
 
     public function getById($id)
     {
-        // Implemente a lógica para obter uma Prestador de Serviços específica por ID
+        // Implemente a lógica para obter uma Beneficios específica por ID
 
-        $service = ServiceProvider::where('id', $id)->first();
+        $service = Benefits::where('id', $id)->first();
 
         if (!$service) {
             return response()->json([
-                'error' => "Prestador de Serviços não encontrada",
+                'error' => "Beneficios não encontrada",
                 'code' => 404,
             ], 404);
         }
@@ -56,7 +54,7 @@ class ServiceProvidersController extends Controller
 
 
     /**
-     * Insere um nova Prestador de Serviços.
+     * Insere um nova Beneficios.
      *
      * @param \Illuminate\Http\Request $request Os dados do documento a ser inserido.
      *
@@ -67,7 +65,7 @@ class ServiceProvidersController extends Controller
 
         // Validar os dados da requisição
 
-        $newProvider = new ServiceProvider();
+        $newProvider = new Benefits();
 
 
         $validator = Validator::make($request->all(), [
@@ -98,7 +96,7 @@ class ServiceProvidersController extends Controller
         }
         if ($request->hasfile('thumb')) {
             // Salvar o arquivo no armazenamento
-            $arquivo = $request->file('thumb')->store('public/service-providers/thumb');
+            $arquivo = $request->file('thumb')->store('public/benefits/thumb');
             $url = asset(Storage::url($arquivo));
         } else {
             $arquivo = '';
@@ -128,7 +126,7 @@ class ServiceProvidersController extends Controller
         } catch (Exception $e) {
             // Tratar o erro
             return response()->json([
-                'error' => 'Erro ao salvar Prestador de Serviços!',
+                'error' => 'Erro ao salvar Beneficios!',
                 'detail' => $e->getMessage(),
                 'code' => 500,
             ], 500);
@@ -145,20 +143,20 @@ class ServiceProvidersController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Implemente a lógica para atualizar uma Prestador de Serviços existente
+        // Implemente a lógica para atualizar uma Beneficios existente
 
         $array['id'] =  $id;
         // Buscar o documento pelo ID
-        $provider = ServiceProvider::find($id);
-        $arquivo = $provider->thumb_file;
-        $url =  $provider->thumb;
+        $benefit = Benefits::find($id);
+        $arquivo = $benefit->thumb_file;
+        $url =  $benefit->thumb;
 
 
 
         // Se o aviso não for encontrado, retornar uma mensagem de erro
-        if (!$provider) {
+        if (!$benefit) {
             return response()->json([
-                'error' => 'Prestador de Serviços inexistente',
+                'error' => 'Beneficios inexistente',
                 'code' => 404,
             ], 404);
         }
@@ -196,34 +194,34 @@ class ServiceProvidersController extends Controller
             }
 
             // Salvar o arquivo no armazenamento
-            $arquivo = $request->file('thumb')->store('public/service-providers/thumb');
+            $arquivo = $request->file('thumb')->store('public/benefits/thumb');
             $url = asset(Storage::url($arquivo));
-            $thumb_delete = $provider->thumb_file;
+            $thumb_delete = $benefit->thumb_file;
             Storage::delete($thumb_delete);
         }
 
 
-        $provider->name = $request->input('name');
-        $provider->email = $request->input('email');
-        $provider->phone = $request->input('phone');
-        $provider->service_type = $request->input('service_type');
-        $provider->description = $request->input('description');
-        $provider->address = $request->input('address');
-        $provider->city = $request->input('city');
-        $provider->state = $request->input('state');
-        $provider->zip_code = $request->input('zip_code');
-        $provider->website = $request->input('website');
-        $provider->social_media = json_decode($request->input('social_media'), true);
-        $provider->work_hours = $request->input('work_hours');
-        $provider->thumb = $url;
-        $provider->thumb_file = $arquivo;
+        $benefit->name = $request->input('name');
+        $benefit->email = $request->input('email');
+        $benefit->phone = $request->input('phone');
+        $benefit->service_type = $request->input('service_type');
+        $benefit->description = $request->input('description');
+        $benefit->address = $request->input('address');
+        $benefit->city = $request->input('city');
+        $benefit->state = $request->input('state');
+        $benefit->zip_code = $request->input('zip_code');
+        $benefit->website = $request->input('website');
+        $benefit->social_media = json_decode($request->input('social_media'), true);
+        $benefit->work_hours = $request->input('work_hours');
+        $benefit->thumb = $url;
+        $benefit->thumb_file = $arquivo;
         // Salvar o documento no banco de dados
         try {
-            $provider->save();
+            $benefit->save();
         } catch (Exception $e) {
             // Tratar o erro
             return response()->json([
-                'error' => 'Erro ao salvar Prestador de Serviços!',
+                'error' => 'Erro ao salvar Beneficios!',
                 'detail' => $e->getMessage(),
                 'code' => 500,
             ], 500);
@@ -234,33 +232,33 @@ class ServiceProvidersController extends Controller
         return response()->json([
             'error' => '',
             'success' => true,
-            'list' => $provider,
+            'list' => $benefit,
         ], 200);
     }
 
 
     public function delete($id)
     {
-        // Buscar a Prestador de Serviços a ser deletada
-        $provider = ServiceProvider::find($id);
+        // Buscar a Beneficios a ser deletada
+        $benefit = Benefits::find($id);
 
-        // Verificar se a Prestador de Serviços existe
-        if (!$provider) {
-            return response()->json(['error' => 'Prestador de Serviços Inexistente', 'code' => 404], 404);
+        // Verificar se a Beneficios existe
+        if (!$benefit) {
+            return response()->json(['error' => 'Beneficios Inexistente', 'code' => 404], 404);
         }
 
-        // Excluir todas as perguntas relacionadas à Prestador de Serviços e suas respostas
+        // Excluir todas as perguntas relacionadas à Beneficios e suas respostas
         try {
           
-            $provider->delete();
-            $fileDelete = $provider->thumb_file;
+            $benefit->delete();
+            $fileDelete = $benefit->thumb_file;
             Storage::delete($fileDelete);
 
             return response()->json(['error' => '', 'success' => true], 200);
         } catch (Exception $e) {
             // Tratar o erro
             return response()->json([
-                'error' => 'Erro ao Deletar Prestador de Serviços',
+                'error' => 'Erro ao Deletar Beneficios',
                 'detail' => $e->getMessage(),
                 'code' => 500,
             ], 500);

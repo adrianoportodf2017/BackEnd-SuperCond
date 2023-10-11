@@ -344,9 +344,37 @@ class Createalltables extends Migration
             $table->string('availability')->nullable(); // Adicionado campo para disponibilidade
             $table->float('average_rating')->nullable(); // Adicionado campo para média de avaliações
             $table->integer('total_ratings')->nullable(); // Adicionado campo para total de avaliações
+            $table->string('thumb')->nullable();
+            $table->string('thumb_file')->nullable();
+
+
             $table->timestamps();
         });
-    }
+    
+
+
+    Schema::create('benefits', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->nullable();
+        $table->string('email')->nullable();
+        $table->string('phone')->nullable();
+        $table->string('service_type')->nullable();
+        $table->text('description')->nullable();
+        $table->string('address')->nullable();
+        $table->string('city')->nullable();
+        $table->string('state')->nullable();
+        $table->string('zip_code')->nullable();
+        $table->string('website')->nullable(); // Adicionado campo para website
+        $table->string('social_media')->nullable(); // Adicionado campo para redes sociais
+        $table->string('work_hours')->nullable(); // Adicionado campo para horário de trabalho
+        $table->string('availability')->nullable(); // Adicionado campo para disponibilidade
+        $table->float('average_rating')->nullable(); // Adicionado campo para média de avaliações
+        $table->integer('total_ratings')->nullable(); // Adicionado campo para total de avaliações
+        $table->string('thumb')->nullable();
+        $table->string('thumb_file')->nullable();
+        $table->timestamps();
+    });
+}
 
 
     
@@ -381,6 +409,8 @@ class Createalltables extends Migration
         Schema::dropIfExists('midias');
         Schema::dropIfExists('polls');
         Schema::dropIfExists('service_providers');
+        Schema::dropIfExists('benefits');
+
 
 
 

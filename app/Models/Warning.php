@@ -9,4 +9,9 @@ class Warning extends Model
 {
     use HasFactory;
     public $table = 'warnings';
+    
+    public function midias()
+    {
+        return $this->morphMany(Midia::class, 'mediable');
+    }
 }

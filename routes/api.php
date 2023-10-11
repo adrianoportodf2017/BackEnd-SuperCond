@@ -30,9 +30,12 @@ use App\Http\Controllers\{
     ClassifiedsController,
     GalleryController,
     NewsController,
-    PollsController
+    PollsController,
+    ServiceProvidersController,
+    BenefitsController
 
 };
+use App\Models\Benefits;
 
 Route::get('/ping', function () {
     return ['pong' => true];
@@ -49,15 +52,15 @@ Route::post('/admin/auth/reset-password', [AuthController::class, 'reset'])->nam
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
 
-     /**USERS**/
-     Route::get('/admin/users', [UserController::class, 'getAll']);
-     Route::get('/admin/users/{id}', [UserController::class, 'getById']);
-     Route::get('/admin/users/cpf', [UserController::class, 'getByCpf']);
-     Route::put('/admin/user/{id}', [UserController::class, 'update']);
-     Route::post('/admin/user', [UserController::class, 'insert']);
-     Route::delete('/admin/user/{id}', [UserController::class, 'delete']);
-     /**<--USERS-->*/
- 
+    /**USERS**/
+    Route::get('/admin/users', [UserController::class, 'getAll']);
+    Route::get('/admin/users/{id}', [UserController::class, 'getById']);
+    Route::get('/admin/users/cpf', [UserController::class, 'getByCpf']);
+    Route::put('/admin/user/{id}', [UserController::class, 'update']);
+    Route::post('/admin/user', [UserController::class, 'insert']);
+    Route::delete('/admin/user/{id}', [UserController::class, 'delete']);
+    /**<--USERS-->*/
+
 
 
     Route::post('/auth/validate', [AuthController::class, 'validateToken']);
@@ -108,41 +111,41 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/admin/doc/{id}', [DocController::class, 'delete']);
     /**<--DOCS-->*/
 
-     /**BOLETOS**/
-     Route::get('/admin/billets', [BilletController::class, 'getAll']);
-     Route::get('/admin/billet/{id}', [BilletController::class, 'getById']);
-     Route::post('/admin/billet/{id}', [BilletController::class, 'update']);
-     Route::post('/admin/billet', [BilletController::class, 'insert']);
-     Route::delete('/admin/billet/{id}', [BilletController::class, 'delete']);
+    /**BOLETOS**/
+    Route::get('/admin/billets', [BilletController::class, 'getAll']);
+    Route::get('/admin/billet/{id}', [BilletController::class, 'getById']);
+    Route::post('/admin/billet/{id}', [BilletController::class, 'update']);
+    Route::post('/admin/billet', [BilletController::class, 'insert']);
+    Route::delete('/admin/billet/{id}', [BilletController::class, 'delete']);
 
-      /**Ocorrencias**/
-      Route::get('/admin/warnings', [WarningController::class, 'getAll']);
-      Route::get('/admin/warning/{id}', [WarningController::class, 'getById']);
-      Route::post('/admin/warning/{id}', [WarningController::class, 'update']);
-      Route::post('/admin/warning', [WarningController::class, 'insert']);
-      Route::delete('/admin/warning/{id}', [WarningController::class, 'delete']);
+    /**Ocorrencias**/
+    Route::get('/admin/warnings', [WarningController::class, 'getAll']);
+    Route::get('/admin/warning/{id}', [WarningController::class, 'getById']);
+    Route::post('/admin/warning/{id}', [WarningController::class, 'update']);
+    Route::post('/admin/warning', [WarningController::class, 'insert']);
+    Route::delete('/admin/warning/{id}', [WarningController::class, 'delete']);
 
-    
-          /**Achados e Perdidos    * **/
-      Route::get('/admin/lost-and-found', [LostAndFoundController::class, 'getAll']); // Listar todos os achados e perdidos
-      Route::get('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'getById']); // Obter um achado e perdido específico
-      Route::post('/admin/lost-and-found', [LostAndFoundController::class, 'insert']); // Criar um novo achado e perdido
-      Route::post('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'update']); // Atualizar um achado e perdido existente
-      Route::delete('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'delete']); // Excluir um achado e perdido
-      Route::post('/admin/lost-and-found/midia/{id}', [LostAndFoundController::class, 'insertMidia']); // Inserir uma nova mídia
-      Route::delete('/admin/lost-and-found/midia/{id}', [LostAndFoundController::class, 'deleteMidia']); // Deletar uma  mídia
- 
 
-   /**AREAS**/
+    /**Achados e Perdidos    * **/
+    Route::get('/admin/lost-and-found', [LostAndFoundController::class, 'getAll']); // Listar todos os achados e perdidos
+    Route::get('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'getById']); // Obter um achado e perdido específico
+    Route::post('/admin/lost-and-found', [LostAndFoundController::class, 'insert']); // Criar um novo achado e perdido
+    Route::post('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'update']); // Atualizar um achado e perdido existente
+    Route::delete('/admin/lost-and-found/{id}', [LostAndFoundController::class, 'delete']); // Excluir um achado e perdido
+    Route::post('/admin/lost-and-found/midia/{id}', [LostAndFoundController::class, 'insertMidia']); // Inserir uma nova mídia
+    Route::delete('/admin/lost-and-found/midia/{id}', [LostAndFoundController::class, 'deleteMidia']); // Deletar uma  mídia
 
-   Route::get('/admin/areas', [AreaController::class, 'getAll']);
-   Route::get('/admin/area/{id}', [AreaController::class, 'getById']); // Obter um achado e perdido específico
-   Route::post('/admin/area', [AreaController::class, 'insert']);
-   Route::post('/admin/area/{id}', [AreaController::class, 'update']);
-   Route::delete('/admin/area/{id}', [AreaController::class, 'delete']);
-   Route::post('/admin/area/midia/{id}', [AreaController::class, 'insertMidia']); // Inserir uma nova mídia
-   Route::delete('/admin/area/midia/{id}', [AreaController::class, 'deleteMidia']); // Deletar uma  mídia
- 
+
+    /**AREAS**/
+
+    Route::get('/admin/areas', [AreaController::class, 'getAll']);
+    Route::get('/admin/area/{id}', [AreaController::class, 'getById']); // Obter um achado e perdido específico
+    Route::post('/admin/area', [AreaController::class, 'insert']);
+    Route::post('/admin/area/{id}', [AreaController::class, 'update']);
+    Route::delete('/admin/area/{id}', [AreaController::class, 'delete']);
+    Route::post('/admin/area/midia/{id}', [AreaController::class, 'insertMidia']); // Inserir uma nova mídia
+    Route::delete('/admin/area/midia/{id}', [AreaController::class, 'deleteMidia']); // Deletar uma  mídia
+
 
     /**RESERVARTIONS**/
     Route::get('/admin/reservations', [ReservationController::class, 'getAll']);
@@ -150,7 +153,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/reservation', [ReservationController::class, 'insert']);
     Route::delete('/admin/reservation/{id}', [ReservationController::class, 'delete']);
 
-    
+
     /**<--RESERVERTIONS-->*/
 
 
@@ -165,7 +168,7 @@ Route::middleware('auth:api')->group(function () {
 
     /**<--UNITS-->*/
 
-        /**<--CLASSIFICADOS-->*/
+    /**<--CLASSIFICADOS-->*/
 
     Route::get('/admin/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
     Route::get('/admin/classifieds/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
@@ -178,7 +181,7 @@ Route::middleware('auth:api')->group(function () {
 
 
 
- 
+
 
     //*********************************************************************************************** */
 
@@ -189,7 +192,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/new/{id}', [NewsController::class, 'update']); // Atualizar uma notícia existente
     Route::delete('/admin/new/{id}', [NewsController::class, 'delete']); // Excluir uma notícia
 
-        /**<--Galeria-->*/
+    /**<--Galeria-->*/
 
     Route::get('/admin/gallerys', [GalleryController::class, 'getAll']); // Listar todas as fotos
     Route::get('/admin/gallery/{id}', [GalleryController::class, 'getById']); // Obter uma foto específica
@@ -199,7 +202,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/gallery/midia/{id}', [GalleryController::class, 'insertMidia']); // Inserir uma nova mídia
     Route::delete('/admin/gallery/midia/{id}', [GalleryController::class, 'deleteMidia']); // Deletar uma  mídia
 
-        /**<--Enquetes-->*/
+    /**<--Enquetes-->*/
 
     Route::get('/admin/polls', [PollsController::class, 'getAll']); // Listar todas as enquetes
     Route::get('/admin/poll/{id}', [PollsController::class, 'getById']); // Obter uma enquete específica
@@ -207,7 +210,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/poll/{id}', [PollsController::class, 'update']); // Atualizar uma enquete existente
     Route::delete('/admin/poll/{id}', [PollsController::class, 'delete']); // Excluir uma enquete
 
-        /**<--Enquetes Perguntas-->*/
+    /**<--Enquetes Perguntas-->*/
 
     Route::get('/admin/polls/questions/{id}', [PollsController::class, 'getQuestionsAll']); // Listar todas as opções de uma enquete
     Route::get('/admin/poll/question/{id}', [PollsController::class, 'getQuestionById']); // Obter uma opções específica
@@ -216,32 +219,38 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/admin/poll/question/{id}', [PollsController::class, 'deleteQuestion']); // Excluir uma opções
 
 
-        /**<--Enquetes Respostas-->*/
+    /**<--Enquetes Respostas-->*/
 
-        Route::get('/admin/poll/{id}/answers', [PollsController::class, 'getAnswersByPoll']); // Listar todas as respostas de uma enquete
-        Route::post('/admin/poll/{id}/answer', [PollsController::class, 'insertAnswer']); // Criar uma nova respostas realacionada a uma enquete
-
-
-    Route::get('/admin/partners', [PartnersController::class, 'index']); // Listar todos os convênios/parceiros
-    Route::get('/admin/partners/{id}', [PartnersController::class, 'show']); // Obter um convênio/parceiro específico
-    Route::post('/admin/partners', [PartnersController::class, 'store']); // Criar um novo convênio/parceiro
-    Route::put('/admin/partners/{id}', [PartnersController::class, 'update']); // Atualizar um convênio/parceiro existente
-    Route::delete('/admin/partners/{id}', [PartnersController::class, 'destroy']); // Excluir um convênio/parceiro
+    Route::get('/admin/poll/{id}/answers', [PollsController::class, 'getAnswersByPoll']); // Listar todas as respostas de uma enquete
+    Route::post('/admin/poll/{id}/answer', [PollsController::class, 'insertAnswer']); // Criar uma nova respostas realacionada a uma enquete
 
 
 
 
-    Route::get('/admin/service-providers', [ServiceProvidersController::class, 'index']); // Listar todos os prestadores de serviços
-    Route::get('/admin/service-providers/{id}', [ServiceProvidersController::class, 'show']); // Obter um prestador de serviços específico
-    Route::post('/admin/service-providers', [ServiceProvidersController::class, 'store']); // Criar um novo prestador de serviços
-    Route::put('/admin/service-providers/{id}', [ServiceProvidersController::class, 'update']); // Atualizar um prestador de serviços existente
-    Route::delete('/admin/service-providers/{id}', [ServiceProvidersController::class, 'destroy']); // Excluir um prestador de serviços
+    Route::get('/admin/service-providers', [ServiceProvidersController::class, 'getAll']); // Listar todos os prestadores de serviços
+    Route::get('/admin/service-providers/{id}', [ServiceProvidersController::class, 'getById']); // Obter um prestador de serviços específico
+    Route::post('/admin/service-providers', [ServiceProvidersController::class, 'insert']); // Criar um novo prestador de serviços
+    Route::post('/admin/service-providers/{id}', [ServiceProvidersController::class, 'update']); // Atualizar um prestador de serviços existente
+    Route::delete('/admin/service-providers/{id}', [ServiceProvidersController::class, 'delete']); // Excluir um prestador de serviços
+
+
+    Route::get('/admin/benefits', [BenefitsController::class, 'getAll']); // Listar todos os Beneficios
+    Route::get('/admin/benefit/{id}', [BenefitsController::class, 'getById']); // Obter um Beneficios específico
+    Route::post('/admin/benefit', [BenefitsController::class, 'insert']); // Criar um novo Beneficios
+    Route::post('/admin/benefit/{id}', [BenefitsController::class, 'update']); // Atualizar um Beneficio existente
+    Route::delete('/admin/benefit/{id}', [BenefitsController::class, 'delete']); // Excluir um Beneficio
 
 
 
 
 
-   
+
+
+
+
+
+
+
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
@@ -279,7 +288,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/foundandlost/{id}', [FoundAndLostController::class, 'update']);
 
     //Unidade
-    Route::get('/unit/{id}', [UnitController::class, 'getInfo']);  
+    Route::get('/unit/{id}', [UnitController::class, 'getInfo']);
     Route::post('/unit/{id}/addperson', [UnitController::class, 'addPerson']);
     Route::post('/unit/{id}/addvehicle', [UnitController::class, 'addVehicle']);
     Route::post('/unit/{id}/addpet', [UnitController::class, 'addPet']);
