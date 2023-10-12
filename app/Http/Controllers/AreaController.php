@@ -410,7 +410,7 @@ class AreaController extends Controller
             }
 
             $array['list'][] = [
-                'id_area' => $area['id'],
+                'area_id' => $area['id'],
                 'title' => $area['title'],
                 'cover' => asset('storage/' . $area['cover']),
                 'dates' => $dates

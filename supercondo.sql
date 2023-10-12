@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `areadisableddays`;
 CREATE TABLE IF NOT EXISTS `areadisableddays` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_area` int(11) NOT NULL,
+  `area_id` int(11) NOT NULL,
   `day` date NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -209,7 +209,7 @@ DROP TABLE IF EXISTS `reservetions`;
 CREATE TABLE IF NOT EXISTS `reservetions` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `unit_id` int(11) NOT NULL,
-  `id_area` int(11) NOT NULL,
+  `area_id` int(11) NOT NULL,
   `reservation_date` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

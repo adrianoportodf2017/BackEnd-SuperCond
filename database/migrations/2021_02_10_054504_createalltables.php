@@ -183,7 +183,7 @@ class Createalltables extends Migration
 
         Schema::create('area_disabled_days', function(Blueprint $table) {
             $table->id();
-            $table->integer('id_area');
+            $table->integer('area_id');
             $table->date('day');
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
@@ -194,8 +194,10 @@ class Createalltables extends Migration
         Schema::create('reservations', function(Blueprint $table) {
             $table->id();
             $table->integer('unit_id');
-            $table->integer('id_area');
+            $table->integer('area_id');
             $table->datetime('reservation_date');
+            $table->string('start_time')->nullable();
+            $table->string('end_time')->nullable();
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
