@@ -151,6 +151,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/admin/reservations', [ReservationController::class, 'getAll']);
     Route::get('/admin/reservation/{id}', [ReservationController::class, 'getById']); // Obter uma reserva específica
     Route::post('/admin/reservation', [ReservationController::class, 'insert']);
+    Route::post('/admin/reservation/{id}', [ReservationController::class, 'update']);
+
     Route::delete('/admin/reservation/{id}', [ReservationController::class, 'delete']);
 
 

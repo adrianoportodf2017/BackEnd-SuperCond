@@ -54,7 +54,6 @@ class AssembleiaController extends Controller
                 $newAssembleia->year = $year;
                 $newAssembleia->thumb = $url;
                 $newAssembleia->created_at = date('Y-m-d H:m:s');
-                $newAssembleia->save();
             } else {
 
                 $array['error'] = $validator->errors()->first();
@@ -73,10 +72,27 @@ class AssembleiaController extends Controller
             $newAssembleia->order = $order;
             $newAssembleia->year = $year;
             $newAssembleia->created_at = date('Y-m-d H:m:s');
-            $newAssembleia->save();
         }
-        return $array;
+        // Salvar o documento no banco de dados
+        try {
+            $newAssembleia->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao salvar Notícia!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso com os dados da notícia
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $newAssembleia,
+        ], 201);
     }
+    
     public function update($id, Request $request)
     {
         $array = ['error' => ''];
@@ -121,7 +137,6 @@ class AssembleiaController extends Controller
             $assembleia->order = $order;
             $assembleia->year = $year;
             $assembleia->thumb = $url;
-            $assembleia->save();
             // Converta a URL em um caminho relativo ao sistema de arquivos
             $relativePath = str_replace(asset(''), '', $thumbDelete);
             $relativePath = str_replace('storage', '', $relativePath);
@@ -142,11 +157,28 @@ class AssembleiaController extends Controller
             $assembleia->order = $order;
             $assembleia->year = $year;
 
-            $assembleia->save();
         }
 
-        return $array;
-    }
+            // Salvar o documento no banco de dados
+            try {
+                $assembleia->save();
+            } catch (Exception $e) {
+                // Tratar o erro
+                return response()->json([
+                    'error' => 'Erro ao salvar Notícia!',
+                    'detail' => $e->getMessage(),
+                    'code' => 500,
+                ], 500);
+            }
+    
+            // Retornar uma resposta de sucesso com os dados da notícia
+            return response()->json([
+                'error' => '',
+                'success' => true,
+                'list' => $assembleia,
+            ], 201);
+        }
+    
 
     public function delete($id)
     {
@@ -180,8 +212,25 @@ class AssembleiaController extends Controller
         } else {
             $item = Assembleia::find($id);
             $item->status = $request->input('status');
-            $item->save();
-            return $request->input();
+             // Salvar o documento no banco de dados
+             try {
+                $item->save();
+            } catch (Exception $e) {
+                // Tratar o erro
+                return response()->json([
+                    'error' => 'Erro ao salvar Notícia!',
+                    'detail' => $e->getMessage(),
+                    'code' => 500,
+                ], 500);
+            }
+    
+            // Retornar uma resposta de sucesso com os dados da notícia
+            return response()->json([
+                'error' => '',
+                'success' => true,
+                'list' => $item,
+            ], 201);
         }
+
     }
 }
