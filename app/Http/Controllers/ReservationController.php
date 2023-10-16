@@ -86,13 +86,21 @@ class ReservationController extends Controller
         $array = ['error' => ''];
         // echo 'teste';
         // var_dump($request->input());
-        $validator = Validator::make($request->all(), [
-            'reservation_date' => 'required|date',
-            'start_time' => 'required',
-            'end_time' => 'required',
-            'unit_id' => 'required',
-            'area_id' => 'required',
-        ]);
+   $validator = Validator::make($request->all(), [
+    'reservation_date' => ['required', 'date', function ($attribute, $value, $fail) {
+        $today = now()->subDays(1)->startOfDay();
+        $selectedDate = \Carbon\Carbon::parse($value)->startOfDay();
+
+        if ($selectedDate < $today) {
+            $fail("A data de reserva deve ser a data atual ou uma data futura.");
+        }
+    }],
+    'start_time' => 'required',
+    'end_time' => 'required',
+    'unit_id' => 'required',
+    'area_id' => 'required',
+]);
+
 
         if ($validator->fails()) {
             $array['error'] = $validator->errors()->first();

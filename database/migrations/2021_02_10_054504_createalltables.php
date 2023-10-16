@@ -207,7 +207,7 @@ class Createalltables extends Migration
         Schema::create('assembleias', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
-            $table->text('content')->nullable();
+            $table->longText('content')->nullable(); // Usando longText
             $table->enum('status', ['1', '0'])->default('1');
             $table->integer('order')->nullable();
             $table->string('year')->nullable();

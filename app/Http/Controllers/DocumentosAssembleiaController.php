@@ -7,6 +7,8 @@ use App\Models\DocumentosAssembleia;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
+use Exception;
+
 
 class DocumentosAssembleiaController extends Controller
 {
@@ -14,6 +16,14 @@ class DocumentosAssembleiaController extends Controller
     {
         $array = ['error' => ''];
         $docs = DocumentosAssembleia::all();
+             // Verifica se existem reservas
+             if (!$docs) {
+                return response()->json([
+                    'error' => 'Nenhuma reserva encontrada',
+                    'list' => [],
+                    'code' => 404,
+                ], 404);
+            }    
         $array['list'] = $docs;
         return $array;
     }
@@ -33,20 +43,21 @@ class DocumentosAssembleiaController extends Controller
         $array = ['error' => ''];
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
+            'file' => 'mimes:jpg,png,jpeg,pdf',
+            'thumb' => 'mimes:jpg,png,jpeg'
+
             //'year' => 'required',
         ]);
 
         if ($validator->fails()) {
-            $array['error'] = $validator->errors()->first();
-            return $array;
+            return response()->json([
+                'error' =>  $validator->errors()->first(),
+                'code' => 404,
+            ], 404)    ;       
         } else {
 
 
             if ($request->hasfile('file')) {
-
-                $validator = Validator::make($request->all(), [
-                    'file' => 'required|mimes:jpg,png,jpeg,pdf'
-                ]);
                 if ($request->file('file')->isValid()) {
                     $arquivo_documents = $request->file('file')->store('public/upload/documentos_assembleias/documentos');
                     $url_documents = asset(Storage::url($arquivo_documents));
@@ -55,10 +66,6 @@ class DocumentosAssembleiaController extends Controller
                 $url_documents = null;
             }
             if ($request->hasfile('thumb')) {
-
-                $validator = Validator::make($request->all(), [
-                    'thumb' => 'required|mimes:jpg,png,jpeg'
-                ]);
 
                 if ($request->file('thumb')->isValid()) {
                     $arquivo = $request->file('thumb')->store('public/upload/documentos_assembleias/thumbs');
@@ -81,8 +88,16 @@ class DocumentosAssembleiaController extends Controller
             $newAssembleia->created_at = date('Y-m-d H:m:s');
             $newAssembleia->save();
         }
-        return $array;
+
+        // Retornar uma resposta de sucesso com os dados da unidade
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'documento' => $newAssembleia,
+        ], 200);
     }
+
+
     public function update($id, Request $request)
     {
         $array = ['error' => ''];
@@ -90,27 +105,28 @@ class DocumentosAssembleiaController extends Controller
         $array['id'] =  $id;
         $doc = DocumentosAssembleia::find($id);
         if (!$doc) {
-            $array['error'] = 'Registro não encontrado';
-            return $array;
-            exit();
+            return response()->json([
+                'error' => 'Nenhum documento  encontrada',
+                'code' => 404,
+            ], 404);
         }
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
+            'file' => 'mimes:jpg,png,jpeg,pdf',
+            'thumb' => 'mimes:jpg,png,jpeg'
             //'year' => 'required',
         ]);
         if ($validator->fails()) {
-            $array['error'] = $validator->errors()->first();
-            return $array;
+            return response()->json([
+                'error' =>  $validator->errors()->first(),
+                'code' => 404,
+            ], 404);
         } else {
             if ($request->hasfile('file')) {
 
-                $validator = Validator::make($request->all(), [
-                    'file' => 'required|mimes:jpg,png,jpeg,pdf'
-                ]);
                 if ($request->file('file')->isValid()) {
                     $fileDelete = $doc->file_url;
-
-                    $arquivo_documents = $request->file('file')->store('public/upload/documentos_assembleias/documents');
+                    $arquivo_documents = $request->file('file')->store('public/upload/documentos_assembleias/documentos');
                     $url_documents = asset(Storage::url($arquivo_documents));
                     // Converta a URL em um caminho relativo ao sistema de arquivos
                     $relativePath = str_replace(asset(''), '', $fileDelete);
@@ -118,17 +134,15 @@ class DocumentosAssembleiaController extends Controller
                     // Use o caminho relativo para excluir o arquivo        
                     Storage::delete('public' . $relativePath);
                 } else {
-                    $array['error'] = $validator->errors()->first();
-                    return $array;
+                    return response()->json([
+                        'error' =>  $validator->errors()->first(),
+                        'code' => 404,
+                    ], 404);
                 }
             } else {
-                $url_documents = null;
+                $url_documents =  $doc->file_url;
             }
             if ($request->hasfile('thumb')) {
-
-                $validator = Validator::make($request->all(), [
-                    'thumb' => 'required|mimes:jpg,png,jpeg'
-                ]);
 
                 if ($request->file('thumb')->isValid()) {
                     $fileDeletethumb = $doc->thumb;
@@ -140,11 +154,13 @@ class DocumentosAssembleiaController extends Controller
                     // Use o caminho relativo para excluir o arquivo        
                     Storage::delete('public' . $relativePathThumb);
                 } else {
-                    $array['error'] = $validator->errors()->first();
-                    return $array;
+                    return response()->json([
+                        'error' =>  $validator->errors()->first(),
+                        'code' => 404,
+                    ], 404);
                 }
             } else {
-                $url = null;
+                $url =  $doc->thumb;
             }
 
             $title = $request->input('title');
@@ -155,14 +171,29 @@ class DocumentosAssembleiaController extends Controller
             $doc->status = $status;
             $doc->file_url = $url_documents;
             $doc->thumb = $url;
-            $doc->save();
+            // Salvar o documento no banco de dados
+            try {
+                $doc->save();
+            } catch (Exception $e) {
+                // Tratar o erro
+                return response()->json([
+                    'error' => 'Erro ao salvar Documento!',
+                    'detail' => $e->getMessage(),
+                    'code' => 500,
+                ], 500);
+            }
         }
-        return $array;
+        // Retornar uma resposta de sucesso com os dados da unidade
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'documento' => $doc,
+        ], 200);
     }
+
 
     public function delete($id)
     {
-        $array = ['error' => ''];
         $item = DocumentosAssembleia::find($id);
         if ($item) {
             // Converta a URL em um caminho relativo ao sistema de arquivos
@@ -178,12 +209,30 @@ class DocumentosAssembleiaController extends Controller
             //var_dump($relativePath);die;
             //   Storage::delete('public/image/areas/G4RCjcZN9gMoDxvZ7BsSPkV9Egl1smtyKrNO2tVe.png');
             Storage::delete('public' . $relativePath);
-            DocumentosAssembleia::find($id)->delete();
+
+                  // Salvar o documento no banco de dados
+                  try {
+                    $item->delete();
+                } catch (Exception $e) {
+                    // Tratar o erro
+                    return response()->json([
+                        'error' => 'Erro ao Deletar Documento!',
+                        'detail' => $e->getMessage(),
+                        'code' => 500,
+                    ], 500);
+                }
         } else {
-            $array['error'] = 'Documento inexistente';
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Documento inexistente!',
+                'code' => 500,
+            ], 500);
             // return $array;
         }
-        return $array;
+        return response()->json([
+            'error' => '',
+            'success' => 'Documento deletado com sucesso',            
+        ], 201);
     }
 
     public function updateStatus($id, Request $request)
