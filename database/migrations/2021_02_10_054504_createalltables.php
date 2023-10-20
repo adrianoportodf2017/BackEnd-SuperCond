@@ -93,6 +93,9 @@ class Createalltables extends Migration
             $table->id();
             $table->string('title');
             $table->string('content');
+            $table->string('thumb')->nullable();
+            $table->string('thumb_file')->nullable();  
+            $table->string('status')->nullable();  
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
 
@@ -120,6 +123,17 @@ class Createalltables extends Migration
             $table->string('filename')->nullable();
             $table->timestamps();
 
+        });
+
+        Schema::create('folders', function (Blueprint $table) {
+            $table->id();
+            $table->string('title')->nullable();
+            $table->string('status')->nullable();
+            $table->text('content')->nullable();
+            $table->string('thumb')->nullable();
+            $table->string('thumb_file')->nullable();
+            $table->string('parent_id')->nullable(); // Chave estrangeira para a pasta pai.
+            $table->timestamps();
         });
 
         Schema::create('billets', function(Blueprint $table) {
@@ -397,6 +411,7 @@ class Createalltables extends Migration
         Schema::dropIfExists('walls');
         Schema::dropIfExists('wall_likes');
         Schema::dropIfExists('docs');
+        Schema::dropIfExists('folders');
         Schema::dropIfExists('billets');
         Schema::dropIfExists('warnings');
         Schema::dropIfExists('lost_end_found');

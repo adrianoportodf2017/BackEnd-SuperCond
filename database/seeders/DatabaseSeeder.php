@@ -328,6 +328,17 @@ class DatabaseSeeder extends Seeder
         DB::table('docs')->insert($docs);
 
 
+
+        $faker = Faker::create();
+
+        // Seed 5 pastas raiz
+        for ($i = 0; $i < 5; $i++) {
+            $this->createFolder(null, $faker);
+        }
+
+      
+
+
         $units = [];
         for ($i = 0; $i < 10; $i++) {
             $units[] = [
@@ -392,6 +403,24 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+        }
+    }
+    private function createFolder($parent_id, $faker)
+    {
+        $folder = new \App\Models\Folder([
+            'title' => $faker->word,
+            'content' => $faker->paragraph,
+        ]);
+
+        $folder->parent_id = $parent_id;
+        $folder->save();
+
+        // Seed subpastas
+        if (rand(0, 1) == 1) {
+            $numSubfolders = rand(1, 5);
+            for ($i = 0; $i < $numSubfolders; $i++) {
+                $this->createFolder($folder->id, $faker);
+            }
         }
     }
 }

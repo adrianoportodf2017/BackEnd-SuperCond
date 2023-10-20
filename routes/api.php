@@ -32,7 +32,8 @@ use App\Http\Controllers\{
     NewsController,
     PollsController,
     ServiceProvidersController,
-    BenefitsController
+    BenefitsController,
+    FolderController
 
 };
 use App\Models\Benefits;
@@ -97,8 +98,10 @@ Route::middleware('auth:api')->group(function () {
     /**WALLS**/
     Route::get('/admin/walls', [WallController::class, 'getAll']);
     Route::get('/admin/wall/{id}', [WallController::class, 'getById']);
-    Route::put('/admin/wall/{id}', [WallController::class, 'update']);
+    Route::post('/admin/wall/{id}', [WallController::class, 'update']);
     Route::post('/admin/wall', [WallController::class, 'insert']);
+    Route::post('/admin/wall/{id}/status', [WallController::class, 'updateStatus']);
+
     Route::delete('/admin/wall/{id}', [WallController::class, 'delete']);
     /**<--WALLS-->*/
 
@@ -109,6 +112,15 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/doc/{id}', [DocController::class, 'update']);
     Route::post('/admin/doc', [DocController::class, 'insert']);
     Route::delete('/admin/doc/{id}', [DocController::class, 'delete']);
+    /**<--DOCS-->*/
+
+    
+    /**DOCS**/
+    Route::get('/admin/foldes', [FolderController::class, 'getAll']);
+    Route::get('/admin/folder/{id}', [FolderController::class, 'getById']);
+    Route::post('/admin/folder/{id}', [FolderController::class, 'update']);
+    Route::post('/admin/folder', [FolderController::class, 'insert']);
+    Route::delete('/admin/folder/{id}', [FolderController::class, 'delete']);
     /**<--DOCS-->*/
 
     /**BOLETOS**/

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Wall;
 use App\Models\WallLike;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use Exception;
 
 /**
@@ -166,26 +167,46 @@ class WallController extends Controller
 
     public function insert(Request $request)
     {
+        
+        $newWall = new Wall();
+
         // Validar os dados da solicitação
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
-            'content' => 'required'
+            'content' => 'required',
+            'thumb' => 'mimes:jpg,png,jpeg',
+
         ]);
 
-        // Se a validação falhar, retornar uma mensagem de erro
+        // Retornar uma mensagem de erro se a validação falhar
         if ($validator->fails()) {
             return response()->json([
                 'error' => $validator->errors()->first(),
                 'code' => 422,
             ], 422);
         }
+        // Criar um novo documento
+        // Verificar se o arquivo é válido
+        if ($request->file('thumb') && !$request->file('thumb')->isValid()) {
+            return response()->json([
+                'error' => 'O arquivo enviado não é válido',
+                'code' => 400,
+            ], 400);
+        }
+        if ($request->hasfile('thumb')) {
+            // Salvar o arquivo no armazenamento
+            $arquivo = $request->file('thumb')->store('public/wall/thumb');
+            $url = asset(Storage::url($arquivo));
+        } else {
+            $arquivo = '';
+            $url = '';
+        }
 
-        // Criar um novo objeto Wall
-        $newWall = new Wall();
-
-        // Definir as propriedades do objeto Wall com os dados da solicitação
         $newWall->title = $request->input('title');
         $newWall->content = $request->input('content');
+        $newWall->thumb = $url;
+        $newWall->thumb_file = $arquivo;
+        $newWall->status = $request->input('status');
 
         // Salvar o objeto Wall no banco de dados
         try {
@@ -219,47 +240,113 @@ class WallController extends Controller
 
      public function update($id, Request $request)
      {
-         // Buscar o aviso a ser atualizado
-         $wall = Wall::find($id);
- 
-         // Se o aviso não for encontrado, retornar uma mensagem de erro
-         if (!$wall) {
-             return response()->json([
-                 'error' => 'Aviso não encontrado'
-             ], 404);
-         }
- 
-         // Validar os dados da solicitação
-         $validator = Validator::make($request->all(), [
-             'title' => 'required',
-             'content' => 'required'
-         ]);
- 
-         // Se a validação falhar, retornar uma mensagem de erro
-         if ($validator->fails()) {
-             return response()->json([
-                 'error' => $validator->errors()->first()
-             ], 422);
-         }
- 
-         // Atualizar as propriedades do aviso com os dados da solicitação
-         try {
-             $wall->title = $request->input('title');
-             $wall->content = $request->input('content');
-             $wall->save();
-         } catch (Exception $e) {
-             // Tratar o erro
-             return response()->json([
-                 'error' => 'Erro ao salvar aviso!',
-                 'detail' => $e->getMessage(),
-             ], 500);
-         }
+        $array['id'] =  $id;
+        // Buscar o documento pelo ID
+        $wall = Wall::find($id);
+        $arquivo = $wall->thumb_file;
+        $url =  $wall->thumb;
+
+
+
+        // Se o aviso não for encontrado, retornar uma mensagem de erro
+        if (!$wall) {
+            return response()->json([
+                'error' => 'Aviso inexistente',
+                'code' => 404,
+            ], 404);
+        }
+
+        // Validar os dados da requisição
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:2',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 400,
+            ], 400);
+        }
+
+        if ($request->file('thumb')) {
+            // Validar os dados da requisição
+            $validator = Validator::make($request->all(), [
+                'thumb' => 'mimes:jpg,png,jpeg',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => 'O arquivo enviado não é válido',
+                    'code' => 400,
+                ], 400);
+            }
+
+            // Salvar o arquivo no armazenamento
+            $arquivo = $request->file('thumb')->store('public/wall/thumb');
+            $url = asset(Storage::url($arquivo));
+            $thumb_delete = $wall->thumb_file;
+            Storage::delete($thumb_delete);
+        }
+
+
+        $wall->title = $request->input('title');
+        $wall->content = $request->input('content');
+        $wall->thumb_file = $arquivo;
+        $wall->thumb = $url;
+        $wall->status = $request->input('status');
+        // Salvar o documento no banco de dados
+        try {
+            $wall->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao salvar Novo item!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
  
          // Retornar uma resposta de sucesso
          return response()->json([
             'error' => '',
              'success' => true
          ]);
+     }
+
+
+     public function updateStatus($id, Request $request)
+     {
+         $array = ['error' => ''];
+         $validator = Validator::make($request->all(), [
+             'status' => 'required',
+         ]);
+         if ($validator->fails()) {
+             $array['error'] = $validator->errors()->first();
+             return $array;
+         } else {
+             $item = Wall::find($id);
+             $item->status = $request->input('status');
+              // Salvar o documento no banco de dados
+              try {
+                 $item->save();
+             } catch (Exception $e) {
+                 // Tratar o erro
+                 return response()->json([
+                     'error' => 'Erro ao salvar Aviso!',
+                     'detail' => $e->getMessage(),
+                     'code' => 500,
+                 ], 500);
+             }
+     
+             // Retornar uma resposta de sucesso com os dados da notícia
+             return response()->json([
+                 'error' => '',
+                 'success' => true,
+                 'list' => $item,
+             ], 201);
+         }
+ 
      }
     /**
      * Exclui um aviso.
