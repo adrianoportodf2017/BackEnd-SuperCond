@@ -329,13 +329,19 @@ class DatabaseSeeder extends Seeder
 
 
 
-        $faker = Faker::create();
 
-        // Seed 5 pastas raiz
-        for ($i = 0; $i < 5; $i++) {
-            $this->createFolder(null, $faker);
+      
+        foreach (range(1, 10) as $index) {
+            DB::table('folders')->insert([
+                'title' => $faker->sentence(4),
+                'content' => $faker->paragraph(3),
+                'parent_id' => $faker->numberBetween(1, 5),
+                'thumb' => $faker->imageUrl(800, 600),
+                'thumb_file' => $faker->imageUrl(800, 600),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
-
       
 
 

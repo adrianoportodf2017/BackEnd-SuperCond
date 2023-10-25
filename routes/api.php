@@ -116,7 +116,7 @@ Route::middleware('auth:api')->group(function () {
 
     
     /**DOCS**/
-    Route::get('/admin/foldes', [FolderController::class, 'getAll']);
+    Route::get('/admin/folders', [FolderController::class, 'getAll']);
     Route::get('/admin/folder/{id}', [FolderController::class, 'getById']);
     Route::post('/admin/folder/{id}', [FolderController::class, 'update']);
     Route::post('/admin/folder', [FolderController::class, 'insert']);
