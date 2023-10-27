@@ -29,7 +29,9 @@ class FolderController extends Controller
 
     public function getById($id)
     {
-        $folder = $this->getFolderWithChildren($id);
+
+        $folder = Folder::find($id);
+        $folderChidrens = $this->getFolderWithChildren($id);
 
         if (!$folder) {
             // Se a pasta não for encontrada, retorne um erro 404
@@ -43,11 +45,65 @@ class FolderController extends Controller
     }
 
 
-    public function store(Request $request)
-    {
-        $folder = Folder::create($request->all());
-        return response()->json($folder);
+    public function insert(Request $request)
+    {      
+        // Validar os dados da requisição
+
+        $newFolder = new Folder();
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:2',
+            'thumb' => 'mimes:jpg,png,jpeg',
+
+        ]);
+
+        // Retornar uma mensagem de erro se a validação falhar
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 422,
+            ], 422);
+        }
+        // Criar um novo documento
+        // Verificar se o arquivo é válido
+        if ($request->file('thumb') && !$request->file('thumb')->isValid()) {
+            return response()->json([
+                'error' => 'O arquivo enviado não é válido',
+                'code' => 400,
+            ], 400);
+        }
+        if ($request->hasfile('thumb')) {
+            // Salvar o arquivo no armazenamento
+            $arquivo = $request->file('thumb')->store('public/folders/thumb');
+            $url = asset(Storage::url($arquivo));
+        } else {
+            $arquivo = '';
+            $url = '';
+        }
+        $newFolder->title = $request->input('title');
+        $newFolder->content = $request->input('content');
+        $newFolder->thumb = $url;
+        $newFolder->thumb_file = $arquivo;
+        $newFolder->status = $request->input('status');
+        $newFolder->parent_id = $request->input('parent_id');
+
+        // Salvar o documento no banco de dados
+        try {
+            $newFolder->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao salvar Pasta!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $newFolder,
+        ], 201);
     }
+
 
     public function update(Request $request, $id)
     {
