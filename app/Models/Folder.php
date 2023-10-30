@@ -12,6 +12,7 @@ class Folder extends Model
     protected $fillable = ['title', 'content', 'thumb', 'thumb_file', 'parent_id'];
 
     public function children()
+    
     {
         return $this->hasMany(Folder::class, 'parent_id');
     }
@@ -19,5 +20,10 @@ class Folder extends Model
     public function parent()
     {
         return $this->belongsTo(Folder::class, 'parent_id');
+    }
+
+    public function midias()
+    {
+        return $this->morphMany(Midia::class, 'mediable');
     }
 }

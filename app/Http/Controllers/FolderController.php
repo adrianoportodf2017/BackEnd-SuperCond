@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Folder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Midia;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 
@@ -29,10 +32,8 @@ class FolderController extends Controller
 
     public function getById($id)
     {
-
         $folder = Folder::find($id);
-        $folderChidrens = $this->getFolderWithChildren($id);
-
+    
         if (!$folder) {
             // Se a pasta não for encontrada, retorne um erro 404
             return response()->json([
@@ -40,18 +41,46 @@ class FolderController extends Controller
                 'code' => 404,
             ], 404);
         }
-
-        return response()->json($folder, 200); // Adicione o código de status HTTP 200
+    
+        // Recupere a coleção de mídias
+        $midias = $folder->midias;
+    
+        // Obtém a URL base para os ícones
+        $iconBaseUrl = asset('assets/icons/');
+    
+        // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+        foreach ($midias as $midia) {
+            $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+            if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $midia->type = 'imagem';
+                $midia->icon = $midia->url;
+            } elseif ($fileExtension === 'pdf') {
+                $midia->type = 'pdf';
+                $midia->icon = $iconBaseUrl . '/pdf.png';
+            } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/word.png';
+            } else {
+                $midia->type = 'outro';
+                $midia->icon = $iconBaseUrl . '/outros.png';
+            }
+        }
+    
+        $folder['children'] = $this->getFolderWithChildren($id);
+        $folder['midias'] = $midias;
+    
+        return response()->json($folder, 200);
     }
 
 
     public function insert(Request $request)
-    {      
+    {
         // Validar os dados da requisição
 
         $newFolder = new Folder();
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
+            'file.*' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
             'thumb' => 'mimes:jpg,png,jpeg',
 
         ]);
@@ -97,6 +126,28 @@ class FolderController extends Controller
                 'code' => 500,
             ], 500);
         }
+
+        // Retornar uma resposta de sucesso
+        if ($request->file('file')) {
+            $files = $request->file('file');
+            foreach ($files as  $key) {
+
+                $arquivo = $key->store('public/folders/' . $newFolder->id);
+                $url = asset(Storage::url($arquivo));
+                $midia = new Midia([
+                    'title' => $newFolder->title,
+                    'url' => $url,
+                    'file' => $arquivo,
+                    'status' => 'ativo', // Status da mídia
+                    'type' => '', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                    //'user_id' => $request->input('user_id')
+                ]);
+                // Associar a mídia a uma entidade (por exemplo, Document)
+                // Salvar o documento no banco de dados
+                $newFolder->midias()->save($midia);
+            }
+        }
+        $newFolder->midias = $newFolder->midias;
         return response()->json([
             'error' => '',
             'success' => true,
@@ -148,7 +199,7 @@ class FolderController extends Controller
             return null;
         }
 
-        $children = Folder::select('id', 'title', 'thumb')
+        $children = Folder::select('id', 'title', 'thumb', 'created_at', 'updated_at')
             ->where('parent_id', $id)
             ->get();
 
