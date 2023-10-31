@@ -236,9 +236,10 @@ class FolderController extends Controller
     public function insertMidia($id, Request $request)
     {
         $folder = Folder::find($id);
-
+    
         $validator = Validator::make($request->all(), [
-            'file.*' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
+            'file.*' => 'required|max:200000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
+           // 'file' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
             //'user_id' => 'required',
         ]);
 
@@ -266,6 +267,8 @@ class FolderController extends Controller
 
         // Verificar se o arquivo é válido
         $files = $request->file('file');
+
+      //  var_dump($files);
 
         foreach ($files as $file) {
             if (!$file->isValid()) {
