@@ -120,6 +120,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/admin/folder/{id}', [FolderController::class, 'getById']);
     Route::post('/admin/folder/{id}', [FolderController::class, 'update']);
     Route::post('/admin/folder', [FolderController::class, 'insert']);
+    Route::post('/admin/folder/file/{id}', [FolderController::class, 'insertMidia']);
     Route::delete('/admin/folder/{id}', [FolderController::class, 'delete']);
     /**<--DOCS-->*/
 

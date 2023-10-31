@@ -13,6 +13,6 @@ class Midia extends Model
     
     use HasFactory;
     protected $table = 'midias';
-    protected $fillable = ['title', 'url', 'file', 'status', 'type', 'user_id'];
+    protected $fillable = ['title', 'slug', 'url', 'file', 'status', 'type', 'user_id'];
 
  }

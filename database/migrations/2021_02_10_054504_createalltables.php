@@ -296,6 +296,7 @@ class Createalltables extends Migration
         Schema::create('midias', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
+            $table->string('slug')->nullable();
             $table->string('content')->nullable();
             $table->string('url')->nullable();
             $table->string('file')->nullable();

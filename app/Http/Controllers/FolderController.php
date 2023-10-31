@@ -33,7 +33,7 @@ class FolderController extends Controller
     public function getById($id)
     {
         $folder = Folder::find($id);
-    
+
         if (!$folder) {
             // Se a pasta não for encontrada, retorne um erro 404
             return response()->json([
@@ -41,13 +41,13 @@ class FolderController extends Controller
                 'code' => 404,
             ], 404);
         }
-    
+
         // Recupere a coleção de mídias
         $midias = $folder->midias;
-    
+
         // Obtém a URL base para os ícones
         $iconBaseUrl = asset('assets/icons/');
-    
+
         // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
         foreach ($midias as $midia) {
             $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
@@ -60,15 +60,18 @@ class FolderController extends Controller
             } elseif (in_array($fileExtension, ['doc', 'docx'])) {
                 $midia->type = 'word';
                 $midia->icon = $iconBaseUrl . '/word.png';
+            } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/excel.png';
             } else {
                 $midia->type = 'outro';
                 $midia->icon = $iconBaseUrl . '/outros.png';
             }
         }
-    
+
         $folder['children'] = $this->getFolderWithChildren($id);
         $folder['midias'] = $midias;
-    
+
         return response()->json($folder, 200);
     }
 
@@ -188,7 +191,7 @@ class FolderController extends Controller
             ], 400);
         }
 
-        if ($request->file('thumb')) {           
+        if ($request->file('thumb')) {
             // Salvar o arquivo no armazenamento
             $arquivo = $request->file('thumb')->store('public/folders/thumb');
             $url = asset(Storage::url($arquivo));
@@ -202,7 +205,7 @@ class FolderController extends Controller
         $folder->thumb_file = $arquivo;
         $folder->thumb = $url;
         $folder->status = $request->input('status');
-        
+
         // Salvar o documento no banco de dados
         try {
             $folder->save();
@@ -230,6 +233,135 @@ class FolderController extends Controller
     }
 
 
+    public function insertMidia($id, Request $request)
+    {
+        $folder = Folder::find($id);
+
+        $validator = Validator::make($request->all(), [
+            'file.*' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
+            //'user_id' => 'required',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 400,
+            ], 400);
+        }
+        // Se o aviso não for encontrado, retornar uma mensagem de erro
+        if (!$folder) {
+            return response()->json([
+                'error' => 'Pasta inexistente',
+                'code' => 404,
+            ], 404);
+        }
+        // Verificar se o arquivo existe
+        if (!$request->hasfile('file')) {
+            return response()->json([
+                'error' => 'Nenhum arquivo enviado',
+                'code' => 400,
+            ], 400);
+        }
+
+        // Verificar se o arquivo é válido
+        $files = $request->file('file');
+
+        foreach ($files as $file) {
+            if (!$file->isValid()) {
+                return response()->json([
+                    'error' => 'O arquivo enviado não é válido',
+                    'code' => 400,
+                ], 400);
+            }
+        
+            $title = $file->getClientOriginalName(); // Use o nome original do arquivo como título
+            $extension = $file->getClientOriginalExtension();
+            
+        
+            $count = 1;
+            $newTitle = $title;
+            $newTitle = preg_replace('/[^a-zA-Z0-9.-]+/', '',   $newTitle);
+        
+            while (Midia::where('slug', $newTitle)->count() > 0) {
+                // Se uma mídia com o mesmo título existir, adicione um número ao título para torná-lo único
+                $newTitle = pathinfo($title, PATHINFO_FILENAME) . '-' . $count . '.' . $extension;
+                $newTitle = preg_replace('/[^a-zA-Z0-9.-]+/', '',   $newTitle);
+                $count++;
+            }
+        
+            $arquivo = $file->storeAs('public/folders/' . $id, $newTitle); // Salve o arquivo com o título ajustado
+            $url = asset(Storage::url($arquivo));
+        
+            $midia = new Midia([
+                'title' => $request->input('title') ? $request->input('title') : pathinfo($title, PATHINFO_FILENAME),
+                'slug' => $newTitle,
+                'url' => $url,
+                'file' => $arquivo,
+                'status' => 'ativo',
+                'type' => $extension, // Defina o tipo com base na extensão do arquivo
+                'user_id' => $request->input('user_id')
+            ]);
+            // Associar a mídia a uma entidade (por exemplo, Document)
+            // Salvar o documento no banco de dados
+            try {
+                $folder->midias()->save($midia);
+            } catch (Exception $e) {
+                // Tratar o erro
+                return response()->json([
+                    'error' => 'Erro ao salvar Imagem na galeria!',
+                    'detail' => $e->getMessage(),
+                    'code' => 500,
+                ], 500);
+            }
+        }
+            // Retornar uma resposta de sucesso
+            $folder->midias = $folder->midias;
+            return response()->json([
+                'error' => '',
+                'success' => true,
+                'list' => $folder,
+            ], 200);
+       
+    }
+
+    public function deleteMidia($id, Request $request)
+    {
+        // Buscar o aviso a ser deletado
+        $midia = Midia::find($id);
+
+
+
+        // Se o aviso não for encontrado, retornar uma mensagem de erro
+        if (!$midia) {
+            return response()->json([
+                'error' => 'Arquivo inexistente',
+                'code' => 404,
+            ], 404);
+        }
+
+        // Tentar deletar o aviso
+        try {
+            $midia->delete();
+            $midia = $midia->file;
+            Storage::delete($midia);
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao deletar Arquivo!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso
+        return response()->json([
+            'error' => '',
+            'success' => true,
+        ], 200);
+    }
+
+
 
     /**
      * Recupera as pastas filhas de uma pasta, incluindo os campos 'id', 'title' e 'thumb'.
@@ -246,6 +378,9 @@ class FolderController extends Controller
 
             $folders = $folders->map(function ($folder) {
                 $folder->children = $this->getFolderWithChildren($folder->id);
+                // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
+                $folder->icon =  asset('assets/icons/folder.png');
+
                 return $folder;
             });
 
@@ -265,6 +400,10 @@ class FolderController extends Controller
 
         $children = $children->map(function ($child) {
             $child->children = $this->getFolderWithChildren($child->id);
+
+            // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
+            $child->icon = asset('assets/icons/folder.png');
+
             return $child;
         });
 
