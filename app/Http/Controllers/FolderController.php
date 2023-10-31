@@ -156,13 +156,73 @@ class FolderController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update($id, Request $request)
     {
+        $array['id'] =  $id;
+        // Buscar o documento pelo ID
         $folder = Folder::find($id);
-        $folder->update($request->all());
-        return response()->json($folder);
-    }
+        $arquivo = $folder->thumb_file;
+        $url =  $folder->thumb;
 
+
+
+        // Se o aviso não for encontrado, retornar uma mensagem de erro
+        if (!$folder) {
+            return response()->json([
+                'error' => 'Pasta inexistente',
+                'code' => 404,
+            ], 404);
+        }
+
+        // Validar os dados da requisição
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:2',
+            'file.*' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
+            'thumb' => 'mimes:jpg,png,jpeg',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 400,
+            ], 400);
+        }
+
+        if ($request->file('thumb')) {           
+            // Salvar o arquivo no armazenamento
+            $arquivo = $request->file('thumb')->store('public/folders/thumb');
+            $url = asset(Storage::url($arquivo));
+            $thumb_delete = $folder->thumb_file;
+            Storage::delete($thumb_delete);
+        }
+
+
+        $folder->title = $request->input('title');
+        $folder->content = $request->input('content');
+        $folder->thumb_file = $arquivo;
+        $folder->thumb = $url;
+        $folder->status = $request->input('status');
+        
+        // Salvar o documento no banco de dados
+        try {
+            $folder->save();
+        } catch (Exception $e) {
+            // Tratar o erro
+            return response()->json([
+                'error' => 'Erro ao salvar a Pasta!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+        // Retornar uma resposta de sucesso
+        $folder->midias =    $folder->midias;
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $folder,
+        ], 200);
+    }
     public function destroy($id)
     {
         Folder::destroy($id);
