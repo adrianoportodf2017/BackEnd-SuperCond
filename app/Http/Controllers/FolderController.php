@@ -226,10 +226,53 @@ class FolderController extends Controller
             'list' => $folder,
         ], 200);
     }
-    public function destroy($id)
+    public function delete($id)
     {
-        Folder::destroy($id);
-        return response()->json(['message' => 'Folder deleted']);
+        try {
+            // Verifica se um ID foi fornecido
+            if ($id === null) {
+                return; // Não foi fornecido um ID válido
+            }
+    
+            // Busca as pastas com base no ID fornecido
+            $folder = Folder::find($id);
+    
+            if (!$folder) {
+                return; // Pasta não encontrada
+            }
+    
+            // Recursivamente, exclua todas as pastas filhas
+            $children = Folder::where('parent_id', $id)->get();
+    
+            foreach ($children as $child) {
+                $this->delete($child->id);
+            }
+    
+            // Agora que todas as pastas filhas foram excluídas, você pode excluir esta pasta
+            $midias =  $folder->midias;
+            foreach ($midias  as $midia) {
+                $midia->delete();
+                $midia = $midia->file;
+                Storage::delete($midia);
+            }
+            $folder->delete();
+            
+        } catch (Exception $e) {
+            // Trate a exceção aqui, como registrar o erro ou enviar uma resposta de erro para o usuário.
+            // Você pode usar $e->getMessage() para obter informações sobre o erro.
+              // Tratar o erro
+              return response()->json([
+                'error' => 'Erro ao deletar Pasta!',
+                'detail' => $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+
+         // Retornar uma resposta de sucesso
+         return response()->json([
+            'error' => '',
+            'success' => true,
+        ], 200);
     }
 
 
