@@ -22,5 +22,13 @@ class CreateAdrianoUser extends Seeder
         $user->profile = 1;
         $user->password = Hash::make('0307199216@Dr');
         $user->save();
+
+        $user = new User();
+        $user->name = 'Administrador';
+        $user->email = 'admin@admin.com';
+        $user->cpf = '12345678998'; // adicionado um valor aleatório para a coluna cpf
+        $user->profile = 1;
+        $user->password = Hash::make('12345');
+        $user->save();
     }
 }

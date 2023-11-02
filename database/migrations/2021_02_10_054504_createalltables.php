@@ -13,7 +13,7 @@ class Createalltables extends Migration
      */
     public function up()
     {
-        
+
         Schema::create('condominios', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -30,11 +30,10 @@ class Createalltables extends Migration
             $table->string('state')->nullable();
             $table->string('billit')->nullable();
             $table->timestamps();
-
         });
-        
-        
-        Schema::create('users', function(Blueprint $table) {
+
+
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
@@ -44,10 +43,17 @@ class Createalltables extends Migration
             $table->string('password');
             $table->string('remember_token')->nullable();
             $table->timestamps();
+        });
+        Schema::create('profiles', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('roles')->nullable();
+            $table->string('status')->nullable();
+            $table->timestamps();
+        });
 
-                  });
 
-        Schema::create('units', function(Blueprint $table) {
+        Schema::create('units', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('address')->nullable();
@@ -55,20 +61,18 @@ class Createalltables extends Migration
             $table->integer('owner_id');
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
-
         });
 
-        Schema::create('unit_peoples', function(Blueprint $table) {
+        Schema::create('unit_peoples', function (Blueprint $table) {
             $table->id();
             $table->integer('unit_id');
             $table->string('name');
             $table->date('birthdate')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
-
         });
 
-        Schema::create('unit_vehicles', function(Blueprint $table) {
+        Schema::create('unit_vehicles', function (Blueprint $table) {
             $table->id();
             $table->integer('unit_id');
             $table->string('title');
@@ -76,40 +80,34 @@ class Createalltables extends Migration
             $table->string('plate')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
-
         });
 
-        Schema::create('unit_pets', function(Blueprint $table) {
+        Schema::create('unit_pets', function (Blueprint $table) {
             $table->id();
             $table->integer('unit_id');
             $table->string('name');
             $table->string('race')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
-
         });
 
-        Schema::create('walls', function(Blueprint $table) {
+        Schema::create('walls', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->string('content');
             $table->string('thumb')->nullable();
-            $table->string('thumb_file')->nullable();  
-            $table->string('status')->nullable();  
+            $table->string('thumb_file')->nullable();
+            $table->string('status')->nullable();
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
-
-
         });
 
-        Schema::create('wall_likes', function(Blueprint $table) {
+        Schema::create('wall_likes', function (Blueprint $table) {
             $table->id();
             $table->integer('id_wall');
             $table->integer('id_user');
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
-
-
         });
 
         Schema::create('docs', function (Blueprint $table) {
@@ -122,7 +120,6 @@ class Createalltables extends Migration
             // Adicione as colunas ausentes aqui
             $table->string('filename')->nullable();
             $table->timestamps();
-
         });
 
         Schema::create('folders', function (Blueprint $table) {
@@ -136,7 +133,7 @@ class Createalltables extends Migration
             $table->timestamps();
         });
 
-        Schema::create('billets', function(Blueprint $table) {
+        Schema::create('billets', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->text('content')->nullable();
@@ -149,26 +146,24 @@ class Createalltables extends Migration
             $table->string('fileurl')->nullable();
             $table->string('filename')->nullable();
             $table->timestamps();
-
-
         });
 
-        Schema::create('warnings', function(Blueprint $table) {
-            $table->id();          
+        Schema::create('warnings', function (Blueprint $table) {
+            $table->id();
             $table->string('title')->nullable();
             $table->text('content')->nullable();
             $table->text('notes')->nullable();
             $table->string('unit_id')->nullable();
             $table->string('owner_id')->nullable();
             $table->string('status')->default('IN_REVIEW'); // IN_REVIEW, RESOLVED
-            $table->text('photos')->nullable()/**Aqui podemos colocar varias fotos, serão urls finais, apois o upload na pasta storage*/;
+            $table->text('photos')->nullable()
+                /**Aqui podemos colocar varias fotos, serão urls finais, apois o upload na pasta storage*/
+            ;
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
-
-
         });
 
-        Schema::create('lost_end_found', function(Blueprint $table) {
+        Schema::create('lost_end_found', function (Blueprint $table) {
             $table->id();
             $table->text('title')->nullable();
             $table->string('status')->default('LOST');  // LOST, RECOVERED
@@ -178,34 +173,28 @@ class Createalltables extends Migration
             $table->string('owner_id')->nullable();
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
-
-
         });
 
-        Schema::create('areas', function(Blueprint $table) {
+        Schema::create('areas', function (Blueprint $table) {
             $table->id();
             $table->integer('allowed')->default(1);
             $table->string('title');
-            $table->string('days'); 
+            $table->string('days');
             $table->time('start_time');
             $table->time('end_time');
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
-
-
         });
 
-        Schema::create('area_disabled_days', function(Blueprint $table) {
+        Schema::create('area_disabled_days', function (Blueprint $table) {
             $table->id();
             $table->integer('area_id');
             $table->date('day');
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
-
-
         });
 
-        Schema::create('reservations', function(Blueprint $table) {
+        Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->integer('unit_id');
             $table->integer('area_id');
@@ -214,8 +203,6 @@ class Createalltables extends Migration
             $table->string('end_time')->nullable();
             $table->integer('condominio_id')->nullable();
             $table->timestamps();
-
-
         });
 
         Schema::create('assembleias', function (Blueprint $table) {
@@ -238,8 +225,6 @@ class Createalltables extends Migration
             $table->string('file_url')->nullable();
             $table->unsignedBigInteger('assembleia_id')->nullable();
             $table->timestamps();
-
-            
         });
 
         Schema::create('classifieds', function (Blueprint $table) {
@@ -331,7 +316,8 @@ class Createalltables extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->text('content')->nullable();
-            $table->string('type')->nullable();/**  Text, chekbox*/
+            $table->string('type')->nullable();
+            /**  Text, chekbox*/
             $table->string('poll_id')->nullable();
             $table->timestamps();
         });
@@ -367,34 +353,34 @@ class Createalltables extends Migration
 
             $table->timestamps();
         });
-    
 
 
-    Schema::create('benefits', function (Blueprint $table) {
-        $table->id();
-        $table->string('name')->nullable();
-        $table->string('email')->nullable();
-        $table->string('phone')->nullable();
-        $table->string('service_type')->nullable();
-        $table->text('description')->nullable();
-        $table->string('address')->nullable();
-        $table->string('city')->nullable();
-        $table->string('state')->nullable();
-        $table->string('zip_code')->nullable();
-        $table->string('website')->nullable(); // Adicionado campo para website
-        $table->string('social_media')->nullable(); // Adicionado campo para redes sociais
-        $table->string('work_hours')->nullable(); // Adicionado campo para horário de trabalho
-        $table->string('availability')->nullable(); // Adicionado campo para disponibilidade
-        $table->float('average_rating')->nullable(); // Adicionado campo para média de avaliações
-        $table->integer('total_ratings')->nullable(); // Adicionado campo para total de avaliações
-        $table->string('thumb')->nullable();
-        $table->string('thumb_file')->nullable();
-        $table->timestamps();
-    });
-}
+
+        Schema::create('benefits', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('service_type')->nullable();
+            $table->text('description')->nullable();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->string('website')->nullable(); // Adicionado campo para website
+            $table->string('social_media')->nullable(); // Adicionado campo para redes sociais
+            $table->string('work_hours')->nullable(); // Adicionado campo para horário de trabalho
+            $table->string('availability')->nullable(); // Adicionado campo para disponibilidade
+            $table->float('average_rating')->nullable(); // Adicionado campo para média de avaliações
+            $table->integer('total_ratings')->nullable(); // Adicionado campo para total de avaliações
+            $table->string('thumb')->nullable();
+            $table->string('thumb_file')->nullable();
+            $table->timestamps();
+        });
+    }
 
 
-    
+
 
     /**
      * Reverse the migrations.
@@ -428,13 +414,5 @@ class Createalltables extends Migration
         Schema::dropIfExists('polls');
         Schema::dropIfExists('service_providers');
         Schema::dropIfExists('benefits');
-
-
-
-
-
-
-
-
     }
 }

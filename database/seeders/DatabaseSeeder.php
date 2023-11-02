@@ -31,7 +31,24 @@ class DatabaseSeeder extends Seeder
             'email' => 'adrianobr00@gmail.com',
             'cpf' => '12345678901', // adicionado um valor aleatório para a coluna cpf
             'profile' => 1,
-            'password' => Hash::make('0307199216@Dr'),
+            'password' => Hash::make('12345'),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Administrador',
+            'email' => 'admin@gmail.com',
+            'cpf' => '12345678911', // adicionado um valor aleatório para a coluna cpf
+            'profile' => 1,
+            'password' => Hash::make('12345'),
+        ]);
+
+        DB::table('profiles')->insert([
+            ['name' => 'Administrador', 'roles' => 'Administrador', 'status' => 'ativo'],
+            ['name' => 'Síndico', 'roles' => 'sindico', 'status' => 'ativo'],
+            ['name' => 'Conselheiro', 'roles' => 'conselheiro', 'status' => 'ativo'],
+            ['name' => 'Morador', 'roles' => 'morador', 'status' => 'ativo'],
+            ['name' => 'Porteiro', 'roles' => 'porteiro', 'status' => 'ativo'],
+            ['name' => 'Zelador', 'roles' => 'zelador', 'status' => 'ativo'],
         ]);
 
         DB::table('condominios')->insert([

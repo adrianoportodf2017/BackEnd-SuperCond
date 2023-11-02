@@ -33,7 +33,8 @@ use App\Http\Controllers\{
     PollsController,
     ServiceProvidersController,
     BenefitsController,
-    FolderController
+    FolderController,
+    ProfileController
 
 };
 use App\Models\Benefits;
@@ -60,8 +61,13 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/admin/user/{id}', [UserController::class, 'update']);
     Route::post('/admin/user', [UserController::class, 'insert']);
     Route::delete('/admin/user/{id}', [UserController::class, 'delete']);
-    /**<--USERS-->*/
-
+    
+    /**<--PERFIL DE ACESSO-->*/
+    Route::get('/admin/profiles', [ProfileController::class, 'getAll']);
+    Route::get('/admin/profile/{id}', [ProfileController::class, 'getById']);
+    Route::put('/admin/profile/{id}', [ProfileController::class, 'update']);
+    Route::post('/admin/profile', [ProfileController::class, 'insert']);
+    Route::delete('/admin/profile/{id}', [ProfileController::class, 'delete']);
 
 
     Route::post('/auth/validate', [AuthController::class, 'validateToken']);
