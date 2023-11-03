@@ -34,10 +34,11 @@ use App\Http\Controllers\{
     ServiceProvidersController,
     BenefitsController,
     FolderController,
-    ProfileController
-
+    ProfileController,
+    CategoryController
 };
 use App\Models\Benefits;
+use App\Models\Category;
 
 Route::get('/ping', function () {
     return ['pong' => true];
@@ -56,17 +57,18 @@ Route::middleware('auth:api')->group(function () {
 
     /**USERS**/
     Route::get('/admin/users', [UserController::class, 'getAll']);
-    Route::get('/admin/users/{id}', [UserController::class, 'getById']);
+    Route::get('/admin/user/{id}', [UserController::class, 'getById']);
     Route::get('/admin/users/cpf', [UserController::class, 'getByCpf']);
-    Route::put('/admin/user/{id}', [UserController::class, 'update']);
+    Route::post('/admin/user/{id}', [UserController::class, 'update']);
     Route::post('/admin/user', [UserController::class, 'insert']);
     Route::delete('/admin/user/{id}', [UserController::class, 'delete']);
-    
+
     /**<--PERFIL DE ACESSO-->*/
     Route::get('/admin/profiles', [ProfileController::class, 'getAll']);
     Route::get('/admin/profile/{id}', [ProfileController::class, 'getById']);
-    Route::put('/admin/profile/{id}', [ProfileController::class, 'update']);
+    Route::post('/admin/profile/{id}', [ProfileController::class, 'update']);
     Route::post('/admin/profile', [ProfileController::class, 'insert']);
+    Route::post('/admin/profile/{id}/status', [ProfileController::class, 'updateStatus']);
     Route::delete('/admin/profile/{id}', [ProfileController::class, 'delete']);
 
 
@@ -107,9 +109,16 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/wall/{id}', [WallController::class, 'update']);
     Route::post('/admin/wall', [WallController::class, 'insert']);
     Route::post('/admin/wall/{id}/status', [WallController::class, 'updateStatus']);
-
     Route::delete('/admin/wall/{id}', [WallController::class, 'delete']);
     /**<--WALLS-->*/
+
+    /**Categorias**/
+    Route::get('/admin/categories/{type?}', [CategoryController::class, 'getAll'])->where('type', '.*');
+    Route::get('/admin/category/{id}', [CategoryController::class, 'getById']);
+    Route::post('/admin/category/{id}', [CategoryController::class, 'update']);
+    Route::post('/admin/category', [CategoryController::class, 'insert']);
+    Route::post('/admin/category/{id}/status', [CategoryController::class, 'updateStatus']);
+    Route::delete('/admin/category/{id}', [CategoryController::class, 'delete']);
 
 
     /**DOCS**/
@@ -120,7 +129,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/admin/doc/{id}', [DocController::class, 'delete']);
     /**<--DOCS-->*/
 
-    
+
     /**DOCS**/
     Route::get('/admin/folders', [FolderController::class, 'getAll']);
     Route::get('/admin/folder/{id}', [FolderController::class, 'getById']);

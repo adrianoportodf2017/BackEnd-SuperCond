@@ -221,6 +221,21 @@ class DatabaseSeeder extends Seeder
         }
 
         for ($i = 1; $i <= 10; $i++) {
+            DB::table('categories')->insert([
+                'name' => 'Categoria ' . $i,
+                'type' => 'tipo' . rand(1, 5),
+                'content' => 'tipo' . rand(1, 5), // Supondo que você tenha 5 tipos diferentes
+                'thumb' => 'thumb-categoria-' . $i . '.jpg',
+                'thumb_url' => 'http://example.com/thumb-url-' . $i,
+                'slug' => 'categoria-' . $i,
+                'status' => 'active', // ou 'inactive' conforme necessário
+                'notes' => $faker->sentence,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        for ($i = 1; $i <= 10; $i++) {
             DB::table('gallery')->insert([
                 'title' => 'Título da Galeria ' . $i,
                 'content' => 'Conteúdo da Galeria ' . $faker->paragraph,

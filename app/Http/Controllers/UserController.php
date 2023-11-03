@@ -11,44 +11,59 @@ class UserController extends Controller
     public function getAll()
     {
         $array = ['error' => ''];
-        $users = User::all();
+        $users = User::leftJoin('profiles', 'users.profile', '=', 'profiles.id')
+            ->select('users.*', 'profiles.roles as profile_roles', 'profiles.name as profile_name')
+            ->get();
         $array['list'] = $users;
         return $array;
     }
 
 
+
+
     public function getById($id)
     {
-        $users = User::where('id', $id)->first();
-        if ($users) {
+        try {
+            $user = User::leftJoin('profiles', 'users.profile', '=', 'profiles.id')
+                ->where('users.id', $id)
+                ->select('users.*', 'profiles.roles as profile_roles', 'profiles.name as profile_name')
+                ->first();
+
+            if ($user) {
+                $results = [
+                    'error' => '',
+                    'success' => true,
+                    'list' => $user,
+                    'message' => 'Usuário encontrado com sucesso.',
+                ];
+                return response()->json($results, 200);
+            } else {
+                $results = [
+                    'error' => 'Nenhum Usuário encontrado com esse ID.',
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Nenhum Usuário encontrado com esse ID.',
+                ];
+                return response()->json($results, 404);
+            }
+        } catch (\Exception $e) {
             $results = [
-                'error' => '',
-                'list' => $users,
-                // Outros dados de resultado aqui...
+                'success' => false,
+                'list' => null,
+                'error' => 'Erro inesperado: ' . $e->getMessage(),
             ];
-        } else {
-            $results = [
-                'error' => 'Nenhum Usuário encontrado com esse CPF',
-                'list' => '',
-                // Outros dados de resultado aqui...
-            ];
+            return response()->json($results, 500);
         }
-
-        // Realize a lógica de pesquisa com base no valor de $q
-        // Por exemplo, você pode consultar o banco de dados para encontrar os resultados desejados.
-
-        // Suponha que você deseja retornar um array como resultado de pesquisa para este exemplo:
-
-
-        return response()->json($results);
     }
+
 
     public function getByCpf(Request $request)
     {
-        
-        
+
+
         $cpf = $request->input('cpf');
-        return $cpf;die;
+        return $cpf;
+        die;
         $users = User::where('cpf', $cpf)->first();
         if ($users) {
             $results = [
@@ -83,45 +98,8 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
                 'email' => 'required|email|',
-                'cpf' => 'required|digits:11',
+                'cpf' => 'digits:11',
                 'password' => 'required',
-               // 'password_confirm' => 'required|same:password',
-            ]);
-            if (!$validator->fails()) {
-                $name = $request->input('name');
-                $email = $request->input('email');
-                $phone = $request->input('phone');
-                $cpf = $request->input('cpf');
-                $password = $request->input('password');
-                $hash = password_hash($password, PASSWORD_DEFAULT);                  
-                    $newUser = User::find($id);
-                    $cpfUser = User::where('cpf', $cpf)->first();
-                    $emailUser = User::where('email', $email)->get()->first();
-    
-                    if ($cpfUser &&  $cpfUser->cpf != $newUser->cpf) {
-                        $array['error'] = 'CPF já utilizado por outro usuário! ';
-                    } elseif ($emailUser &&  $emailUser->email != $newUser->email) {
-                        $array['error'] = 'EMAIL já utilizado por outro usuário!';
-                    } else {
-                        $newUser->name = $name;
-                        $newUser->email = $email;
-                        $newUser->phone = $phone;
-                        $newUser->cpf = $cpf;
-                        $newUser->password = $hash;
-                        $newUser->save();
-                    }
-                } else {
-                    $array['error'] = $validator->errors()->first();
-                    return $array;
-                }  return $array;
-            }
-         else {
-
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email',
-                'cpf' => 'required|digits:11',
-                //'password' => 'required',
                 // 'password_confirm' => 'required|same:password',
             ]);
             if (!$validator->fails()) {
@@ -129,6 +107,10 @@ class UserController extends Controller
                 $email = $request->input('email');
                 $phone = $request->input('phone');
                 $cpf = $request->input('cpf');
+                $password = $request->input('password');
+                $profile = $request->input('profile');
+
+                $hash = password_hash($password, PASSWORD_DEFAULT);
                 $newUser = User::find($id);
                 $cpfUser = User::where('cpf', $cpf)->first();
                 $emailUser = User::where('email', $email)->get()->first();
@@ -142,6 +124,47 @@ class UserController extends Controller
                     $newUser->email = $email;
                     $newUser->phone = $phone;
                     $newUser->cpf = $cpf;
+                    $newUser->profile = $profile;
+                    $newUser->password = $hash;
+                    $newUser->save();
+                }
+            } else {
+                $array['error'] = $validator->errors()->first();
+                return $array;
+            }
+            return $array;
+        } else {
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'email' => 'required|email',
+                'cpf' => 'required|digits:11',
+                //'password' => 'required',
+                // 'password_confirm' => 'required|same:password',
+            ]);
+            if (!$validator->fails()) {
+                $name = $request->input('name');
+                $email = $request->input('email');
+                $phone = $request->input('phone');
+                $cpf = $request->input('cpf');
+                
+                $newUser = User::find($id);
+                $cpfUser = User::where('cpf', $cpf)->first();
+                $emailUser = User::where('email', $email)->get()->first();
+                $profile = $request->input('profile');
+
+
+                if ($cpfUser &&  $cpfUser->cpf != $newUser->cpf) {
+                    $array['error'] = 'CPF já utilizado por outro usuário! ';
+                } elseif ($emailUser &&  $emailUser->email != $newUser->email) {
+                    $array['error'] = 'EMAIL já utilizado por outro usuário!';
+                } else {
+                    $newUser->name = $name;
+                    $newUser->email = $email;
+                    $newUser->phone = $phone;
+                    $newUser->cpf = $cpf;
+                    $newUser->profile = $profile;
+
                     $newUser->save();
                 }
             } else {
@@ -166,6 +189,8 @@ class UserController extends Controller
             $email = $request->input('email');
             $phone = $request->input('phone');
             $cpf = $request->input('cpf');
+            $profile = $request->input('profile');
+
             $password = $request->input('password');
             $hash = password_hash($password, PASSWORD_DEFAULT);
             /**
@@ -176,7 +201,7 @@ class UserController extends Controller
             $newUser->name = $name;
             $newUser->email = $email;
             $newUser->phone = $phone;
-
+            $newUser->profile = $profile;
             $newUser->cpf = $cpf;
             $newUser->password = $hash;
             $newUser->save();

@@ -113,6 +113,11 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        'custom_api_log' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/api.log'), // Caminho e nome do arquivo de log personalizado
+            'level' => 'info',
+        ],
     ],
 
 ];

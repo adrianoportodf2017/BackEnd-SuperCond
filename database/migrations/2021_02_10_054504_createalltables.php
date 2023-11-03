@@ -293,6 +293,19 @@ class Createalltables extends Migration
             $table->timestamps();
         });
 
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('type')->nullable();
+            $table->string('content')->nullable();
+            $table->string('thumb')->nullable();
+            $table->string('thumb_url')->nullable();
+            $table->string('slug')->nullable();
+            $table->string('status')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create('polls', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();

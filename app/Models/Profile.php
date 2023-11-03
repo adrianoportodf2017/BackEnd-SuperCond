@@ -13,4 +13,9 @@ class Profile extends Model
 
     public $table = 'Profiles';
 
+    public function users()
+    {
+        return $this->hasMany(User::class, 'profile', 'id');
+    }
+
 }

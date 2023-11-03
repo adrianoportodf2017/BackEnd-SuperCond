@@ -23,6 +23,11 @@ class User extends Authenticatable implements JWTSubject
         'password',
     ];
 
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class, 'profile', 'id');
+    }
+
    
    // Rest omitted for brevity
 
