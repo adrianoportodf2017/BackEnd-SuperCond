@@ -221,6 +221,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/admin/news/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
     Route::post('/admin/new', [NewsController::class, 'insert']); // Criar uma nova notícia
     Route::post('/admin/new/{id}', [NewsController::class, 'update']); // Atualizar uma notícia existente
+    Route::post('/admin/new/{id}/status', [NewsController::class, 'updateStatus']);
+
     Route::delete('/admin/new/{id}', [NewsController::class, 'delete']); // Excluir uma notícia
 
     /**<--Galeria-->*/

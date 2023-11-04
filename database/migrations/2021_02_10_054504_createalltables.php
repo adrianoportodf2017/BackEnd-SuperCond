@@ -247,19 +247,18 @@ class Createalltables extends Migration
             $table->string('title')->nullable();
             $table->text('content')->nullable();
             $table->string('thumb')->nullable();
-            $table->string('slug')->unique(); // Campo único para URLs amigáveis
-            $table->unsignedBigInteger('category_id')->nullable(); // Chave estrangeira para categoria
-            $table->string('comments_count')->default(0); // Contador de comentários
-            $table->string('likes_count')->default(0); // Contador de curtidas
-            $table->string('views_count')->default(0); // Contador de visualizações
-            $table->unsignedBigInteger('author_id')->nullable(); // Chave estrangeira para autor
-            $table->date('publish_date')->nullable(); // Data de publicação
+            $table->string('slug')->nullable(); // Campo único para URLs amigáveis
+            $table->string('category_id')->nullable(); // Chave estrangeira para categoria
+            $table->string('comments_count')->nullable(); // Contador de comentários
+            $table->string('likes_count')->nullable(); // Contador de curtidas
+            $table->string('views_count')->nullable(); // Contador de visualizações
+            $table->string('author_id')->nullable(); // Chave estrangeira para autor
             $table->string('tags')->nullable(); // Tags ou categorias adicionais
-            $table->string('highlight')->default('0'); // Destaque
+            $table->string('highlight')->nullable(); // Destaque
             $table->string('status')->default('published'); // Status (publicada, rascunho, arquivada, etc.)
             $table->json('additional_images')->nullable(); // Imagens adicionais em formato JSON
             $table->string('external_url')->nullable(); // URL externa, se aplicável
-            $table->string('shares_count')->default('0'); // Contador de compartilhamentos
+            $table->string('shares_count')->default('0')->nullable(); // Contador de compartilhamentos
             $table->timestamps();
         });
 
