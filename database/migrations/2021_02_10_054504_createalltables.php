@@ -236,8 +236,8 @@ class Createalltables extends Migration
             $table->string('address')->nullable();
             $table->string('contact')->nullable();
             $table->string('status')->nullable()->default('NÃO VENDIDO');;
-            $table->unsignedBigInteger('user_id')->nullable(); // Chave estrangeira para usuário
-            $table->unsignedBigInteger('category_id')->nullable(); // Chave estrangeira para categoria
+            $table->string('user_id')->nullable(); // Chave estrangeira para usuário
+            $table->string('category_id')->nullable(); // Chave estrangeira para categoria
             $table->timestamps();
         });
 

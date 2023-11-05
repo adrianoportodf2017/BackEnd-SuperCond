@@ -202,12 +202,12 @@ Route::middleware('auth:api')->group(function () {
     /**<--CLASSIFICADOS-->*/
 
     Route::get('/admin/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
-    Route::get('/admin/classifieds/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
-    Route::post('/admin/classifieds', [ClassifiedsController::class, 'insert']); // Criar um novo classificado
+    Route::get('/admin/classified/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
+    Route::post('/admin/classified', [ClassifiedsController::class, 'insert']); // Criar um novo classificado
     Route::post('/admin/classified/{id}', [ClassifiedsController::class, 'update']); // Atualizar um classificado existente
     Route::delete('/admin/classified/{id}', [ClassifiedsController::class, 'delete']); // Excluir um classificado
-    Route::post('/admin/classifieds/midia/{id}', [ClassifiedsController::class, 'insertMidia']); // Inserir uma nova mídia
-    Route::delete('/admin/classifieds/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
+    Route::post('/admin/classified/midia/{id}', [ClassifiedsController::class, 'insertMidia']); // Inserir uma nova mídia
+    Route::delete('/admin/classified/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
 
 
 

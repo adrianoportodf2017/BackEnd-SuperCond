@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Classified;
+use App\Models\User;
+
 use App\Models\Midia;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +22,9 @@ class ClassifiedsController extends Controller
 
     public function getAll()
     {
-        $classifieds =  Classified::all();
+        $classifieds = Classified::leftJoin('users', 'classifieds.user_id', '=', 'users.id')
+        ->select('classifieds.*', 'users.name', 'users.email')
+        ->get();
 
         // Retornar uma mensagem de erro se não houver ocorrencias
         if (!$classifieds) {
@@ -32,10 +36,33 @@ class ClassifiedsController extends Controller
         // Retornar uma resposta de sucesso com a lista de ocorrencias
         $result = [];
         foreach ($classifieds as $classified) {
-            $classified->midias  = $classified->midias;;
+            // Recupere a coleção de mídias
+            $midias = $classified->midias;
+            // Obtém a URL base para os ícones
+            $iconBaseUrl = asset('assets/icons/');
+            // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+            foreach ($midias as $midia) {
+                $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+                if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                    $midia->type = 'imagem';
+                    $midia->icon = $midia->url;
+                } elseif ($fileExtension === 'pdf') {
+                    $midia->type = 'pdf';
+                    $midia->icon = $iconBaseUrl . '/pdf.png';
+                } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                    $midia->type = 'word';
+                    $midia->icon = $iconBaseUrl . '/word.png';
+                } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                    $midia->type = 'word';
+                    $midia->icon = $iconBaseUrl . '/excel.png';
+                } else {
+                    $midia->type = 'outro';
+                    $midia->icon = $iconBaseUrl . '/outros.png';
+                }
+            }
+            $classified['midias'] = $midias;
             $result[] = $classified;
         }
-
         return response()->json([
             'error' => '',
             'success' => true,
@@ -51,18 +78,19 @@ class ClassifiedsController extends Controller
      */
     public function getById($id)
     {
-        $lostAndFound = Classified::where('id', $id)->first();
+        $classified = Classified::where('id', $id)->first();
+        $classified->midias  = $classified->midias;
 
-        if (!$lostAndFound) {
+
+        if (!$classified) {
             return response()->json([
                 'error' => "Item com ID {$id} não encontrado",
                 'code' => 404,
             ], 404);
         }
-        $lostAndFound->photos_array = json_decode($lostAndFound->photos);
         return response()->json([
             'error' => '',
-            'list' => json_decode($lostAndFound),
+            'list' => $classified,
             // Outros dados de resultado aqui...
         ], 200);
     }
@@ -79,13 +107,12 @@ class ClassifiedsController extends Controller
 
         // Validar os dados da requisição
 
-        $newClassifields = new Classified();
+        $newclassifieds = new Classified();
 
 
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
-            'file' =>  'max:2M',
-            'file.*' => 'mimes:jpg,png,jpeg',
+            'file.*' => 'max:10000|mimes:jpg,png,jpeg',
             'user_id' => 'required',
             'price' => 'required',
         ]);
@@ -98,72 +125,99 @@ class ClassifiedsController extends Controller
             ], 422);
         }
 
-        // Verificar se o arquivo existe
-        if (!$request->hasfile('file')) {
-            return response()->json([
-                'error' => 'Nenhum arquivo enviado',
-                'code' => 400,
-            ], 400);
+        if ($request->hasfile('thumb')) {
+
+            $validator = Validator::make($request->all(), [
+                'thumb' => 'required|mimes:jpg,png,jpeg'
+            ]);
+
+            if ($request->file('thumb')->isValid()) {
+                $arquivo = $request->file('thumb')->store('public/classifieds/thumb');
+                $url = asset(Storage::url($arquivo));
+            } else {
+                $array['error'] = $validator->errors()->first();
+            }
+        } else {
+            $url  = '';
         }
 
-        // Verificar se o arquivo é válido
-        $files = $request->file('file');
-        foreach ($files as $file) {
-            if (!$file->isValid()) {
-                return response()->json([
-                    'error' => 'O arquivo enviado não é válido',
-                    'code' => 400,
-                ], 400);
+        // Verificar se o arquivo existe
+        if ($request->hasfile('file')) {
+
+
+            // Verificar se o arquivo é válido
+            $files = $request->file('file');
+            foreach ($files as $file) {
+                if (!$file->isValid()) {
+                    return response()->json([
+                        'error' => 'O arquivo enviado não é válido',
+                        'code' => 400,
+                    ], 400);
+                }
             }
         }
 
 
 
         // Criar um novo documento
-        $newClassifields->title = $request->input('title');
-        $newClassifields->content = $request->input('content');
-        $newClassifields->thumb = $request->input('thumb');
-        $newClassifields->price = $request->input('price');
-        $newClassifields->address = $request->input('address');
-        $newClassifields->contact = $request->input('contact');
-        $newClassifields->category_id = $request->input('category_id');
-        $newClassifields->status = 'Não Vendido';
+        $newclassifieds->title = $request->input('title');
+        $newclassifieds->user_id = $request->input('user_id');
+        $newclassifieds->content = $request->input('content');
+        $newclassifieds->thumb = $url ;
+        $newclassifieds->price = $request->input('price');
+        $newclassifieds->address = $request->input('address');
+        $newclassifieds->contact = $request->input('contact');
+        $newclassifieds->category_id = $request->input('category_id');
+        $newclassifieds->status = '0';
 
 
         // Salvar o documento no banco de dados
         try {
-            $newClassifields->save();
+            $newclassifieds->save();
         } catch (Exception $e) {
             // Tratar o erro
             return response()->json([
-                'error' => 'Erro ao salvar Ocorrência!',
+                'error' => 'Erro ao salvar Classificados!',
                 'detail' => $e->getMessage(),
                 'code' => 500,
             ], 500);
         }
 
         // Retornar uma resposta de sucesso
-
-
-
-        $file = [];
-        foreach ($files as  $key) {
-            $arquivo = $key->store('public/classifieds/' . $request->input('user_id'));
-            $midia = new Midia([
-                'title' => 'Classificados',
-                'content' => $arquivo,
-                'status' => 'ativo', // Status da mídia
-                'type' => 'imagem', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
-                'user_id' => $request->input('user_id')
-            ]);
-            // Associar a mídia a uma entidade (por exemplo, Document)
-            $newClassifields->midias()->save($midia);
+        if ($request->hasfile('file')) {
+            foreach ($files as  $key) {
+                $arquivo = $key->store('public/classifieds/' . $newclassifieds->id);
+                $url = asset(Storage::url($arquivo));
+                $midia = new Midia([
+                    'title' => 'Classificados',
+                    'url' => $url,
+                    'file' => $arquivo,
+                    'status' => 'ativo', // Status da mídia
+                    'type' => 'imagem', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                    'user_id' => $request->input('user_id')
+                ]);
+                // Associar a mídia a uma entidade (por exemplo, Document)
+                // Salvar o documento no banco de dados
+                try {
+                    $newclassifieds->midias()->save($midia);
+                } catch (Exception $e) {
+                    // Tratar o erro
+                    return response()->json([
+                        'error' => 'Erro ao salvar Novo arquivo!',
+                        'detail' => $e->getMessage(),
+                        'code' => 500,
+                    ], 500);
+                }
+            }
         }
+        // Retornar uma resposta de sucesso
+        $newclassifieds->midias  = $newclassifieds->midias;
+
         return response()->json([
             'error' => '',
             'success' => true,
-            'list' => $newClassifields,
-        ], 201);
+            'list' => $newclassifieds,
+        ], 200);
     }
     public function update($id, Request $request)
     {
@@ -187,14 +241,36 @@ class ClassifiedsController extends Controller
         } else {
 
             if ($classified) {
+
+                if ($request->hasfile('thumb')) {
+
+                    $validator = Validator::make($request->all(), [
+                        'thumb' => 'required|mimes:jpg,png,jpeg'
+                    ]);
+        
+                    if ($request->file('thumb')->isValid()) {
+                        $arquivo = $request->file('thumb')->store('public/classifieds/thumb');
+                        $url = asset(Storage::url($arquivo));
+                        $thumbDelete = $classified->thumb;
+                        // Converta a URL em um caminho relativo ao sistema de arquivos
+                        $relativePath = str_replace(asset(''), '', $thumbDelete);
+                        $relativePath = str_replace('storage', '', $relativePath);
+                        Storage::delete('public' . $relativePath);
+                        $classified->thumb =  $url;
+        
+                    } else {
+                        $array['error'] = $validator->errors()->first();
+                    }
+                }
+
+
                 $classified->title = $request->input('title');
                 $classified->content = $request->input('content');
-                $classified->thumb = $request->input('thumb');
                 $classified->price = $request->input('price');
                 $classified->address = $request->input('address');
                 $classified->contact = $request->input('contact');
                 $classified->category_id = $request->input('category_id');
-                $classified->status = 'Não Vendido';
+                $classified->status = $request->input('status');
                 // Salvar o documento no banco de dados
                 try {
                     $classified->save();
@@ -262,7 +338,6 @@ class ClassifiedsController extends Controller
             // Salvar o documento no banco de dados
             try {
                 $classified->midias()->save($midia);
-                
             } catch (Exception $e) {
                 // Tratar o erro
                 return response()->json([
@@ -272,15 +347,15 @@ class ClassifiedsController extends Controller
                 ], 500);
             }
 
-              // Retornar uma resposta de sucesso
-        return response()->json([
-            'error' => '',
-            'success' => true,
-            'list' => $classified,
-        ], 200);
+            // Retornar uma resposta de sucesso
+            return response()->json([
+                'error' => '',
+                'success' => true,
+                'list' => $classified,
+            ], 200);
         }
     }
-    
+
     public function deleteMidia($id, Request $request)
     {
         // Buscar o aviso a ser deletado
@@ -339,12 +414,14 @@ class ClassifiedsController extends Controller
 
         // Tentar deletar o aviso
         try {
-            $classified->delete();
-            $fileDelete = $classified->filename;
-            $classified->photos_array = json_decode($classified->photos);
-            foreach ($classified->photos_array as $photos) {
-                Storage::delete($photos);
+            // Agora que todas as pastas filhas foram excluídas, você pode excluir esta pasta
+            $midias =  $classified->midias;
+            foreach ($midias  as $midia) {
+                $midia->delete();
+                $midia = $midia->file;
+                Storage::delete($midia);
             }
+            $classified->delete();
         } catch (Exception $e) {
             // Tratar o erro
             return response()->json([
