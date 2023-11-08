@@ -20,6 +20,29 @@ class NewsController extends Controller
         return $array;
     }
 
+      /**
+     * Obtém um documento pelo ID.
+     *
+     * @param int $id O ID do documento a ser obtido.
+     *
+     * @return \App\Models\Doc
+     */
+    public function getById($id)
+    {
+        $new = News::where('id', $id)->first();
+        if (!$new) {
+            return response()->json([
+                'error' => "Notícia com ID {$id} não encontrado",
+                'code' => 404,
+            ], 404);
+        }
+        return response()->json([
+            'error' => '',
+            'list' => $new,
+            // Outros dados de resultado aqui...
+        ], 200);
+    }
+
     public function insert(Request $request)
     {
         $array = ['error' => ''];

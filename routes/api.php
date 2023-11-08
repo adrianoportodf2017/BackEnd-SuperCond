@@ -52,6 +52,9 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
 Route::post('/admin/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/admin/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
+
+Route::get('/new/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
+
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
 

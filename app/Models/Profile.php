@@ -11,7 +11,7 @@ class Profile extends Model
     use HasFactory;
     protected $fillable = ['name', 'roles', 'status'];
 
-    public $table = 'Profiles';
+    public $table = 'profiles';
 
     public function users()
     {
