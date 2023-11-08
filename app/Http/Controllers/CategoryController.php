@@ -231,6 +231,7 @@ class CategoryController extends Controller
                 'code' => 500,
             ], 500);
         }
+        
         return response()->json(['error' => '', 'success' => 'Categoria deletado com sucesso']);
     }
 
