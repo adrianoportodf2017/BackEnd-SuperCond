@@ -208,11 +208,9 @@ class DatabaseSeeder extends Seeder
                 'likes_count' => rand(0, 100),
                 'views_count' => rand(100, 10000),
                 'author_id' => rand(1, 10), // Supondo que você tenha 10 autores diferentes
-                'publish_date' => now()->subDays(rand(1, 365)),
                 'tags' => 'tag' . rand(1, 5), // Supondo que você tenha 5 tags diferentes
                 'highlight' => rand(0, 1),
                 'status' => 'published',
-                'additional_images' => json_encode(['imagem1.jpg', 'imagem2.jpg']),
                 'external_url' => null,
                 'shares_count' => rand(0, 100),
                 'created_at' => now(),

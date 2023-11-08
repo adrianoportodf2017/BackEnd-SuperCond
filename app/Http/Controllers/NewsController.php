@@ -134,16 +134,15 @@ class NewsController extends Controller
                 $relativePath = str_replace(asset(''), '', $thumbDelete);
                 $relativePath = str_replace('storage', '', $relativePath);
                 Storage::delete('public' . $relativePath);
+                $new->thumb =  $url;
+
             } else {
                 $array['error'] = $validator->errors()->first();
             }
-        } else {
-            $url  = '';
         }
 
         $new->title = $request->input('title');
         $new->content = $request->input('content');
-        $new->thumb =  $url;
         $new->category_id = $request->input('category_id');
         $new->author_id = $request->input('author_id');
         $new->tags = $request->input('tags');
@@ -170,35 +169,44 @@ class NewsController extends Controller
     }
 
     public function delete($id)
-{
-    $array = ['error' => ''];
-
-    // Verificar se o documento existe
-    $item = News::find($id);
-
-    if (!$item) {
-        return response()->json([
-            'error' => 'Documento inexistente',
-            'code' => 404,
-        ], 404);
+    {
+        $array = ['error' => ''];
+    
+        try {
+            // Verificar se o documento existe
+            $item = News::find($id);
+    
+            if (!$item) {
+                return response()->json([
+                    'error' => 'Documento inexistente',
+                    'code' => 404,
+                ], 404);
+            }
+    
+            // Excluir a imagem de thumbnail
+            if ($item->thumb) {
+                $relativePath = str_replace(asset(''), '', $item->thumb);
+                $relativePath = str_replace('storage', '', $relativePath);
+                Storage::delete('public' . $relativePath);
+            }
+    
+            // Excluir o documento do banco de dados
+            $item->delete();
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Ocorreu um erro ao excluir o documento: ' . $e->getMessage(),
+                'code' => 500,
+            ], 500);
+        }
+        
+            // Retornar uma resposta de sucesso
+            return response()->json([
+                'error' => '',
+                'success' => true,
+            ], 200);
     }
-
-    // Excluir a imagem de thumbnail
-    if ($item->thumb) {
-        $relativePath = str_replace(asset(''), '', $item->thumb);
-        $relativePath = str_replace('storage', '', $relativePath);
-        Storage::delete('public' . $relativePath);
-    }
-
-    // Excluir o documento do banco de dados
-    $item->delete();
-
-    // Retornar uma resposta de sucesso
-    return response()->json([
-        'error' => '',
-        'success' => true,
-    ], 204);
-}
+    
 
     public function updateStatus($id, Request $request)
     {

@@ -52,7 +52,7 @@ class CategoryController extends Controller
             ]);
 
             if ($request->file('thumb')->isValid()) {
-                $arquivo = $request->file('thumb')->store('public/image/categorias');
+                $arquivo = $request->file('thumb')->store('public/categorias/thumb');
                 $url = asset(Storage::url($arquivo));
             } else {
                 $array['error'] = $validator->errors()->first();
@@ -136,7 +136,7 @@ class CategoryController extends Controller
             ]);
 
             if ($request->file('thumb')->isValid()) {
-                $arquivo = $request->file('thumb')->store('public/image/categorias');
+                $arquivo = $request->file('thumb')->store('public/categorias/thumb');
                 $url = asset(Storage::url($arquivo));
                 $thumbDelete = $categorie->thumb;
                 // Converta a URL em um caminho relativo ao sistema de arquivos
@@ -219,12 +219,6 @@ class CategoryController extends Controller
 
             // Excluir o documento do banco de dados
             $item->delete();
-
-            // Retornar uma resposta de sucesso
-            return response()->json([
-                'error' => '',
-                'success' => true,
-            ], 204);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Ocorreu um erro ao excluir a categoria: ' . $e->getMessage(),
