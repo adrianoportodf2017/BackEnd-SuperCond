@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +37,9 @@ use App\Http\Controllers\{
     BenefitsController,
     FolderController,
     ProfileController,
-    CategoryController
+    CategoryController,
+    ResetBaseController
+    
 };
 use App\Models\Benefits;
 use App\Models\Category;
@@ -54,10 +58,15 @@ Route::post('/admin/auth/forgot-password', [AuthController::class, 'forgotPasswo
 Route::post('/admin/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::get('/new/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
+Route::get('/news', [NewsController::class, 'getAll']); // Obter uma notícia específica
+Route::get('/wallFront/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
+Route::get('/wallsFront', [WallController::class, 'getAllPublic']);
+
 
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
 
+    Route::get('/admin/migrate', [ResetBaseController::class, 'migrate']);  
     /**USERS**/
     Route::get('/admin/users', [UserController::class, 'getAll']);
     Route::get('/admin/user/{id}', [UserController::class, 'getById']);

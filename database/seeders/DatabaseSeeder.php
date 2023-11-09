@@ -135,7 +135,9 @@ class DatabaseSeeder extends Seeder
             'title' => $faker->sentence,
             'content' => $faker->paragraph,
             'created_at' => $faker->dateTime,
-            'condominio_id' => 1
+            'condominio_id' => 1,
+            'thumb' => '/images/noticias.png',
+
 
         ]);
         DB::table('walls')->insert([
@@ -143,6 +145,8 @@ class DatabaseSeeder extends Seeder
             'content' => $faker->paragraph,
             'created_at' => $faker->dateTime,
             'condominio_id' => 1,
+            'thumb' => '/images/noticias.png',
+
 
         ]);
 
@@ -201,7 +205,7 @@ class DatabaseSeeder extends Seeder
             DB::table('news')->insert([
                 'title' => 'Notícia ' . $i,
                 'content' => $faker->paragraph,
-                'thumb' => 'imagem-noticia-' . $i . '.jpg',
+                'thumb' => '/images/noticias.png',
                 'slug' => 'noticia-' . $i,
                 'category_id' => rand(1, 5), // Supondo que você tenha 5 categorias diferentes
                 'comments_count' => rand(0, 100),

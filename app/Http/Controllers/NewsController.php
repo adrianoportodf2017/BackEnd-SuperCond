@@ -15,10 +15,20 @@ class NewsController extends Controller
     public function getAll()
     {
         $array = ['error' => ''];
-        $docs = News::all();
-        $array['list'] = $docs;
-        return $array;
+        $news = News::all();
+        if (!$news) {
+            return response()->json([
+                'error' => "Nenhuma notícia não encontrado",
+                'code' => 404,
+            ], 404);
+        }
+        return response()->json([
+            'error' => '',
+            'list' => $news,
+            // Outros dados de resultado aqui...
+        ], 200);
     }
+    
 
       /**
      * Obtém um documento pelo ID.

@@ -51,6 +51,27 @@ class WallController extends Controller
             'list' => $walls,
         ], 200);
     }
+
+
+    public function getAllPublic()
+    {
+        // Buscar todos os avisos
+        $walls = Wall::all();
+    
+        // Retornar uma mensagem de erro se não houver avisos
+        if (!$walls) {
+            return response()->json([
+                'error' => 'Nenhum aviso encontrado',
+                'code' => 404,
+            ], 404);
+        }
+            // Retornar uma resposta de sucesso com a lista de avisos
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $walls,
+        ], 200);
+    }
     
     /**
      * Curte ou descurte um aviso.
