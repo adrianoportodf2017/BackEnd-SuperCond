@@ -57,10 +57,12 @@ Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
 Route::post('/admin/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/admin/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
-Route::get('/new/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
-Route::get('/news', [NewsController::class, 'getAll']); // Obter uma notícia específica
-Route::get('/wallFront/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
-Route::get('/wallsFront', [WallController::class, 'getAllPublic']);
+Route::get('/front/new/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
+Route::get('/front/news', [NewsController::class, 'getAll']); // Obter uma notícia específica
+Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
+Route::get('/front/walls', [WallController::class, 'getAllPublic']);
+Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
+Route::get('/front/classified/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
 
 
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);

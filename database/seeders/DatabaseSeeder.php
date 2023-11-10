@@ -35,9 +35,23 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('users')->insert([
-            'name' => 'Administrador',
-            'email' => 'admin@gmail.com',
-            'cpf' => '12345678911', // adicionado um valor aleatório para a coluna cpf
+            'name' => 'Rosana Torres',
+            'email' => 'torres@gmail.com',
+            'cpf' => '12345678912', // adicionado um valor aleatório para a coluna cpf
+            'profile' => 1,
+            'password' => Hash::make('12345'),
+        ]);
+        DB::table('users')->insert([
+            'name' => 'João de Souza',
+            'email' => 'joao@gmail.com',
+            'cpf' => '12345678913', // adicionado um valor aleatório para a coluna cpf
+            'profile' => 1,
+            'password' => Hash::make('12345'),
+        ]);
+        DB::table('users')->insert([
+            'name' => 'Maria de Oliveira',
+            'email' => 'Maria@gmail.com',
+            'cpf' => '12345678914', // adicionado um valor aleatório para a coluna cpf
             'profile' => 1,
             'password' => Hash::make('12345'),
         ]);
@@ -174,25 +188,61 @@ class DatabaseSeeder extends Seeder
 
         DB::table('classifieds')->insert([
             [
-                'title' => 'Classificado 1',
+                'title' => 'Oferta 1',
                 'content' => $faker->paragraph,
-                'thumb' => 'imagem1.jpg',
+                'thumb' => '/images/noticias.png',
                 'price' => '100.00',
-                'address' => 'Endereço 1',
-                'contact' => 'Contato 1',
+                'address' => 'Qd 01 Cj 09 Ouro Vermelho II',
+                'contact' => '(61)98565-5689',
                 'user_id' => 1, // ID do usuário relacionado
                 'category_id' => 1, // ID da categoria relacionada
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'title' => 'Classificado 2',
+                'title' => 'Oferta 2',
                 'content' => $faker->paragraph,
-                'thumb' => 'imagem2.jpg',
+                'thumb' => '/images/noticias.png',
                 'price' => '50.00',
-                'address' => 'Endereço 2',
-                'contact' => 'Contato 2',
+                'address' => 'Qd 05 Cj 05 Ouro Vermelho II',
+                'contact' => '(61)98565-5689',
                 'user_id' => 2, // ID do usuário relacionado
+                'category_id' => 2, // ID da categoria relacionada
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'Oferta 3',
+                'content' => $faker->paragraph,
+                'thumb' => '/images/noticias.png',
+                'price' => '50.00',
+                'address' => 'Qd 03 Cj 05 Ouro Vermelho II',
+                'contact' => '(61)98565-5689',
+                'user_id' => 3, // ID do usuário relacionado
+                'category_id' => 2, // ID da categoria relacionada
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'Oferta 4',
+                'content' => $faker->paragraph,
+                'thumb' => '/images/noticias.png',
+                'price' => '50.00',
+                'address' => 'Qd20 Cj 05 Ouro Vermelho II',
+                'contact' => '(61)98565-5689',
+                'user_id' => 4, // ID do usuário relacionado
+                'category_id' => 2, // ID da categoria relacionada
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'Oferta 5',
+                'content' => $faker->paragraph,
+                'thumb' => '/images/noticias.png',
+                'price' => '50.00',
+                'address' => 'Qd 14 Cj 05 Ouro Vermelho II',
+                'contact' => '(61)98565-5689',
+                'user_id' => 1, // ID do usuário relacionado
                 'category_id' => 2, // ID da categoria relacionada
                 'created_at' => now(),
                 'updated_at' => now(),
