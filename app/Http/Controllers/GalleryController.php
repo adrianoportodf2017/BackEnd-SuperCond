@@ -30,18 +30,44 @@ class GalleryController extends Controller
             ], 404);
         }
         // Retornar uma resposta de sucesso com a lista de ocorrencias
-        $result = [];
+        // Retornar uma resposta de sucesso
+        // Retornar uma resposta de sucesso
+        $cont = '0';
         foreach ($gallerys as $gallery) {
-            $gallery->midias  = $gallery->midias;
-            $result[] = $gallery;
+            $midias = $gallery->midias;
+            // Obtém a URL base para os ícones
+            $iconBaseUrl = asset('assets/icons/');
+            // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+            foreach ($midias as $midia) {
+                $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+                if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                    $midia->type = 'imagem';
+                    $midia->icon = $midia->url;
+                } elseif ($fileExtension === 'pdf') {
+                    $midia->type = 'pdf';
+                    $midia->icon = $iconBaseUrl . '/pdf.png';
+                } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                    $midia->type = 'word';
+                    $midia->icon = $iconBaseUrl . '/word.png';
+                } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                    $midia->type = 'word';
+                    $midia->icon = $iconBaseUrl . '/excel.png';
+                } else {
+                    $midia->type = 'outro';
+                    $midia->icon = $iconBaseUrl . '/outros.png';
+                }
+            }
+            $gallery['midias'] = $midias;
+            $data[$cont] = $gallery;
+            $cont++;
         }
-
         return response()->json([
             'error' => '',
             'success' => true,
-            'list' => $result,
+            'list' => $data,
         ], 200);
     }
+
     /**
      * Obtém um galeria pelo ID.
      *
@@ -59,13 +85,39 @@ class GalleryController extends Controller
                 'code' => 404,
             ], 404);
         }
-        $gallery->midias = $gallery->midias;
+        // Retornar uma resposta de sucesso
+        // Retornar uma resposta de sucesso
+        $midias = $gallery->midias;
+        // Obtém a URL base para os ícones
+        $iconBaseUrl = asset('assets/icons/');
+        // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+        foreach ($midias as $midia) {
+            $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+            if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $midia->type = 'imagem';
+                $midia->icon = $midia->url;
+            } elseif ($fileExtension === 'pdf') {
+                $midia->type = 'pdf';
+                $midia->icon = $iconBaseUrl . '/pdf.png';
+            } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/word.png';
+            } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/excel.png';
+            } else {
+                $midia->type = 'outro';
+                $midia->icon = $iconBaseUrl . '/outros.png';
+            }
+        }
+        $gallery['midias'] = $midias;
         return response()->json([
             'error' => '',
-            'list' => json_decode($gallery),
-            // Outros dados de resultado aqui...
+            'success' => true,
+            'list' => $gallery,
         ], 200);
     }
+
 
     /**
      * Insere um novo documento.
@@ -152,7 +204,31 @@ class GalleryController extends Controller
                 $newGallery->midias()->save($midia);
             }
         }
-        $newGallery->midias = $newGallery->midias;
+        // Retornar uma resposta de sucesso
+        $midias = $newGallery->midias;
+        // Obtém a URL base para os ícones
+        $iconBaseUrl = asset('assets/icons/');
+        // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+        foreach ($midias as $midia) {
+            $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+            if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $midia->type = 'imagem';
+                $midia->icon = $midia->url;
+            } elseif ($fileExtension === 'pdf') {
+                $midia->type = 'pdf';
+                $midia->icon = $iconBaseUrl . '/pdf.png';
+            } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/word.png';
+            } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/excel.png';
+            } else {
+                $midia->type = 'outro';
+                $midia->icon = $iconBaseUrl . '/outros.png';
+            }
+        }
+        $newGallery['midias'] = $midias;
         return response()->json([
             'error' => '',
             'success' => true,
@@ -217,7 +293,7 @@ class GalleryController extends Controller
         $gallery->content = $request->input('content');
         $gallery->thumb_file = $arquivo;
         $gallery->thumb = $url;
-        $gallery->status = 'Ativo';
+        $gallery->status = $request->input('status');
         // Salvar o documento no banco de dados
         try {
             $gallery->save();
@@ -231,7 +307,31 @@ class GalleryController extends Controller
         }
 
         // Retornar uma resposta de sucesso
-        $gallery->midias =    $gallery->midias;
+        // Retornar uma resposta de sucesso
+        $midias = $gallery->midias;
+        // Obtém a URL base para os ícones
+        $iconBaseUrl = asset('assets/icons/');
+        // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+        foreach ($midias as $midia) {
+            $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+            if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $midia->type = 'imagem';
+                $midia->icon = $midia->url;
+            } elseif ($fileExtension === 'pdf') {
+                $midia->type = 'pdf';
+                $midia->icon = $iconBaseUrl . '/pdf.png';
+            } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/word.png';
+            } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/excel.png';
+            } else {
+                $midia->type = 'outro';
+                $midia->icon = $iconBaseUrl . '/outros.png';
+            }
+        }
+        $gallery['midias'] = $midias;
         return response()->json([
             'error' => '',
             'success' => true,
@@ -244,18 +344,20 @@ class GalleryController extends Controller
         $gallery = Gallery::find($id);
 
         $validator = Validator::make($request->all(), [
-            'file' =>  'max:2M',
-            'file.*' => 'mimes:jpg,png,jpeg',
-            'user_id' => 'required',
+            'file.*' => 'required|max:200000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
+
+            // 'user_id' => 'required',
         ]);
 
 
         if ($validator->fails()) {
             return response()->json([
                 'error' => $validator->errors()->first(),
+                'messages' => $validator->errors()->all(),
                 'code' => 400,
             ], 400);
         }
+
         // Se o aviso não for encontrado, retornar uma mensagem de erro
         if (!$gallery) {
             return response()->json([
@@ -283,7 +385,8 @@ class GalleryController extends Controller
             }
         }
         foreach ($files as  $key) {
-            $arquivo = $key->store('public/gallery/' . $id);
+
+            $arquivo = $key->store('public/gallery/' .   $id);
             $url = asset(Storage::url($arquivo));
             $midia = new Midia([
                 'title' => $gallery->title,
@@ -291,7 +394,7 @@ class GalleryController extends Controller
                 'file' => $arquivo,
                 'status' => 'ativo', // Status da mídia
                 'type' => 'imagem', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
-                'user_id' => $request->input('user_id')
+                'user_id' =>   $gallery->user_id
             ]);
             // Associar a mídia a uma entidade (por exemplo, Document)
             // Salvar o documento no banco de dados
@@ -300,28 +403,48 @@ class GalleryController extends Controller
             } catch (Exception $e) {
                 // Tratar o erro
                 return response()->json([
-                    'error' => 'Erro ao salvar Imagem na galeria!',
+                    'error' => 'Erro ao salvar Novo item!',
                     'detail' => $e->getMessage(),
                     'code' => 500,
                 ], 500);
             }
-
-            // Retornar uma resposta de sucesso
-            $gallery->midias = $gallery->midias;
-            return response()->json([
-                'error' => '',
-                'success' => true,
-                'list' => $gallery,
-            ], 200);
         }
+        // Retornar uma resposta de sucesso
+        $midias = $gallery->midias;
+        // Obtém a URL base para os ícones
+        $iconBaseUrl = asset('assets/icons/');
+        // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+        foreach ($midias as $midia) {
+            $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+            if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $midia->type = 'imagem';
+                $midia->icon = $midia->url;
+            } elseif ($fileExtension === 'pdf') {
+                $midia->type = 'pdf';
+                $midia->icon = $iconBaseUrl . '/pdf.png';
+            } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/word.png';
+            } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/excel.png';
+            } else {
+                $midia->type = 'outro';
+                $midia->icon = $iconBaseUrl . '/outros.png';
+            }
+        }
+        $gallery['midias'] = $midias;
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $gallery,
+        ], 200);
     }
 
     public function deleteMidia($id, Request $request)
     {
         // Buscar o aviso a ser deletado
         $midia = Midia::find($id);
-
-
 
         // Se o aviso não for encontrado, retornar uma mensagem de erro
         if (!$midia) {

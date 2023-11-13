@@ -241,7 +241,7 @@ Route::middleware('auth:api')->group(function () {
 
     /**<--Galeria-->*/
 
-    Route::get('/admin/gallerys', [GalleryController::class, 'getAll']); // Listar todas as fotos
+    Route::get('/admin/galleries', [GalleryController::class, 'getAll']); // Listar todas as fotos
     Route::get('/admin/gallery/{id}', [GalleryController::class, 'getById']); // Obter uma foto específica
     Route::post('/admin/gallery', [GalleryController::class, 'insert']); // Carregar uma nova foto
     Route::post('/admin/gallery/{id}', [GalleryController::class, 'update']); // Atualizar uma foto existente

@@ -123,7 +123,7 @@ class WarningController extends Controller
         $newWarning->notes = $request->input('notes');
         $newWarning->owner_id = $request->input('owner_id');
         $newWarning->unit_id = $request->input('unit_id');
-        $newWarning->status = 'Pendente';
+        $newWarning->status = '1';
 
 
         // Salvar o documento no banco de dados
