@@ -167,6 +167,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/warning/{id}', [WarningController::class, 'update']);
     Route::post('/admin/warning', [WarningController::class, 'insert']);
     Route::delete('/admin/warning/{id}', [WarningController::class, 'delete']);
+    Route::delete('/admin/warning/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
+
 
 
     /**Achados e Perdidos    * **/

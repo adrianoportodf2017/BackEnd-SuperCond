@@ -19,6 +19,7 @@ class LostAndFoundController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+
      public function getAll()
     {
         $lostAndFounds =  LostAndFound::all();
@@ -119,7 +120,7 @@ class LostAndFoundController extends Controller
         $newLostAndFound->content = $request->input('content');
         $newLostAndFound->notes = $request->input('notes');
         $newLostAndFound->owner_id = $request->input('owner_id');
-        $newLostAndFound->status = 'Não Encontrado';
+        $newLostAndFound->status = $request->input('status');
 
 
         // Salvar o documento no banco de dados
@@ -202,7 +203,7 @@ class LostAndFoundController extends Controller
         return response()->json([
             'error' => '',
             'success' => true,
-            'document' => $lostAndFound,
+            'list' => $lostAndFound,
         ], 200);
     }
     /**

@@ -19,32 +19,58 @@ class WarningController extends Controller
      *
      * @return \Illuminate\Support\Collection
      */
- 
 
-     public function getAll()
-     {
-         $warnings =  Warning::all();
- 
-         // Retornar uma mensagem de erro se não houver ocorrencias
-         if (!$warnings) {
-             return response()->json([
-                 'error' => 'Nenhuma Galeria Encontrado',
-                 'code' => 404,
-             ], 404);
-         }
-         // Retornar uma resposta de sucesso com a lista de ocorrencias
-         $result = [];
-         foreach ($warnings as $warning) {
-             $warning->midias  = $warning->midias;
-             $result[] = $warning;
-         }
- 
-         return response()->json([
-             'error' => '',
-             'success' => true,
-             'list' => $result,
-         ], 200);
-     }
+
+    public function getAll()
+    {
+        $warnings =  Warning::all();
+
+        // Retornar uma mensagem de erro se não houver ocorrencias
+        if (!$warnings) {
+            return response()->json([
+                'error' => 'Nenhuma Galeria Encontrado',
+                'code' => 404,
+            ], 404);
+        }
+        // Retornar uma resposta de sucesso com a lista de ocorrencias
+        $result = [];
+
+        $result = [];
+        foreach ($warnings as $warning) {
+            // Recupere a coleção de mídias
+            $midias = $warning->midias;
+            // Obtém a URL base para os ícones
+            $iconBaseUrl = asset('assets/icons/');
+            // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+            foreach ($midias as $midia) {
+                $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+                if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                    $midia->type = 'imagem';
+                    $midia->icon = $midia->url;
+                } elseif ($fileExtension === 'pdf') {
+                    $midia->type = 'pdf';
+                    $midia->icon = $iconBaseUrl . '/pdf.png';
+                } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                    $midia->type = 'word';
+                    $midia->icon = $iconBaseUrl . '/word.png';
+                } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                    $midia->type = 'word';
+                    $midia->icon = $iconBaseUrl . '/excel.png';
+                } else {
+                    $midia->type = 'outro';
+                    $midia->icon = $iconBaseUrl . '/outros.png';
+                }
+            }
+            $warning['midias'] = $midias;
+            $result[] = $warning;
+        }
+
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $result,
+        ], 200);
+    }
     /**
      * Obtém um documento pelo ID.
      *
@@ -86,7 +112,7 @@ class WarningController extends Controller
             'title' => 'required|min:2',
             'file' => 'required',
             'file.*' => 'mimes:jpg,png,pdf,jpeg',
-            'owner_id' => 'required',          
+            'owner_id' => 'required',
         ]);
 
         // Retornar uma mensagem de erro se a validação falhar
@@ -115,7 +141,7 @@ class WarningController extends Controller
                 ], 400);
             }
         }
-      
+
         // Criar um novo documento
         $newWarning = new Warning();
         $newWarning->title = $request->input('title');
@@ -138,7 +164,7 @@ class WarningController extends Controller
             ], 500);
         }
 
-    
+
 
         // Retornar uma resposta de sucesso
         if ($request->file('file')) {
@@ -159,57 +185,124 @@ class WarningController extends Controller
                 $newWarning->midias()->save($midia);
             }
         }
-        $newWarning->midias = $newWarning->midias;
+        $midias = $newWarning->midias;
+        // Obtém a URL base para os ícones
+        $iconBaseUrl = asset('assets/icons/');
+        // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+        foreach ($midias as $midia) {
+            $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+            if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $midia->type = 'imagem';
+                $midia->icon = $midia->url;
+            } elseif ($fileExtension === 'pdf') {
+                $midia->type = 'pdf';
+                $midia->icon = $iconBaseUrl . '/pdf.png';
+            } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/word.png';
+            } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/excel.png';
+            } else {
+                $midia->type = 'outro';
+                $midia->icon = $iconBaseUrl . '/outros.png';
+            }
+        }
+        $newWarning['midias'] = $midias;
+
         return response()->json([
             'error' => '',
             'success' => true,
             'list' => $newWarning,
         ], 201);
-    
     }
     public function update($id, Request $request)
     {
         $array['id'] =  $id;
         // Buscar o documento pelo ID
         $warning = Warning::find($id);
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|min:2',
-                'owner_id' => 'required',          
+        // Validar os dados da requisição
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|min:2',
+            'file.*' => 'mimes:jpg,png,pdf,jpeg',
+            'owner_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors()->first(),
+                'code' => 400,
+            ], 400);
+        } else {
 
-            ]);
-            if ($validator->fails()) {
-                return response()->json([
-                    'error' => $validator->errors()->first(),
-                    'code' => 400,
-                ], 400);
-            } else {
-
-                if ($warning) {
-                    $warning->title = $request->input('title');
-                    $warning->content = $request->input('content');
-                    $warning->notes = $request->input('notes');
-                    $warning->owner_id = $request->input('owner_id');
-                    $warning->unit_id = $request->input('unit_id');
-                    $warning->status = $request->input('status');
-                    // Salvar o documento no banco de dados
-                    try {
-                        $warning->save();
-                    } catch (Exception $e) {
-                        // Tratar o erro
-                        return response()->json([
-                            'error' => 'Erro ao salvar Ocorrência!',
-                            'detail' => $e->getMessage(),
-                            'code' => 500,
-                        ], 500);
+            if ($warning) {
+                $warning->title = $request->input('title');
+                $warning->content = $request->input('content');
+                $warning->notes = $request->input('notes');
+                $warning->owner_id = $request->input('owner_id');
+                $warning->unit_id = $request->input('unit_id');
+                $warning->status = $request->input('status');
+                // Salvar o documento no banco de dados
+                try {
+                    $warning->save();
+                    // Retornar uma resposta de sucesso
+                    if ($request->file('file')) {
+                        $files = $request->file('file');
+                        foreach ($files as  $key) {
+                            $arquivo = $key->store('public/warnings/' . $warning->id);
+                            $url = asset(Storage::url($arquivo));
+                            $midia = new Midia([
+                                'title' => $warning->title,
+                                'url' => $url,
+                                'file' => $arquivo,
+                                'status' => 'ativo', // Status da mídia
+                                'type' => 'imagem', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                                'user_id' => $request->input('user_id')
+                            ]);
+                            // Associar a mídia a uma entidade (por exemplo, Document)
+                            // Salvar o documento no banco de dados
+                            $warning->midias()->save($midia);
+                        }
                     }
+                    $midias = $warning->midias;
+                    // Obtém a URL base para os ícones
+                    $iconBaseUrl = asset('assets/icons/');
+                    // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+                    foreach ($midias as $midia) {
+                        $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+                        if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                            $midia->type = 'imagem';
+                            $midia->icon = $midia->url;
+                        } elseif ($fileExtension === 'pdf') {
+                            $midia->type = 'pdf';
+                            $midia->icon = $iconBaseUrl . '/pdf.png';
+                        } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                            $midia->type = 'word';
+                            $midia->icon = $iconBaseUrl . '/word.png';
+                        } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                            $midia->type = 'word';
+                            $midia->icon = $iconBaseUrl . '/excel.png';
+                        } else {
+                            $midia->type = 'outro';
+                            $midia->icon = $iconBaseUrl . '/outros.png';
+                        }
+                    }
+                    $warning['midias'] = $midias;
+                } catch (Exception $e) {
+                    // Tratar o erro
+                    return response()->json([
+                        'error' => 'Erro ao salvar Ocorrência!',
+                        'detail' => $e->getMessage(),
+                        'code' => 500,
+                    ], 500);
                 }
             }
-        
+        }
+
         // Retornar uma resposta de sucesso
         return response()->json([
             'error' => '',
             'success' => true,
-            'document' => $warning,
+            'list' => $warning,
         ], 200);
     }
     /**
@@ -220,7 +313,7 @@ class WarningController extends Controller
      * @return \Illuminate\Http\JsonResponse 
      * */
 
-     public function insertMidia($id, Request $request)
+    public function insertMidia($id, Request $request)
     {
         $warning = Warning::find($id);
 
@@ -363,7 +456,7 @@ class WarningController extends Controller
 
         // Tentar deletar o aviso
         try {
-            $warning->delete();       
+            $warning->delete();
         } catch (Exception $e) {
             // Tratar o erro
             return response()->json([
