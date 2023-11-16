@@ -44,6 +44,23 @@ class Createalltables extends Migration
             $table->string('remember_token')->nullable();
             $table->timestamps();
         });
+
+
+        Schema::create('personal_access_tokens', function (Blueprint $table) {
+            $table->id();
+            $table->string('tokenable_type')->nullable();
+            $table->unsignedBigInteger('tokenable_id');
+            $table->string('name');
+            $table->string('token', 64)->unique();
+            $table->text('abilities')->nullable();
+            $table->timestamp('last_used_at')->nullable();
+            $table->timestamps();
+        });
+
+
+        // Índices
+   
+
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
