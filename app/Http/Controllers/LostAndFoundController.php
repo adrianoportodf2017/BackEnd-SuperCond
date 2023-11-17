@@ -27,14 +27,40 @@ class LostAndFoundController extends Controller
         // Retornar uma mensagem de erro se não houver ocorrencias
         if (!$lostAndFounds) {
             return response()->json([
-                'error' => 'Nenhuma Ocorrência Encontrada',
+                'error' => 'Nenhuma Galeria Encontrado',
                 'code' => 404,
             ], 404);
         }
         // Retornar uma resposta de sucesso com a lista de ocorrencias
         $result = [];
+
+        $result = [];
         foreach ($lostAndFounds as $lostAndFound) {
-            $lostAndFound->midias  = $lostAndFound->midias;
+            // Recupere a coleção de mídias
+            $midias = $lostAndFound->midias;
+            // Obtém a URL base para os ícones
+            $iconBaseUrl = asset('assets/icons/');
+            // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+            foreach ($midias as $midia) {
+                $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+                if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                    $midia->type = 'imagem';
+                    $midia->icon = $midia->url;
+                } elseif ($fileExtension === 'pdf') {
+                    $midia->type = 'pdf';
+                    $midia->icon = $iconBaseUrl . '/pdf.png';
+                } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                    $midia->type = 'word';
+                    $midia->icon = $iconBaseUrl . '/word.png';
+                } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                    $midia->type = 'word';
+                    $midia->icon = $iconBaseUrl . '/excel.png';
+                } else {
+                    $midia->type = 'outro';
+                    $midia->icon = $iconBaseUrl . '/outros.png';
+                }
+            }
+            $lostAndFound['midias'] = $midias;
             $result[] = $lostAndFound;
         }
 
@@ -154,14 +180,37 @@ class LostAndFoundController extends Controller
                 $newLostAndFound->midias()->save($midia);
             }
         }
-        $newLostAndFound->midias = $newLostAndFound->midias;
+        $midias = $newLostAndFound->midias;
+        // Obtém a URL base para os ícones
+        $iconBaseUrl = asset('assets/icons/');
+        // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+        foreach ($midias as $midia) {
+            $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+            if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $midia->type = 'imagem';
+                $midia->icon = $midia->url;
+            } elseif ($fileExtension === 'pdf') {
+                $midia->type = 'pdf';
+                $midia->icon = $iconBaseUrl . '/pdf.png';
+            } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/word.png';
+            } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                $midia->type = 'word';
+                $midia->icon = $iconBaseUrl . '/excel.png';
+            } else {
+                $midia->type = 'outro';
+                $midia->icon = $iconBaseUrl . '/outros.png';
+            }
+        }
+        $newLostAndFound['midias'] = $midias;
+
         return response()->json([
             'error' => '',
             'success' => true,
             'list' => $newLostAndFound,
         ], 201);
     }
-
     public function update($id, Request $request)
     {
         $array['id'] =  $id;
@@ -188,6 +237,48 @@ class LostAndFoundController extends Controller
                 // Salvar o documento no banco de dados
                 try {
                     $lostAndFound->save();
+                    if ($request->file('file')) {
+                        $files = $request->file('file');
+                        foreach ($files as  $key) {
+                            $arquivo = $key->store('public/warnings/' . $lostAndFound->id);
+                            $url = asset(Storage::url($arquivo));
+                            $midia = new Midia([
+                                'title' => $lostAndFound->title,
+                                'url' => $url,
+                                'file' => $arquivo,
+                                'status' => 'ativo', // Status da mídia
+                                'type' => 'imagem', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                                'user_id' => $request->input('user_id')
+                            ]);
+                            // Associar a mídia a uma entidade (por exemplo, Document)
+                            // Salvar o documento no banco de dados
+                            $lostAndFound->midias()->save($midia);
+                        }
+                    }
+                    $midias = $lostAndFound->midias;
+                    // Obtém a URL base para os ícones
+                    $iconBaseUrl = asset('assets/icons/');
+                    // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+                    foreach ($midias as $midia) {
+                        $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+                        if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                            $midia->type = 'imagem';
+                            $midia->icon = $midia->url;
+                        } elseif ($fileExtension === 'pdf') {
+                            $midia->type = 'pdf';
+                            $midia->icon = $iconBaseUrl . '/pdf.png';
+                        } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                            $midia->type = 'word';
+                            $midia->icon = $iconBaseUrl . '/word.png';
+                        } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                            $midia->type = 'word';
+                            $midia->icon = $iconBaseUrl . '/excel.png';
+                        } else {
+                            $midia->type = 'outro';
+                            $midia->icon = $iconBaseUrl . '/outros.png';
+                        }
+                    }
+                    $lostAndFound['midias'] = $midias;
                 } catch (Exception $e) {
                     // Tratar o erro
                     return response()->json([

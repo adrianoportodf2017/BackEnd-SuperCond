@@ -72,7 +72,7 @@ Route::middleware('auth:api')->group(function () {
     /**USERS**/
     Route::get('/admin/users', [UserController::class, 'getAll']);
     Route::get('/admin/user/{id}', [UserController::class, 'getById']);
-    Route::get('/admin/users/cpf', [UserController::class, 'getByCpf']);
+    Route::get('/admin/users/cpf/{cpf}', [UserController::class, 'getByCpf']);
     Route::post('/admin/user/{id}', [UserController::class, 'update']);
     Route::post('/admin/user', [UserController::class, 'insert']);
     Route::delete('/admin/user/{id}', [UserController::class, 'delete']);

@@ -57,37 +57,40 @@ class UserController extends Controller
     }
 
 
-    public function getByCpf(Request $request)
+    public function getByCpf($cpf)
     {
-
-
-        $cpf = $request->input('cpf');
-        return $cpf;
-        die;
-        $users = User::where('cpf', $cpf)->first();
-        if ($users) {
-            $results = [
-                'error' => '',
-                'list' => $users,
-                // Outros dados de resultado aqui...
-            ];
-        } else {
-            $results = [
-                'error' => 'Nenhum Usuário encontrado com esse CPF',
-                'list' => '',
-                // Outros dados de resultado aqui...
-            ];
+        $cpf = $cpf;
+    
+        // Verifique se o CPF foi fornecido
+        if (!$cpf) {
+            return response()->json([
+                'error' => 'CPF não fornecido',
+                'success' => false,
+            ], 400);
         }
-
-        // Realize a lógica de pesquisa com base no valor de $q
-        // Por exemplo, você pode consultar o banco de dados para encontrar os resultados desejados.
-
-        // Suponha que você deseja retornar um array como resultado de pesquisa para este exemplo:
-
-
-        return response()->json($results);
+    
+        // Busque o usuário pelo CPF usando LIKE
+        $users = User::where('cpf', 'like', "%$cpf%")->get();
+    
+        if ($users->isNotEmpty()) {
+            return response()->json([
+                'error' => null,
+                'success' => true,
+                'message' => 'Usuários encontrados com sucesso',
+                'list' => $users->toArray(),
+                // Outros dados de resultado aqui...
+            ], 200);
+        } else {
+            return response()->json([
+                'error' => 'Nenhum usuário encontrado com esse CPF',
+                'success' => false,
+                'message' => 'Nenhum usuário encontrado',
+                'data' => [],
+                // Outros dados de resultado aqui...
+            ], 404);
+        }
     }
-
+    
 
     public function update($id, Request $request)
     {
