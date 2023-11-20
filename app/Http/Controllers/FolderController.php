@@ -42,6 +42,8 @@ class FolderController extends Controller
             ], 404);
         }
 
+    
+
         // Recupere a coleção de mídias
         $midias = $folder->midias;
 
@@ -67,6 +69,10 @@ class FolderController extends Controller
                 $midia->type = 'outro';
                 $midia->icon = $iconBaseUrl . '/outros.png';
             }
+        }
+
+        if (empty($folder->thumb)) {
+            $folder->thumb =  $iconBaseUrl.'/folder.png';
         }
 
         $folder['children'] = $this->getFolderWithChildren($id);

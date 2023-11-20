@@ -39,7 +39,6 @@ use App\Http\Controllers\{
     ProfileController,
     CategoryController,
     ResetBaseController
-    
 };
 use App\Models\Benefits;
 use App\Models\Category;
@@ -57,18 +56,26 @@ Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
 Route::post('/admin/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/admin/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
+
+
+Route::post('/front/auth/login', [AuthController::class, 'loginAdmin']);
+Route::post('/front/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/front/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 Route::get('/front/new/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/news', [NewsController::class, 'getAll']); // Obter uma notícia específica
 Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/walls', [WallController::class, 'getAllPublic']);
 Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
 Route::get('/front/classified/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
+Route::get('/front/folders', [FolderController::class, 'getAll']);
+/**lista todas as pastas e arquivos*/
+Route::get('/front/folder/{id}', [FolderController::class, 'getById']);/*listar pasta específico*/
 
 
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
 
-    Route::get('/admin/migrate', [ResetBaseController::class, 'migrate']);  
+    Route::get('/admin/migrate', [ResetBaseController::class, 'migrate']);
     /**USERS**/
     Route::get('/admin/users', [UserController::class, 'getAll']);
     Route::get('/admin/user/{id}', [UserController::class, 'getById']);
