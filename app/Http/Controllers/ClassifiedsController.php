@@ -95,6 +95,60 @@ class ClassifiedsController extends Controller
         ], 200);
     }
 
+    public function getAllByUserId($id)
+    {
+        $classifieds = Classified::where('user_id', $id)
+            ->leftJoin('users', 'classifieds.user_id', '=', 'users.id')
+            ->select('classifieds.*', 'users.name', 'users.email')
+            ->get();
+    
+        // Retornar uma mensagem de erro se não houver ocorrências
+        if ($classifieds->isEmpty()) {
+            return response()->json([
+                'error' => 'Nenhum Achado e Perdido encontrado para o usuário com ID ' . $id,
+                'code' => 404,
+            ], 404);
+        }
+    
+        // Retornar uma resposta de sucesso com a lista de ocorrências
+        $result = [];
+        foreach ($classifieds as $classified) {
+            // Recupere a coleção de mídias
+            $midias = $classified->midias;
+            // Obtém a URL base para os ícones
+            $iconBaseUrl = asset('assets/icons/');
+            // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
+            foreach ($midias as $midia) {
+                $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
+                if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                    $midia->type = 'imagem';
+                    $midia->icon = $midia->url;
+                } elseif ($fileExtension === 'pdf') {
+                    $midia->type = 'pdf';
+                    $midia->icon = $iconBaseUrl . '/pdf.png';
+                } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                    $midia->type = 'word';
+                    $midia->icon = $iconBaseUrl . '/word.png';
+                } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
+                    $midia->type = 'excel';
+                    $midia->icon = $iconBaseUrl . '/excel.png';
+                } else {
+                    $midia->type = 'outro';
+                    $midia->icon = $iconBaseUrl . '/outros.png';
+                }
+            }
+            $classified['midias'] = $midias;
+            $result[] = $classified;
+        }
+    
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $result,
+        ], 200);
+    }
+    
+
     /**
      * Insere um novo documento.
      *

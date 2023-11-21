@@ -67,6 +67,20 @@ Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma
 Route::get('/front/walls', [WallController::class, 'getAllPublic']);
 Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
 Route::get('/front/classified/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
+Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAllByUserId']); // Obter um classificado específico
+Route::get('/front/categories/{type?}', [CategoryController::class, 'getAll'])->where('type', '.*');
+Route::post('/front/classified', [ClassifiedsController::class, 'insert']); // Criar um novo classificado
+Route::post('/front/classified/{id}', [ClassifiedsController::class, 'update']); // Atualizar um classificado existente
+Route::delete('/front/classified/{id}', [ClassifiedsController::class, 'delete']); // Excluir um classificado
+Route::post('/front/classified/midia/{id}', [ClassifiedsController::class, 'insertMidia']); // Inserir uma nova mídia
+Route::delete('/front/classified/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
+Route::get('/front/warnings/{id}', [WarningController::class, 'getAllByUserId']);
+Route::post('/front/warning/{id}', [WarningController::class, 'update']);
+Route::post('/front/warning', [WarningController::class, 'insert']);
+Route::delete('/front/warning/{id}', [WarningController::class, 'delete']);
+Route::delete('/front/warning/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
+
+
 Route::get('/front/folders', [FolderController::class, 'getAll']);
 /**lista todas as pastas e arquivos*/
 Route::get('/front/folder/{id}', [FolderController::class, 'getById']);/*listar pasta específico*/
@@ -76,6 +90,8 @@ Route::get('/front/folder/{id}', [FolderController::class, 'getById']);/*listar 
 Route::middleware('auth:api')->group(function () {
 
     Route::get('/admin/migrate', [ResetBaseController::class, 'migrate']);
+    Route::get('/admin/seed', [ResetBaseController::class, 'seed']);
+
     /**USERS**/
     Route::get('/admin/users', [UserController::class, 'getAll']);
     Route::get('/admin/user/{id}', [UserController::class, 'getById']);
@@ -95,6 +111,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/front/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
     Route::post('/admin/auth/logout', [AuthController::class, 'logout']);
 

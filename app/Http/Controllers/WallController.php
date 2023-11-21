@@ -228,6 +228,8 @@ class WallController extends Controller
         $newWall->thumb = $url;
         $newWall->thumb_file = $arquivo;
         $newWall->status = $request->input('status');
+        $newWall->type = $request->input('type');
+
 
         // Salvar o objeto Wall no banco de dados
         try {
@@ -315,6 +317,8 @@ class WallController extends Controller
         $wall->thumb_file = $arquivo;
         $wall->thumb = $url;
         $wall->status = $request->input('status');
+        $wall->type = $request->input('type');
+
         // Salvar o documento no banco de dados
         try {
             $wall->save();

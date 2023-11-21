@@ -10,8 +10,13 @@ class ResetBaseController extends Controller
 {
       public function migrate()
     {
-        Artisan::call('migrate:fresh');
-        Artisan::call('db:seed');
+        Artisan::call('migrate');
         return response()->json(['message' => 'Migrações concluídas']);
+    }
+
+    public function seed()
+    {
+        Artisan::call('db:seed');
+        return response()->json(['message' => 'Inserção de dados concluídas']);
     }
 }
