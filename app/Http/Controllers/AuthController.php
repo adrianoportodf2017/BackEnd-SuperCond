@@ -173,7 +173,13 @@ Logar usuario no sistema
             }
             $array['token'] = $token;
             $user = auth()->user();
-            $array['user'] = $user;
+            $user = User::leftJoin('profiles', 'users.profile', '=', 'profiles.id')
+            ->select('users.*', 'profiles.roles as profile_roles', 'profiles.name as profile_name')
+            ->where('users.id', $user['id'])
+            ->first(); // Use first() para obter apenas um registro
+        
+        $array['user'] = $user;
+
             /*$properties = Unit::select(['id', 'name'])
                 ->where('owner_id', $user['id'])
                 ->get();
