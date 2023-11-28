@@ -81,13 +81,21 @@ Route::delete('/front/warning/{id}', [WarningController::class, 'delete']);
 Route::delete('/front/warning/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
 
 
-Route::get('/front/folders', [FolderController::class, 'getAll']);
-/**lista todas as pastas e arquivos*/
-Route::get('/front/folder/{id}', [FolderController::class, 'getById']);/*listar pasta específico*/
-
 
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
+
+    Route::get('/front/user/{id}', [UserController::class, 'getById']);
+    Route::get('/front/profiles', [ProfileController::class, 'getAll']);
+    Route::post('/front/user/{id}', [UserController::class, 'updateByUser']);
+
+
+
+
+
+    Route::get('/front/folders', [FolderController::class, 'getAll']);
+    /**lista todas as pastas e arquivos*/
+    Route::get('/front/folder/{id}', [FolderController::class, 'getById']);/*listar pasta específico*/
 
     Route::get('/admin/migrate', [ResetBaseController::class, 'migrate']);
     Route::get('/admin/seed', [ResetBaseController::class, 'seed']);
