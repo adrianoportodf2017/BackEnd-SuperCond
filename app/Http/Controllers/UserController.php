@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+
 use Exception;
 
 class UserController extends Controller
@@ -183,121 +185,62 @@ class UserController extends Controller
 
     public function updateByUser($id, Request $request)
     {
-
         $array = ['error' => ''];
-
-        if ($request->input('password')) {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email|',
-                'password' => 'required',
-                // 'password_confirm' => 'required|same:password',
-            ]);
-            if (!$validator->fails()) {
-                $name = $request->input('name');
-                $email = $request->input('email');
-                $address = $request->input('address');
-                $phone = $request->input('phone');
-
-                $password = $request->input('password');
-
-                $hash = password_hash($password, PASSWORD_DEFAULT);
-                $newUser = User::find($id);
-                $cpfUser = User::where('cpf', $cpf)->first();
-                $emailUser = User::where('email', $email)->get()->first();
-                if ($emailUser &&  $emailUser->email != $newUser->email) {
-                    $array['error'] = 'EMAIL já utilizado por outro usuário!';
-                } else {
-                    if ($request->file('thumb')) {
-                        // Validar os dados da requisição
-                        $validator = Validator::make($request->all(), [
-                            'thumb' => 'mimes:jpg,png,jpeg',
-                        ]);
-
-                        if ($validator->fails()) {
-                            return response()->json([
-                                'error' => 'O arquivo enviado não é válido',
-                                'code' => 400,
-                            ], 400);
-                        }
-
-                        // Salvar o arquivo no armazenamento
-                        $arquivo = $request->file('thumb')->store('public/users/thumb/' . $id);
-                        $url = asset(Storage::url($arquivo));
-                        $thumb_delete = $newUser->thumb_file;
-                        Storage::delete($thumb_delete);
-                        $newUser->thumb_file = $arquivo;
-                        $newUser->thumb = $url;
+    
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+            'cpf' => 'required|digits:11',
+            'current_password' => [
+                'required_with:new_password',
+                function ($attribute, $value, $fail) use ($id) {
+                    $user = User::find($id);
+        
+                    if (!Hash::check($value, $user->password)) {
+                        $fail('Senha atual incorreta');
                     }
-
-                    $newUser->name = $name;
-                    $newUser->email = $email;
-                    $newUser->phone = $phone;
-                    $newUser->address = $address;
-
-                    $newUser->password = $hash;
-                    $newUser->save();
-                }
-            } else {
-                $array['error'] = $validator->errors()->first();
-                return $array;
-            }
+                },
+            ],
+            'new_password' => 'sometimes|min:6|different:current_password',
+            'password_confirmation' => 'sometimes|required_with:new_password|same:new_password',
+            'thumb' => 'sometimes|mimes:jpg,png,jpeg',
+        ]);
+        
+    
+        if ($validator->fails()) {
+            $array['error'] = $validator->errors()->first();
             return $array;
-        } else {
-
-            $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email',
-                'cpf' => 'required|digits:11',
-                //'password' => 'required',
-                // 'password_confirm' => 'required|same:password',
-            ]);
-            if (!$validator->fails()) {
-                $name = $request->input('name');
-                $email = $request->input('email');
-                $phone = $request->input('phone');
-                $cpf = $request->input('cpf');
-                $address = $request->input('address');
-
-
-                $newUser = User::find($id);
-                $cpfUser = User::where('cpf', $cpf)->first();
-                $emailUser = User::where('email', $email)->get()->first();
-                if ($emailUser &&  $emailUser->email != $newUser->email) {
-                    $array['error'] = 'EMAIL já utilizado por outro usuário!';
-                } else {
-                    if ($request->file('thumb')) {
-                        // Validar os dados da requisição
-                        $validator = Validator::make($request->all(), [
-                            'thumb' => 'mimes:jpg,png,jpeg',
-                        ]);
-                        if ($validator->fails()) {
-                            return response()->json([
-                                'error' => 'O arquivo enviado não é válido',
-                                'code' => 400,
-                            ], 400);
-                        }
-                        // Salvar o arquivo no armazenamento
-                        $arquivo = $request->file('thumb')->store('public/users/thumb/' . $id);
-                        $url = asset(Storage::url($arquivo));
-                        $thumb_delete = $newUser->thumb_file;
-                        Storage::delete($thumb_delete);
-                        $newUser->thumb_file = $arquivo;
-                        $newUser->thumb = $url;
-                    }
-                    $newUser->name = $name;
-                    $newUser->address = $address;
-                    $newUser->email = $email;
-                    $newUser->phone = $phone;
-                    $newUser->save();
-                }
-            } else {
-                $array['error'] = $validator->errors()->first();
-                return $array;
-            }
         }
+    
+        $newUser = User::find($id);
+    
+        $newUser->name = $request->input('name');
+        $newUser->email = $request->input('email');
+        $newUser->address = $request->input('address');
+        $newUser->phone = $request->input('phone');    
+        // Atualizar a senha apenas se uma nova senha foi fornecida
+        $newPassword = $request->input('new_password');
+        if ($newPassword) {
+            $hash = password_hash($newPassword, PASSWORD_DEFAULT);
+            $newUser->password = $hash;
+        }
+    
+        // Atualizar a imagem apenas se um novo arquivo for fornecido
+        if ($request->file('thumb')) {
+                // Salvar o arquivo no armazenamento
+                $arquivo = $request->file('thumb')->store('public/users/thumb/' . $id);
+                $url = asset(Storage::url($arquivo));
+                $thumb_delete = $newUser->thumb_file;
+                Storage::delete($thumb_delete);
+                $newUser->thumb_file = $arquivo;
+                $newUser->thumb = $url;
+        }
+    
+        $newUser->save();
+    
         return $array;
     }
+    
     public function insert(Request $request)
     {
         $array = ['error' => ''];

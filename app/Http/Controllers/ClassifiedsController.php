@@ -106,8 +106,7 @@ class ClassifiedsController extends Controller
         if ($classifieds->isEmpty()) {
             return response()->json([
                 'error' => 'Nenhum Achado e Perdido encontrado para o usuário com ID ' . $id,
-                'code' => 404,
-            ], 404);
+            ]);
         }
     
         // Retornar uma resposta de sucesso com a lista de ocorrências
