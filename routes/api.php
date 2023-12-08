@@ -104,6 +104,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/front/folder/{id}', [FolderController::class, 'getById']); // Listar pasta específica
 
 
+       /**Achados e Perdidos    * **/
+       Route::get('/front/lost-and-found', [LostAndFoundController::class, 'getAll']); // Listar todos os achados e perdidos
+       Route::get('/front/lost-and-found/{id}', [LostAndFoundController::class, 'getById']); // Obter um achado e perdido específico
+       Route::post('/front/lost-and-found', [LostAndFoundController::class, 'insert']); // Criar um novo achado e perdido
+       Route::post('/front/lost-and-found/{id}', [LostAndFoundController::class, 'update']); // Atualizar um achado e perdido existente
+       Route::delete('/front/lost-and-found/{id}', [LostAndFoundController::class, 'delete']); // Excluir um achado e perdido
+       Route::post('/front/lost-and-found/midia/{id}', [LostAndFoundController::class, 'insertMidia']); // Inserir uma nova mídia
+       Route::delete('/front/lost-and-found/midia/{id}', [LostAndFoundController::class, 'deleteMidia']); // Deletar uma  mídia
+
+
        // Admin Routes
     Route::get('/admin/migrate', [ResetBaseController::class, 'migrate']);
     Route::get('/admin/seed', [ResetBaseController::class, 'seed']);
