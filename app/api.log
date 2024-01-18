@@ -1,0 +1,7 @@
+[2023-12-11 17:35:27] local.INFO: Requisição API: Método - POST, Rota - api/admin/auth/logout, Usuário - Administrador ID-> 5 Perfil {"id":5,"name":"Porteiro","roles":"porteiro","status":"ativo","created_at":null,"updated_at":null}  
+[2023-12-11 17:35:29] local.INFO: Requisição API: Método - POST, Rota - api/admin/auth/login, Usuário - Não autenticado  
+[2023-12-11 17:35:35] local.INFO: Requisição API: Método - POST, Rota - api/admin/auth/login, Usuário - Não autenticado  
+[2023-12-11 17:35:40] local.INFO: Requisição API: Método - POST, Rota - api/admin/auth/login, Usuário - Não autenticado  
+[2023-12-11 17:35:41] local.INFO: Requisição API: Método - POST, Rota - api/admin/auth/validate, Usuário - Adriano Alves ID-> 1 Perfil {"id":1,"name":"Administrador","roles":"Administrador","status":"1","created_at":null,"updated_at":"2023-12-08T19:59:32.000000Z"}  
+[2023-12-11 17:36:21] local.INFO: Requisição API: Método - POST, Rota - api/admin/warning, Usuário - Adriano Alves ID-> 1 Perfil {"id":1,"name":"Administrador","roles":"Administrador","status":"1","created_at":null,"updated_at":"2023-12-08T19:59:32.000000Z"}  
+[2023-12-11 17:36:34] local.INFO: Requisição API: Método - POST, Rota - api/admin/warning, Usuário - Adriano Alves ID-> 1 Perfil {"id":1,"name":"Administrador","roles":"Administrador","status":"1","created_at":null,"updated_at":"2023-12-08T19:59:32.000000Z"}  
