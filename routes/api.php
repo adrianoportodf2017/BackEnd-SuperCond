@@ -67,36 +67,54 @@ Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma
 Route::get('/front/walls', [WallController::class, 'getAllPublic']);
 Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
 Route::get('/front/classified/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
-Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAllByUserId']); // Obter um classificado específico
 Route::get('/front/categories/{type?}', [CategoryController::class, 'getAll'])->where('type', '.*');
-Route::post('/front/classified', [ClassifiedsController::class, 'insert']); // Criar um novo classificado
-Route::post('/front/classified/{id}', [ClassifiedsController::class, 'update']); // Atualizar um classificado existente
-Route::delete('/front/classified/{id}', [ClassifiedsController::class, 'delete']); // Excluir um classificado
-Route::post('/front/classified/midia/{id}', [ClassifiedsController::class, 'insertMidia']); // Inserir uma nova mídia
-Route::delete('/front/classified/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
+
+
 Route::get('/front/warnings/{id}', [WarningController::class, 'getAllByUserId']);
-Route::post('/front/warning/{id}', [WarningController::class, 'update']);
-Route::post('/front/warning', [WarningController::class, 'insert']);
-Route::delete('/front/warning/{id}', [WarningController::class, 'delete']);
+
 Route::delete('/front/warning/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
 
+Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAllByUserId']); // Obter um classificado específico
 
 
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
 
+    // User Routes
     Route::get('/front/user/{id}', [UserController::class, 'getById']);
-    Route::get('/front/profiles', [ProfileController::class, 'getAll']);
     Route::post('/front/user/{id}', [UserController::class, 'updateByUser']);
 
+    // Profile Routes
+    Route::get('/front/profiles', [ProfileController::class, 'getAll']);
 
+    // Classified Routes
+    Route::post('/front/classified', [ClassifiedsController::class, 'insert']); // Criar um novo classificado
+    Route::post('/front/classified/{id}', [ClassifiedsController::class, 'update']); // Atualizar um classificado existente
+    Route::delete('/front/classified/{id}', [ClassifiedsController::class, 'delete']); // Excluir um classificado
+    Route::post('/front/classified/midia/{id}', [ClassifiedsController::class, 'insertMidia']); // Inserir uma nova mídia
+    Route::delete('/front/classified/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
 
+    // Warning Routes
+    Route::post('/front/warning/{id}', [WarningController::class, 'update']);
+    Route::post('/front/warning', [WarningController::class, 'insert']);
+    Route::delete('/front/warning/{id}', [WarningController::class, 'delete']);
 
-
+    // Folder Routes
     Route::get('/front/folders', [FolderController::class, 'getAll']);
-    /**lista todas as pastas e arquivos*/
-    Route::get('/front/folder/{id}', [FolderController::class, 'getById']);/*listar pasta específico*/
+    Route::get('/front/folder/{id}', [FolderController::class, 'getById']); // Listar pasta específica
 
+
+       /**Achados e Perdidos    * **/
+       Route::get('/front/lost-and-found', [LostAndFoundController::class, 'getAll']); // Listar todos os achados e perdidos
+       Route::get('/front/lost-and-found/{id}', [LostAndFoundController::class, 'getById']); // Obter um achado e perdido específico
+       Route::post('/front/lost-and-found', [LostAndFoundController::class, 'insert']); // Criar um novo achado e perdido
+       Route::post('/front/lost-and-found/{id}', [LostAndFoundController::class, 'update']); // Atualizar um achado e perdido existente
+       Route::delete('/front/lost-and-found/{id}', [LostAndFoundController::class, 'delete']); // Excluir um achado e perdido
+       Route::post('/front/lost-and-found/midia/{id}', [LostAndFoundController::class, 'insertMidia']); // Inserir uma nova mídia
+       Route::delete('/front/lost-and-found/midia/{id}', [LostAndFoundController::class, 'deleteMidia']); // Deletar uma  mídia
+
+
+       // Admin Routes
     Route::get('/admin/migrate', [ResetBaseController::class, 'migrate']);
     Route::get('/admin/seed', [ResetBaseController::class, 'seed']);
 
