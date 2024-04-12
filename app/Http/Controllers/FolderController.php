@@ -426,7 +426,7 @@ class FolderController extends Controller
         // Verifica se um ID foi fornecido
         if ($id === null) {
             // Busca todas as pastas raiz (sem pai)
-            $folders = Folder::whereNull('parent_id')->get();
+            $folders = Folder::whereNull('parent_id')->orderBy('title')->get();
 
             $folders = $folders->map(function ($folder) {
                 $folder->children = $this->getFolderWithChildren($folder->id);
@@ -448,6 +448,7 @@ class FolderController extends Controller
 
         $children = Folder::select('id', 'title', 'thumb', 'created_at', 'updated_at')
             ->where('parent_id', $id)
+            ->orderBy('title')
             ->get();
 
         $children = $children->map(function ($child) {
