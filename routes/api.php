@@ -38,7 +38,8 @@ use App\Http\Controllers\{
     FolderController,
     ProfileController,
     CategoryController,
-    ResetBaseController
+    ResetBaseController,
+    PagesController
 };
 use App\Models\Benefits;
 use App\Models\Category;
@@ -61,8 +62,18 @@ Route::post('/admin/auth/reset-password', [AuthController::class, 'reset'])->nam
 Route::post('/front/auth/login', [AuthController::class, 'loginAdmin']);
 Route::post('/front/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/front/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
+
 Route::get('/front/new/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/news', [NewsController::class, 'getAll']); // Obter uma notícia específica
+Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
+Route::get('/front/walls', [WallController::class, 'getAllPublic']);
+Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
+Route::get('/front/classified/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
+Route::get('/front/categories/{type?}', [CategoryController::class, 'getAll'])->where('type', '.*');
+
+
+Route::get('/front/page/{id}', [NewsController::class, 'getByIdFront']); // Obter uma notícia específica
+Route::get('/front/pages', [PagesController::class, 'getAll']); // Obter uma notícia específica
 Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/walls', [WallController::class, 'getAllPublic']);
 Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
@@ -288,8 +299,18 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/new', [NewsController::class, 'insert']); // Criar uma nova notícia
     Route::post('/admin/new/{id}', [NewsController::class, 'update']); // Atualizar uma notícia existente
     Route::post('/admin/new/{id}/status', [NewsController::class, 'updateStatus']);
-
     Route::delete('/admin/new/{id}', [NewsController::class, 'delete']); // Excluir uma notícia
+
+
+     //*********************************************************************************************** */
+
+
+     Route::get('/admin/pages', [PagesController::class, 'getAll']); // Listar todas as notícias
+     Route::get('/admin/page/{id}', [PagesController::class, 'getById']); // Obter uma notícia específica
+     Route::post('/admin/page', [PagesController::class, 'insert']); // Criar uma nova notícia
+     Route::post('/admin/page/{id}', [PagesController::class, 'update']); // Atualizar uma notícia existente
+     Route::post('/admin/page/{id}/status', [PagesController::class, 'updateStatus']);
+     Route::delete('/admin/page/{id}', [PagesController::class, 'delete']); // Excluir uma notícia
 
     /**<--Galeria-->*/
 
