@@ -64,7 +64,7 @@ Route::post('/front/auth/forgot-password', [AuthController::class, 'forgotPasswo
 Route::post('/front/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 
 Route::get('/front/new/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
-Route::get('/front/news', [NewsController::class, 'getAll']); // Obter uma notícia específica
+Route::get('/front/news', [NewsController::class, 'getAllPublic']); // Obter uma notícia específica
 Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/walls', [WallController::class, 'getAllPublic']);
 Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados

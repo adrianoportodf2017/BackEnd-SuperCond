@@ -28,6 +28,27 @@ class NewsController extends Controller
             // Outros dados de resultado aqui...
         ], 200);
     }
+
+    public function getAllPublic()
+    {
+        $array = ['error' => ''];
+        
+        // Filtrar notícias com status igual a 1 e ordenar do mais novo para o mais antigo
+        $news = News::where('status', 1)->orderBy('created_at', 'desc')->get();
+    
+        if ($news->isEmpty()) {
+            return response()->json([
+                'error' => "Nenhuma notícia encontrada",
+                'code' => 404,
+            ], 404);
+        }
+    
+        return response()->json([
+            'error' => '',
+            'list' => $news,
+            // Outros dados de resultado aqui...
+        ], 200);
+    }
     
 
       /**
