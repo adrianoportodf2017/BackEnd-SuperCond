@@ -59,7 +59,7 @@ Route::post('/admin/auth/reset-password', [AuthController::class, 'reset'])->nam
 
 
 
-Route::post('/front/auth/login', [AuthController::class, 'loginAdmin']);
+Route::post('/front/auth/login', [AuthController::class, 'loginUser']);
 Route::post('/front/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/front/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
 

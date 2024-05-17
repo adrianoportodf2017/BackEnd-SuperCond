@@ -193,6 +193,50 @@ Logar usuario no sistema
     }
 
 
+    public function loginUser(Request $request)
+    {
+        $array = ['error' => ''];
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (!$validator->fails()) {
+            $email = $request->input('email');
+            $password = $request->input('password');
+
+            $token = auth()->attempt([
+                'email' => $email,
+                'password' => $password,
+            ]);
+
+            if (!$token) {
+                $array['error'] = 'Usuário e/ou senha Inválidos';
+                return $array;
+            }
+            $array['token'] = $token;
+            $user = auth()->user();
+            $user = User::leftJoin('profiles', 'users.profile', '=', 'profiles.id')
+            ->select('users.*', 'profiles.roles as profile_roles', 'profiles.name as profile_name')
+            ->where('users.id', $user['id'])
+            ->first(); // Use first() para obter apenas um registro
+        
+        $array['user'] = $user;
+
+            /*$properties = Unit::select(['id', 'name'])
+                ->where('owner_id', $user['id'])
+                ->get();
+            $array['users']['properties'] = $properties;*/
+        } else {
+            $array['error'] = $validator->errors()->first();
+            return $array;
+        }
+
+        return $array;
+    }
+
+
+
     public function forgotPassword(Request $request)
     {
         $request->validate([
