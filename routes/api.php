@@ -66,7 +66,6 @@ Route::post('/front/auth/reset-password', [AuthController::class, 'reset'])->nam
 Route::get('/front/new/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/news', [NewsController::class, 'getAllPublic']); // Obter uma notícia específica
 Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
-Route::get('/front/walls', [WallController::class, 'getAllPublic']);
 Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
 Route::get('/front/classified/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
 Route::get('/front/categories/{type?}', [CategoryController::class, 'getAll'])->where('type', '.*');
@@ -87,7 +86,7 @@ Route::delete('/front/warning/midia/{id}', [ClassifiedsController::class, 'delet
 
 Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAllByUserId']); // Obter um classificado específico
 
-Route::get('/front/benefits', [BenefitsController::class, 'getAll']); // Listar todos os Beneficios
+Route::get('/front/benefits', [BenefitsController::class, 'getAllPublic']); // Listar todos os Beneficios
 Route::get('/front/benefit/{id}', [BenefitsController::class, 'getById']); // Obter um Beneficios específico
 
 
