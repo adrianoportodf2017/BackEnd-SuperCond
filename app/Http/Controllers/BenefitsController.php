@@ -71,11 +71,6 @@ class BenefitsController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'phone' => 'required|string',
-            'service_type' => 'required|string',
-            'description' => 'required|string',
-            'address' => 'required|string',
-            'website' => 'required|url',
-            'thumb' => 'mimes:jpg,png,jpeg',
 
         ]);
 
@@ -165,11 +160,6 @@ class BenefitsController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'phone' => 'required|string',
-            'service_type' => 'required|string',
-            'description' => 'required|string',
-            'address' => 'required|string',
-            'website' => 'required|url',
-            'thumb' => 'mimes:jpg,png,jpeg',
 
         ]);
 
