@@ -264,4 +264,21 @@ class BenefitsController extends Controller
             ], 500);
         }
     }
+
+    public function updateStatus($id, Request $request)
+    {
+        $array = ['error' => ''];
+        $validator = Validator::make($request->all(), [
+            'status' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $array['error'] = $validator->errors()->first();
+            return $array;
+        } else {
+            $item = Benefits::find($id);
+            $item->status = $request->input('status');
+            $item->save();
+            return $request->input();
+        }
+    }
 }

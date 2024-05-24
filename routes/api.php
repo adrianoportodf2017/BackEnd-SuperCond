@@ -358,6 +358,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/admin/benefit/{id}', [BenefitsController::class, 'getById']); // Obter um Beneficios específico
     Route::post('/admin/benefit', [BenefitsController::class, 'insert']); // Criar um novo Beneficios
     Route::post('/admin/benefit/{id}', [BenefitsController::class, 'update']); // Atualizar um Beneficio existente
+    Route::post('/admin/new/{id}/status', [BenefitsController::class, 'updateStatus']);
     Route::delete('/admin/benefit/{id}', [BenefitsController::class, 'delete']); // Excluir um Beneficio
 
 
