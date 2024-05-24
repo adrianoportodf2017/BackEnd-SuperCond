@@ -11,6 +11,29 @@ use Exception;
 
 class BenefitsController extends Controller
 {
+
+
+    public function getAllPublic()
+    {
+        $array = ['error' => ''];
+        
+        // Filtrar notícias com status igual a 1 e ordenar do mais novo para o mais antigo
+        $beneficios = Benefits::where('status', 1)->orderBy('created_at', 'desc')->get();
+    
+        if ($beneficios->isEmpty()) {
+            return response()->json([
+                'error' => "Nenhuma beneficio encontrada",
+                'code' => 404,
+            ], 404);
+        }
+    
+        return response()->json([
+            'error' => '',
+            'list' => $beneficios,
+            // Outros dados de resultado aqui...
+        ], 200);
+    }
+
     public function getAll()
     {
         $polls = Benefits::all();
