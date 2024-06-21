@@ -76,7 +76,7 @@ class PagesController extends Controller
             // Outros dados de resultado aqui...
         ], 200);
     }
-}
+
 
 
     /**
