@@ -197,7 +197,9 @@ public function update($id, Request $request)
     $page->tags = $request->input('tags');
     $page->highlight = $request->input('highlight');
     $page->status = $request->input('status');
-
+    $page->main_menu = $request->input('mainMenu');
+    $page->restricted_area = $request->input('restrictedArea');
+    $page->public_area = $request->input('publicArea');
     // Salvar a página no banco de dados
     try {
         $page->save();
