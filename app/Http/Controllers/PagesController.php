@@ -59,6 +59,7 @@ class PagesController extends Controller
         $array = ['error' => ''];
         $pages = Pages::where('status', 1)
                       ->where('public_area', 1)
+                      ->where('main_menu', 1)
                       ->orderBy('order')
                       ->get();
 
