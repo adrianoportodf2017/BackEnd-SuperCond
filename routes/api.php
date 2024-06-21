@@ -71,8 +71,8 @@ Route::get('/front/classified/{id}', [ClassifiedsController::class, 'getById']);
 Route::get('/front/categories/{type?}', [CategoryController::class, 'getAll'])->where('type', '.*');
 
 
-Route::get('/front/page/{id}', [NewsController::class, 'getByIdFront']); // Obter uma notícia específica
-Route::get('/front/pages', [PagesController::class, 'getAll']); // Obter uma notícia específica
+Route::get('/front/page/{slug}', [PagesController::class, 'getBySlugPublic']); // Obter uma notícia específica
+Route::get('/front/pages', [PagesController::class, 'getAllPublic']); // Obter uma notícia específica
 Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/walls', [WallController::class, 'getAllPublic']);
 Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
