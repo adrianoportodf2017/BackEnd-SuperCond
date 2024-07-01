@@ -57,7 +57,7 @@ class PagesController extends Controller
     public function getAllPublicAndMenu()
     {
         $array = ['error' => ''];
-        $pages = Pages::select('id', 'title', 'order')
+        $pages = Pages::select('id', 'title', 'slug', 'order')
                       ->where('status', 1)
                       ->where('public_area', 1)
                       ->where('main_menu', 1)
