@@ -57,26 +57,25 @@ class PagesController extends Controller
     public function getAllPublicAndMenu()
     {
         $array = ['error' => ''];
-        $pages = Pages::where('status', 1)
+        $pages = Pages::select('id', 'title', 'order')
+                      ->where('status', 1)
                       ->where('public_area', 1)
                       ->where('main_menu', 1)
                       ->orderBy('order')
                       ->get();
-
+    
         if ($pages->isEmpty()) {
             return response()->json([
                 'error' => "Nenhuma página encontrada",
                 'code' => 404,
             ], 404);
         }
-
+    
         return response()->json([
             'error' => '',
             'list' => $pages,
-            // Outros dados de resultado aqui...
         ], 200);
     }
-
 
 
     /**
