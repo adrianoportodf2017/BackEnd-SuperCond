@@ -172,23 +172,20 @@ class FolderController extends Controller
         $folder = Folder::find($id);
         $arquivo = $folder->thumb_file;
         $url =  $folder->thumb;
-
-
-
-        // Se o aviso não for encontrado, retornar uma mensagem de erro
+    
+        // Se a pasta não for encontrada, retornar uma mensagem de erro
         if (!$folder) {
             return response()->json([
                 'error' => 'Pasta inexistente',
                 'code' => 404,
             ], 404);
         }
-
+    
         // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
             'file.*' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
             'thumb' => 'mimes:jpg,png,jpeg',
-
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -196,7 +193,7 @@ class FolderController extends Controller
                 'code' => 400,
             ], 400);
         }
-
+    
         if ($request->file('thumb')) {
             // Salvar o arquivo no armazenamento
             $arquivo = $request->file('thumb')->store('public/folders/thumb');
@@ -204,16 +201,24 @@ class FolderController extends Controller
             $thumb_delete = $folder->thumb_file;
             Storage::delete($thumb_delete);
         }
-
-
+    
+        // Verificar a nova ordem
+        $newOrder = $request->input('order');
+    
+        // Atualizar a ordem das outras pastas, se necessário
+        if (!empty($newOrder) && $newOrder != $folder->order) {
+            Folder::where('order', '>=', $newOrder)->increment('order');
+        }
+    
         $folder->title = $request->input('title');
         $folder->content = $request->input('content');
         $folder->thumb_file = $arquivo;
         $folder->thumb = $url;
         $folder->status = $request->input('status');
-        $folder->order = $request->input('order');
-
-
+        if (!empty($newOrder)) {
+            $folder->order = $newOrder;
+        }
+    
         // Salvar o documento no banco de dados
         try {
             $folder->save();
@@ -225,15 +230,15 @@ class FolderController extends Controller
                 'code' => 500,
             ], 500);
         }
-
-        // Retornar uma resposta de sucesso
-        $folder->midias =    $folder->midias;
+    
         return response()->json([
             'error' => '',
             'success' => true,
             'list' => $folder,
         ], 200);
     }
+
+
     public function delete($id)
     {
         try {
