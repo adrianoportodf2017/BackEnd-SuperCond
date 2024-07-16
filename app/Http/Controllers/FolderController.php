@@ -211,6 +211,8 @@ class FolderController extends Controller
         $folder->thumb_file = $arquivo;
         $folder->thumb = $url;
         $folder->status = $request->input('status');
+        $folder->order = $request->input('order');
+
 
         // Salvar o documento no banco de dados
         try {
