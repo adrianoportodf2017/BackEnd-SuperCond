@@ -429,7 +429,7 @@ class FolderController extends Controller
 
 
 
-  /**
+/**
  * Recupera as pastas filhas de uma pasta, incluindo os campos 'id', 'title' e 'thumb'.
  *
  * @param int|null $id O ID da pasta para buscar suas pastas filhas. Se for null, busca todas as pastas raiz.
@@ -444,10 +444,11 @@ private function getFolderWithChildren($id = null)
             ->get();
 
         $folders = $folders->map(function ($folder) {
-            $folder->children = $this->getFolderWithChildren($folder->id);
+            $clonedFolder = clone $folder;
+            $clonedFolder->children = $this->getFolderWithChildren($folder->id);
             // Define um ícone padrão para a pasta
-            $folder->icon = asset('assets/icons/folder.png');
-            return $folder;
+            $clonedFolder->icon = asset('assets/icons/folder.png');
+            return $clonedFolder;
         });
 
         // Atualiza a ordem das pastas raiz
@@ -467,10 +468,11 @@ private function getFolderWithChildren($id = null)
         ->get();
 
     $children = $children->map(function ($child) {
-        $child->children = $this->getFolderWithChildren($child->id);
+        $clonedChild = clone $child;
+        $clonedChild->children = $this->getFolderWithChildren($child->id);
         // Define um ícone padrão para a subpasta
-        $child->icon = asset('assets/icons/folder.png');
-        return $child;
+        $clonedChild->icon = asset('assets/icons/folder.png');
+        return $clonedChild;
     });
 
     // Atualiza a ordem das subpastas
@@ -501,4 +503,5 @@ private function updateFolderOrder($folders)
         $folder->save();
     }
 }
+
 }
