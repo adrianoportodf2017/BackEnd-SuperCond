@@ -431,7 +431,7 @@ class FolderController extends Controller
 
 
 
-  /**
+    /**
      * Recupera as pastas filhas de uma pasta, incluindo os campos 'id', 'title' e 'thumb'.
      *
      * @param int $id O ID da pasta para buscar suas pastas filhas.
@@ -442,22 +442,13 @@ class FolderController extends Controller
         // Verifica se um ID foi fornecido
         if ($id === null) {
             // Busca todas as pastas raiz (sem pai)
-            $folders = Folder::whereNull('parent_id')
-            ->orderByRaw('IFNULL(`title`, `created_at`)')
-            ->get();
-
-            $this->updateFolderOrder($folders);
-
-            
-            $folders = Folder::whereNull('parent_id')
-            ->orderByRaw('CAST(`order` AS SIGNED) ASC')
-            ->get();
-
+            $folders = Folder::whereNull('parent_id')->orderBy('title')->get();
 
             $folders = $folders->map(function ($folder) {
                 $folder->children = $this->getFolderWithChildren($folder->id);
                 // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
                 $folder->icon =  asset('assets/icons/folder.png');
+
                 return $folder;
             });
 
@@ -471,22 +462,13 @@ class FolderController extends Controller
             return null;
         }
 
-
-        $children = Folder::select('id', 'title', 'order', 'thumb', 'created_at', 'updated_at')
+        $children = Folder::select('id', 'title', 'thumb', 'created_at', 'updated_at')
             ->where('parent_id', $id)
             ->orderBy('title')
             ->get();
 
-            $this->updateFolderOrder($children);
-
-            $children = Folder::select('id', 'title', 'order',  'thumb', 'created_at', 'updated_at')
-            ->orderByRaw('CAST(`order` AS SIGNED) ASC')
-            ->get();
-  
-
         $children = $children->map(function ($child) {
             $child->children = $this->getFolderWithChildren($child->id);
-            
 
             // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
             $child->icon = asset('assets/icons/folder.png');
@@ -494,23 +476,6 @@ class FolderController extends Controller
             return $child;
         });
 
-
         return $children;
     }
-
-    private function updateFolderOrder($folders)
-{
-    $cont = 1;
-    $foldersToUpdate = [];
-
-    foreach ($folders as $folder) {
-        if ($folder->order === null || $folder->order === '') {
-            $folder->order = $cont;
-        }
-        $cont++;
-        $folder->save();
-    }
-
-   
-}
 }
