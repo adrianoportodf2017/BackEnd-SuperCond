@@ -496,11 +496,9 @@ class FolderController extends Controller
             $foldersToUpdate[] = $folder;
         }
         $cont++;
-    }
-
-    // Salva em massa as pastas que tiveram a ordem atualizada
-    foreach ($foldersToUpdate as $folder) {
         $folder->save();
     }
+
+   
 }
 }
