@@ -430,78 +430,51 @@ class FolderController extends Controller
 
 
 /**
- * Recupera as pastas filhas de uma pasta, incluindo os campos 'id', 'title' e 'thumb'.
- *
- * @param int|null $id O ID da pasta para buscar suas pastas filhas. Se for null, busca todas as pastas raiz.
- * @return \Illuminate\Database\Eloquent\Collection|null Coleção de pastas filhas com campos específicos ou null se a pasta não for encontrada.
- */
-private function getFolderWithChildren($id = null)
-{
-    if ($id === null) {
-        // Busca todas as pastas raiz (sem pai)
-        $folders = Folder::whereNull('parent_id')
-            ->orderByRaw('IFNULL(`title`, `created_at`)')
+     * Recupera as pastas filhas de uma pasta, incluindo os campos 'id', 'title' e 'thumb'.
+     *
+     * @param int $id O ID da pasta para buscar suas pastas filhas.
+     * @return \Illuminate\Database\Eloquent\Collection|null Coleção de pastas filhas com campos específicos ou null se a pasta não for encontrada.
+     */
+    private function getFolderWithChildren($id = null)
+    {
+        // Verifica se um ID foi fornecido
+        if ($id === null) {
+            // Busca todas as pastas raiz (sem pai)
+            $folders = Folder::whereNull('parent_id')->orderBy('title')->get();
+
+            $folders = $folders->map(function ($folder) {
+                $folder->children = $this->getFolderWithChildren($folder->id);
+                // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
+                $folder->icon =  asset('assets/icons/folder.png');
+
+                return $folder;
+            });
+
+            return $folders;
+        }
+
+        // Se um ID foi fornecido, busca as pastas com base nesse ID
+        $folder = Folder::find($id);
+
+        if (!$folder) {
+            return null;
+        }
+
+        $children = Folder::select('id', 'title', 'thumb', 'created_at', 'updated_at')
+            ->where('parent_id', $id)
+            ->orderBy('title')
             ->get();
 
-        $folders = $folders->map(function ($folder) {
-            $clonedFolder = clone $folder;
-            $clonedFolder->children = $this->getFolderWithChildren($folder->id);
-            // Define um ícone padrão para a pasta
-            $clonedFolder->icon = asset('assets/icons/folder.png');
-            return $clonedFolder;
+        $children = $children->map(function ($child) {
+            $child->children = $this->getFolderWithChildren($child->id);
+
+            // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
+            $child->icon = asset('assets/icons/folder.png');
+
+            return $child;
         });
 
-        // Atualiza a ordem das pastas raiz
-        $this->updateFolderOrder($folders);
-        return $folders;
+        return $children;
     }
-
-    // Busca as pastas com base no ID fornecido
-    $folder = Folder::find($id);
-    if (!$folder) {
-        return null;
-    }
-
-    $children = Folder::select('id', 'title', 'order', 'thumb', 'created_at', 'updated_at')
-        ->where('parent_id', $id)
-        ->orderByRaw('IFNULL(`title`, `created_at`)')
-        ->get();
-
-    $children = $children->map(function ($child) {
-        $clonedChild = clone $child;
-        $clonedChild->children = $this->getFolderWithChildren($child->id);
-        // Define um ícone padrão para a subpasta
-        $clonedChild->icon = asset('assets/icons/folder.png');
-        return $clonedChild;
-    });
-
-    // Atualiza a ordem das subpastas
-    $this->updateFolderOrder($children);
-    return $children;
-}
-
-/**
- * Atualiza a ordem das pastas fornecidas.
- *
- * @param \Illuminate\Database\Eloquent\Collection $folders Coleção de pastas para atualizar a ordem.
- */
-private function updateFolderOrder($folders)
-{
-    $cont = 1;
-    $foldersToUpdate = [];
-
-    foreach ($folders as $folder) {
-        if ($folder->order === null || $folder->order === '') {
-            $folder->order = $cont;
-            $foldersToUpdate[] = $folder;
-        }
-        $cont++;
-    }
-
-    // Salva em massa as pastas que tiveram a ordem atualizada
-    foreach ($foldersToUpdate as $folder) {
-        $folder->save();
-    }
-}
 
 }
