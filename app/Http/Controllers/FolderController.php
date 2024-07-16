@@ -444,7 +444,10 @@ class FolderController extends Controller
             // Busca todas as pastas raiz (sem pai)
             $folders = Folder::whereNull('parent_id')
             ->orderByRaw('IFNULL(`title`, `created_at`)')
-            ->get();;
+            ->get();
+
+            $this->updateFolderOrder($folders);
+
 
             $folders = $folders->map(function ($folder) {
                 $folder->children = $this->getFolderWithChildren($folder->id);
@@ -452,8 +455,6 @@ class FolderController extends Controller
                 $folder->icon =  asset('assets/icons/folder.png');
                 return $folder;
             });
-            $this->updateFolderOrder($folders);
-
 
             return $folders;
         }
@@ -471,6 +472,9 @@ class FolderController extends Controller
             ->orderBy('title')
             ->get();
 
+            $this->updateFolderOrder($children);
+  
+
         $children = $children->map(function ($child) {
             $child->children = $this->getFolderWithChildren($child->id);
 
@@ -479,7 +483,6 @@ class FolderController extends Controller
 
             return $child;
         });
-        $this->updateFolderOrder($children);
 
 
         return $children;
@@ -493,7 +496,6 @@ class FolderController extends Controller
     foreach ($folders as $folder) {
         if ($folder->order === null || $folder->order === '') {
             $folder->order = $cont;
-            $foldersToUpdate[] = $folder;
         }
         $cont++;
         $folder->save();
