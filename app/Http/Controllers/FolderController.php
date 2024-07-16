@@ -448,6 +448,11 @@ class FolderController extends Controller
 
             $this->updateFolderOrder($folders);
 
+            
+            $folders = Folder::whereNull('parent_id')
+            ->orderByRaw('CAST(`order` AS SIGNED) ASC')
+            ->get();
+
 
             $folders = $folders->map(function ($folder) {
                 $folder->children = $this->getFolderWithChildren($folder->id);
@@ -473,10 +478,15 @@ class FolderController extends Controller
             ->get();
 
             $this->updateFolderOrder($children);
+
+            $children = Folder::select('id', 'title', 'thumb', 'created_at', 'updated_at')
+            ->orderByRaw('CAST(`order` AS SIGNED) ASC')
+            ->get();
   
 
         $children = $children->map(function ($child) {
             $child->children = $this->getFolderWithChildren($child->id);
+            
 
             // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
             $child->icon = asset('assets/icons/folder.png');
