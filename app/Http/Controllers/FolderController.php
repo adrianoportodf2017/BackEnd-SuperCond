@@ -83,86 +83,95 @@ class FolderController extends Controller
 
 
     public function insert(Request $request)
-    {
-        // Validar os dados da requisição
+{
+    // Validar os dados da requisição
+    $validator = Validator::make($request->all(), [
+        'title' => 'required|min:2',
+        'file.*' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
+        'thumb' => 'mimes:jpg,png,jpeg',
+    ]);
 
-        $newFolder = new Folder();
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|min:2',
-            'file.*' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
-            'thumb' => 'mimes:jpg,png,jpeg',
-
-        ]);
-
-        // Retornar uma mensagem de erro se a validação falhar
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => $validator->errors()->first(),
-                'code' => 422,
-            ], 422);
-        }
-        // Criar um novo documento
-        // Verificar se o arquivo é válido
-        if ($request->file('thumb') && !$request->file('thumb')->isValid()) {
-            return response()->json([
-                'error' => 'O arquivo enviado não é válido',
-                'code' => 400,
-            ], 400);
-        }
-        if ($request->hasfile('thumb')) {
-            // Salvar o arquivo no armazenamento
-            $arquivo = $request->file('thumb')->store('public/folders/thumb');
-            $url = asset(Storage::url($arquivo));
-        } else {
-            $arquivo = '';
-            $url = '';
-        }
-        $newFolder->title = $request->input('title');
-        $newFolder->content = $request->input('content');
-        $newFolder->thumb = $url;
-        $newFolder->thumb_file = $arquivo;
-        $newFolder->status = $request->input('status');
-        $newFolder->parent_id = $request->input('parent_id');
-
-        // Salvar o documento no banco de dados
-        try {
-            $newFolder->save();
-        } catch (Exception $e) {
-            // Tratar o erro
-            return response()->json([
-                'error' => 'Erro ao salvar Pasta!',
-                'detail' => $e->getMessage(),
-                'code' => 500,
-            ], 500);
-        }
-
-        // Retornar uma resposta de sucesso
-        if ($request->file('file')) {
-            $files = $request->file('file');
-            foreach ($files as  $key) {
-
-                $arquivo = $key->store('public/folders/' . $newFolder->id);
-                $url = asset(Storage::url($arquivo));
-                $midia = new Midia([
-                    'title' => $newFolder->title,
-                    'url' => $url,
-                    'file' => $arquivo,
-                    'status' => 'ativo', // Status da mídia
-                    'type' => '', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
-                    //'user_id' => $request->input('user_id')
-                ]);
-                // Associar a mídia a uma entidade (por exemplo, Document)
-                // Salvar o documento no banco de dados
-                $newFolder->midias()->save($midia);
-            }
-        }
-        $newFolder->midias = $newFolder->midias;
+    // Retornar uma mensagem de erro se a validação falhar
+    if ($validator->fails()) {
         return response()->json([
-            'error' => '',
-            'success' => true,
-            'list' => $newFolder,
-        ], 201);
+            'error' => $validator->errors()->first(),
+            'code' => 422,
+        ], 422);
     }
+
+    // Verificar se o arquivo é válido
+    if ($request->file('thumb') && !$request->file('thumb')->isValid()) {
+        return response()->json([
+            'error' => 'O arquivo enviado não é válido',
+            'code' => 400,
+        ], 400);
+    }
+
+    $arquivo = '';
+    $url = '';
+    if ($request->hasfile('thumb')) {
+        // Salvar o arquivo no armazenamento
+        $arquivo = $request->file('thumb')->store('public/folders/thumb');
+        $url = asset(Storage::url($arquivo));
+    }
+
+    // Criar uma nova instância de Folder
+    $newFolder = new Folder();
+    $newFolder->title = $request->input('title');
+    $newFolder->content = $request->input('content');
+    $newFolder->thumb = $url;
+    $newFolder->thumb_file = $arquivo;
+    $newFolder->status = $request->input('status');
+    $newFolder->parent_id = $request->input('parent_id');
+
+    // Verificar a nova ordem
+    $newOrder = $request->input('order');
+    if (!empty($newOrder)) {
+        // Atualizar a ordem das outras pastas, se necessário
+        Folder::where('order', '>=', $newOrder)->increment('order');
+        $newFolder->order = $newOrder;
+    }
+
+    // Salvar o documento no banco de dados
+    try {
+        $newFolder->save();
+    } catch (Exception $e) {
+        // Tratar o erro
+        return response()->json([
+            'error' => 'Erro ao salvar Pasta!',
+            'detail' => $e->getMessage(),
+            'code' => 500,
+        ], 500);
+    }
+
+    // Salvar os arquivos associados à nova pasta, se houver
+    if ($request->file('file')) {
+        $files = $request->file('file');
+        foreach ($files as $key) {
+            $arquivo = $key->store('public/folders/' . $newFolder->id);
+            $url = asset(Storage::url($arquivo));
+            $midia = new Midia([
+                'title' => $newFolder->title,
+                'url' => $url,
+                'file' => $arquivo,
+                'status' => 'ativo', // Status da mídia
+                'type' => '', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                //'user_id' => $request->input('user_id')
+            ]);
+            // Associar a mídia à pasta
+            $newFolder->midias()->save($midia);
+        }
+    }
+
+    // Retornar uma resposta de sucesso
+    $newFolder->midias = $newFolder->midias;
+    return response()->json([
+        'error' => '',
+        'success' => true,
+        'list' => $newFolder,
+    ], 201);
+}
+
 
 
     public function update($id, Request $request)
