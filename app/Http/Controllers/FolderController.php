@@ -472,14 +472,14 @@ class FolderController extends Controller
         }
 
 
-        $children = Folder::select('id', 'title', 'thumb', 'created_at', 'updated_at')
+        $children = Folder::select('id', 'title', 'order', 'thumb', 'created_at', 'updated_at')
             ->where('parent_id', $id)
             ->orderBy('title')
             ->get();
 
             $this->updateFolderOrder($children);
 
-            $children = Folder::select('id', 'title', 'thumb', 'created_at', 'updated_at')
+            $children = Folder::select('id', 'title', 'order',  'thumb', 'created_at', 'updated_at')
             ->orderByRaw('CAST(`order` AS SIGNED) ASC')
             ->get();
   
