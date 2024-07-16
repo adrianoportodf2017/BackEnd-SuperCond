@@ -42,7 +42,7 @@ class FolderController extends Controller
             ], 404);
         }
 
-
+    
 
         // Recupere a coleção de mídias
         $midias = $folder->midias;
@@ -72,7 +72,7 @@ class FolderController extends Controller
         }
 
         if (empty($folder->thumb)) {
-            $folder->thumb =  $iconBaseUrl . '/folder.png';
+            $folder->thumb =  $iconBaseUrl.'/folder.png';
         }
 
         $folder['children'] = $this->getFolderWithChildren($id);
@@ -83,94 +83,94 @@ class FolderController extends Controller
 
 
     public function insert(Request $request)
-    {
-        // Validar os dados da requisição
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|min:2',
-            'file.*' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
-            'thumb' => 'mimes:jpg,png,jpeg',
-        ]);
+{
+    // Validar os dados da requisição
+    $validator = Validator::make($request->all(), [
+        'title' => 'required|min:2',
+        'file.*' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
+        'thumb' => 'mimes:jpg,png,jpeg',
+    ]);
 
-        // Retornar uma mensagem de erro se a validação falhar
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => $validator->errors()->first(),
-                'code' => 422,
-            ], 422);
-        }
-
-        // Verificar se o arquivo é válido
-        if ($request->file('thumb') && !$request->file('thumb')->isValid()) {
-            return response()->json([
-                'error' => 'O arquivo enviado não é válido',
-                'code' => 400,
-            ], 400);
-        }
-
-        $arquivo = '';
-        $url = '';
-        if ($request->hasfile('thumb')) {
-            // Salvar o arquivo no armazenamento
-            $arquivo = $request->file('thumb')->store('public/folders/thumb');
-            $url = asset(Storage::url($arquivo));
-        }
-
-        // Criar uma nova instância de Folder
-        $newFolder = new Folder();
-        $newFolder->title = $request->input('title');
-        $newFolder->content = $request->input('content');
-        $newFolder->thumb = $url;
-        $newFolder->thumb_file = $arquivo;
-        $newFolder->status = $request->input('status');
-        $newFolder->parent_id = $request->input('parent_id');
-
-        // Verificar a nova ordem
-        $newOrder = $request->input('order');
-        if (!empty($newOrder)) {
-            // Atualizar a ordem das outras pastas, se necessário
-            Folder::where('order', '>=', $newOrder)->increment('order');
-            $newFolder->order = $newOrder;
-        }
-
-        // Salvar o documento no banco de dados
-        try {
-            $newFolder->save();
-        } catch (Exception $e) {
-            // Tratar o erro
-            return response()->json([
-                'error' => 'Erro ao salvar Pasta!',
-                'detail' => $e->getMessage(),
-                'code' => 500,
-            ], 500);
-        }
-
-        // Salvar os arquivos associados à nova pasta, se houver
-        if ($request->file('file')) {
-            $files = $request->file('file');
-            foreach ($files as $key) {
-                $arquivo = $key->store('public/folders/' . $newFolder->id);
-                $url = asset(Storage::url($arquivo));
-                $midia = new Midia([
-                    'title' => $newFolder->title,
-                    'url' => $url,
-                    'file' => $arquivo,
-                    'status' => 'ativo', // Status da mídia
-                    'type' => '', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
-                    //'user_id' => $request->input('user_id')
-                ]);
-                // Associar a mídia à pasta
-                $newFolder->midias()->save($midia);
-            }
-        }
-
-        // Retornar uma resposta de sucesso
-        $newFolder->midias = $newFolder->midias;
+    // Retornar uma mensagem de erro se a validação falhar
+    if ($validator->fails()) {
         return response()->json([
-            'error' => '',
-            'success' => true,
-            'list' => $newFolder,
-        ], 201);
+            'error' => $validator->errors()->first(),
+            'code' => 422,
+        ], 422);
     }
+
+    // Verificar se o arquivo é válido
+    if ($request->file('thumb') && !$request->file('thumb')->isValid()) {
+        return response()->json([
+            'error' => 'O arquivo enviado não é válido',
+            'code' => 400,
+        ], 400);
+    }
+
+    $arquivo = '';
+    $url = '';
+    if ($request->hasfile('thumb')) {
+        // Salvar o arquivo no armazenamento
+        $arquivo = $request->file('thumb')->store('public/folders/thumb');
+        $url = asset(Storage::url($arquivo));
+    }
+
+    // Criar uma nova instância de Folder
+    $newFolder = new Folder();
+    $newFolder->title = $request->input('title');
+    $newFolder->content = $request->input('content');
+    $newFolder->thumb = $url;
+    $newFolder->thumb_file = $arquivo;
+    $newFolder->status = $request->input('status');
+    $newFolder->parent_id = $request->input('parent_id');
+
+    // Verificar a nova ordem
+    $newOrder = $request->input('order');
+    if (!empty($newOrder)) {
+        // Atualizar a ordem das outras pastas, se necessário
+        Folder::where('order', '>=', $newOrder)->increment('order');
+        $newFolder->order = $newOrder;
+    }
+
+    // Salvar o documento no banco de dados
+    try {
+        $newFolder->save();
+    } catch (Exception $e) {
+        // Tratar o erro
+        return response()->json([
+            'error' => 'Erro ao salvar Pasta!',
+            'detail' => $e->getMessage(),
+            'code' => 500,
+        ], 500);
+    }
+
+    // Salvar os arquivos associados à nova pasta, se houver
+    if ($request->file('file')) {
+        $files = $request->file('file');
+        foreach ($files as $key) {
+            $arquivo = $key->store('public/folders/' . $newFolder->id);
+            $url = asset(Storage::url($arquivo));
+            $midia = new Midia([
+                'title' => $newFolder->title,
+                'url' => $url,
+                'file' => $arquivo,
+                'status' => 'ativo', // Status da mídia
+                'type' => '', // Tipo da mídia (por exemplo, imagem, PDF, etc.)
+                //'user_id' => $request->input('user_id')
+            ]);
+            // Associar a mídia à pasta
+            $newFolder->midias()->save($midia);
+        }
+    }
+
+    // Retornar uma resposta de sucesso
+    $newFolder->midias = $newFolder->midias;
+    return response()->json([
+        'error' => '',
+        'success' => true,
+        'list' => $newFolder,
+    ], 201);
+}
 
 
 
@@ -181,7 +181,7 @@ class FolderController extends Controller
         $folder = Folder::find($id);
         $arquivo = $folder->thumb_file;
         $url =  $folder->thumb;
-
+    
         // Se a pasta não for encontrada, retornar uma mensagem de erro
         if (!$folder) {
             return response()->json([
@@ -189,7 +189,7 @@ class FolderController extends Controller
                 'code' => 404,
             ], 404);
         }
-
+    
         // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
@@ -202,7 +202,7 @@ class FolderController extends Controller
                 'code' => 400,
             ], 400);
         }
-
+    
         if ($request->file('thumb')) {
             // Salvar o arquivo no armazenamento
             $arquivo = $request->file('thumb')->store('public/folders/thumb');
@@ -210,15 +210,15 @@ class FolderController extends Controller
             $thumb_delete = $folder->thumb_file;
             Storage::delete($thumb_delete);
         }
-
+    
         // Verificar a nova ordem
         $newOrder = $request->input('order');
-
+    
         // Atualizar a ordem das outras pastas, se necessário
         if (!empty($newOrder) && $newOrder != $folder->order) {
             Folder::where('order', '>=', $newOrder)->increment('order');
         }
-
+    
         $folder->title = $request->input('title');
         $folder->content = $request->input('content');
         $folder->thumb_file = $arquivo;
@@ -227,7 +227,7 @@ class FolderController extends Controller
         if (!empty($newOrder)) {
             $folder->order = $newOrder;
         }
-
+    
         // Salvar o documento no banco de dados
         try {
             $folder->save();
@@ -239,7 +239,7 @@ class FolderController extends Controller
                 'code' => 500,
             ], 500);
         }
-
+    
         return response()->json([
             'error' => '',
             'success' => true,
@@ -255,21 +255,21 @@ class FolderController extends Controller
             if ($id === null) {
                 return; // Não foi fornecido um ID válido
             }
-
+    
             // Busca as pastas com base no ID fornecido
             $folder = Folder::find($id);
-
+    
             if (!$folder) {
                 return; // Pasta não encontrada
             }
-
+    
             // Recursivamente, exclua todas as pastas filhas
             $children = Folder::where('parent_id', $id)->get();
-
+    
             foreach ($children as $child) {
                 $this->delete($child->id);
             }
-
+    
             // Agora que todas as pastas filhas foram excluídas, você pode excluir esta pasta
             $midias =  $folder->midias;
             foreach ($midias  as $midia) {
@@ -278,19 +278,20 @@ class FolderController extends Controller
                 Storage::delete($midia);
             }
             $folder->delete();
+            
         } catch (Exception $e) {
             // Trate a exceção aqui, como registrar o erro ou enviar uma resposta de erro para o usuário.
             // Você pode usar $e->getMessage() para obter informações sobre o erro.
-            // Tratar o erro
-            return response()->json([
+              // Tratar o erro
+              return response()->json([
                 'error' => 'Erro ao deletar Pasta!',
                 'detail' => $e->getMessage(),
                 'code' => 500,
             ], 500);
         }
 
-        // Retornar uma resposta de sucesso
-        return response()->json([
+         // Retornar uma resposta de sucesso
+         return response()->json([
             'error' => '',
             'success' => true,
         ], 200);
@@ -300,10 +301,10 @@ class FolderController extends Controller
     public function insertMidia($id, Request $request)
     {
         $folder = Folder::find($id);
-
+    
         $validator = Validator::make($request->all(), [
             'file.*' => 'required|max:200000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
-            // 'file' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
+           // 'file' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
             //'user_id' => 'required',
         ]);
 
@@ -332,7 +333,7 @@ class FolderController extends Controller
         // Verificar se o arquivo é válido
         $files = $request->file('file');
 
-        //  var_dump($files);
+      //  var_dump($files);
 
         foreach ($files as $file) {
             if (!$file->isValid()) {
@@ -341,25 +342,25 @@ class FolderController extends Controller
                     'code' => 400,
                 ], 400);
             }
-
+        
             $title = $file->getClientOriginalName(); // Use o nome original do arquivo como título
             $extension = $file->getClientOriginalExtension();
-
-
+            
+        
             $count = 1;
             $newTitle = $title;
             $newTitle = preg_replace('/[^a-zA-Z0-9.-]+/', '',   $newTitle);
-
+        
             while (Midia::where('slug', $newTitle)->count() > 0) {
                 // Se uma mídia com o mesmo título existir, adicione um número ao título para torná-lo único
                 $newTitle = pathinfo($title, PATHINFO_FILENAME) . '-' . $count . '.' . $extension;
                 $newTitle = preg_replace('/[^a-zA-Z0-9.-]+/', '',   $newTitle);
                 $count++;
             }
-
+        
             $arquivo = $file->storeAs('public/folders/' . $id, $newTitle); // Salve o arquivo com o título ajustado
             $url = asset(Storage::url($arquivo));
-
+        
             $midia = new Midia([
                 'title' => $request->input('title') ? $request->input('title') : pathinfo($title, PATHINFO_FILENAME),
                 'slug' => $newTitle,
@@ -382,13 +383,14 @@ class FolderController extends Controller
                 ], 500);
             }
         }
-        // Retornar uma resposta de sucesso
-        $folder->midias = $folder->midias;
-        return response()->json([
-            'error' => '',
-            'success' => true,
-            'list' => $folder,
-        ], 200);
+            // Retornar uma resposta de sucesso
+            $folder->midias = $folder->midias;
+            return response()->json([
+                'error' => '',
+                'success' => true,
+                'list' => $folder,
+            ], 200);
+       
     }
 
     public function deleteMidia($id, Request $request)
@@ -429,7 +431,7 @@ class FolderController extends Controller
 
 
 
-/**
+  /**
      * Recupera as pastas filhas de uma pasta, incluindo os campos 'id', 'title' e 'thumb'.
      *
      * @param int $id O ID da pasta para buscar suas pastas filhas.
@@ -440,15 +442,18 @@ class FolderController extends Controller
         // Verifica se um ID foi fornecido
         if ($id === null) {
             // Busca todas as pastas raiz (sem pai)
-            $folders = Folder::whereNull('parent_id')->orderBy('title')->get();
+            $folders = Folder::whereNull('parent_id')
+            ->orderByRaw('IFNULL(`title`, `created_at`)')
+            ->get();;
 
             $folders = $folders->map(function ($folder) {
                 $folder->children = $this->getFolderWithChildren($folder->id);
                 // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
                 $folder->icon =  asset('assets/icons/folder.png');
-
                 return $folder;
             });
+            $this->updateFolderOrder($folders);
+
 
             return $folders;
         }
@@ -459,6 +464,7 @@ class FolderController extends Controller
         if (!$folder) {
             return null;
         }
+
 
         $children = Folder::select('id', 'title', 'thumb', 'created_at', 'updated_at')
             ->where('parent_id', $id)
@@ -473,8 +479,28 @@ class FolderController extends Controller
 
             return $child;
         });
+        $this->updateFolderOrder($children);
+
 
         return $children;
     }
 
+    private function updateFolderOrder($folders)
+{
+    $cont = 1;
+    $foldersToUpdate = [];
+
+    foreach ($folders as $folder) {
+        if ($folder->order === null || $folder->order === '') {
+            $folder->order = $cont;
+            $foldersToUpdate[] = $folder;
+        }
+        $cont++;
+    }
+
+    // Salva em massa as pastas que tiveram a ordem atualizada
+    foreach ($foldersToUpdate as $folder) {
+        $folder->save();
+    }
+}
 }
