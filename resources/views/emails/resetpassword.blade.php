@@ -10,7 +10,7 @@ Clique para redefinir
 Obrigado por usar nossa aplicação!
 
 Atenciosamente,<br>
-{{ config('app.name') }}
+Ouro Vermelho II
 
 @component('mail::subcopy')
 Se você estiver tendo problemas para clicar no botão "Clique para redefinir", copie e cole a URL abaixo no seu navegador web: [{{ $url }}]({{ $url }})
