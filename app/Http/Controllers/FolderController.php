@@ -478,7 +478,7 @@ class FolderController extends Controller
 
     private function updateFolderOrder($folders)
     {
-        $cont = 1;
+        $cont = 0;
         $foldersToUpdate = [];
 
         foreach ($folders as $folder) {
