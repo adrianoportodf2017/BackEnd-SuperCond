@@ -486,7 +486,7 @@ class FolderController extends Controller
                 $folder->order = $cont;
             }
             $cont++;
-            $foldersToUpdate = $folder;
+            $foldersToUpdate[] = $folder;
         }
 
         // Ordenar as pastas pela coluna 'order'
