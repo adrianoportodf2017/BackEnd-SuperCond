@@ -90,7 +90,7 @@ Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAll
 
 Route::get('/front/benefits', [BenefitsController::class, 'getAllPublic']); // Listar todos os Beneficios
 Route::get('/front/benefit/{id}', [BenefitsController::class, 'getById']); // Obter um Beneficios específico
-
+Route::get('/front/folders', [FolderController::class, 'getAll']);
 
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
@@ -115,7 +115,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/front/warning/{id}', [WarningController::class, 'delete']);
 
     // Folder Routes
-    Route::get('/front/folders', [FolderController::class, 'getAll']);
+   
     Route::get('/front/folder/{id}', [FolderController::class, 'getById']); // Listar pasta específica
 
 
