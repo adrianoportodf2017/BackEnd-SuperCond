@@ -72,6 +72,30 @@ class WallController extends Controller
             'list' => $walls,
         ], 200);
     }
+
+    
+    public function getAllEventsPublic()
+{
+    // Buscar todos os avisos onde o status é diferente de 1 e date_event não é nulo
+    $walls = Wall::where('status', '!=', 1)
+                 ->whereNotNull('date_event')
+                 ->get();
+
+    // Retornar uma mensagem de erro se não houver avisos
+    if ($walls->isEmpty()) {
+        return response()->json([
+            'error' => 'Nenhum aviso encontrado',
+            'code' => 404,
+        ], 404);
+    }
+
+    // Retornar uma resposta de sucesso com a lista de avisos
+    return response()->json([
+        'error' => '',
+        'success' => true,
+        'list' => $walls,
+    ], 200);
+}
     
     /**
      * Curte ou descurte um aviso.
