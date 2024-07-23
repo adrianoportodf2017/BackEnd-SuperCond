@@ -65,9 +65,10 @@ Route::post('/front/auth/reset-password', [AuthController::class, 'reset'])->nam
 
 Route::get('/front/new/{id}', [NewsController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/news', [NewsController::class, 'getAllPublic']); // Obter uma notícia específica
-Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
+
 Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
 Route::get('/front/classified/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
+
 Route::get('/front/categories/{type?}', [CategoryController::class, 'getAll'])->where('type', '.*');
 
 
@@ -77,18 +78,19 @@ Route::get('/front/pages', [PagesController::class, 'getAllPublic']); // Obter t
 
 Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/walls', [WallController::class, 'getAllPublic']);
+Route::get('/front/walls/events', [WallController::class, 'getAllEventsPublic']);
+
+
+
 Route::get('/front/classifieds', [ClassifiedsController::class, 'getAll']); // Listar todos os classificados
 Route::get('/front/classified/{id}', [ClassifiedsController::class, 'getById']); // Obter um classificado específico
 Route::get('/front/categories/{type?}', [CategoryController::class, 'getAll'])->where('type', '.*');
 
 
 Route::get('/front/warnings/{id}', [WarningController::class, 'getAllByUserId']);
+Route::delete('/front/warning/midia/{id}', [ClassifiedsController::class, 'deleteMidia']);
+Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAllByUserId']); 
 
-Route::delete('/front/warning/midia/{id}', [ClassifiedsController::class, 'deleteMidia']); // Deletar uma  mídia
-
-Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAllByUserId']); // Obter um classificado específico
-
-Route::get('/front/benefits', [BenefitsController::class, 'getAllPublic']); // Listar todos os Beneficios
 Route::get('/front/benefit/{id}', [BenefitsController::class, 'getById']); // Obter um Beneficios específico
 Route::get('/front/folders', [FolderController::class, 'getAll']);
 
@@ -356,6 +358,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/service-providers', [ServiceProvidersController::class, 'insert']); // Criar um novo prestador de serviços
     Route::post('/admin/service-providers/{id}', [ServiceProvidersController::class, 'update']); // Atualizar um prestador de serviços existente
     Route::delete('/admin/service-providers/{id}', [ServiceProvidersController::class, 'delete']); // Excluir um prestador de serviços
+
 
 
     Route::get('/admin/benefits', [BenefitsController::class, 'getAll']); // Listar todos os Beneficios

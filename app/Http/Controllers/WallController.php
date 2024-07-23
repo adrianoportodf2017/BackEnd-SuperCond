@@ -228,7 +228,9 @@ class WallController extends Controller
         $newWall->thumb = $url;
         $newWall->thumb_file = $arquivo;
         $newWall->status = $request->input('status');
-        $newWall->type = $request->input('type');
+        $newWall->date_event = $request->input('date_event');
+        $newWall->url_externa = $request->input('url_externa');
+
 
 
         // Salvar o objeto Wall no banco de dados
@@ -318,6 +320,8 @@ class WallController extends Controller
         $wall->thumb = $url;
         $wall->status = $request->input('status');
         $wall->type = $request->input('type');
+        $wall->date_event = $request->input('date_event');
+        $wall->url_externa = $request->input('url_externa');
 
         // Salvar o documento no banco de dados
         try {
