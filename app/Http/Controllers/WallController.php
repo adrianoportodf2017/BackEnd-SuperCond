@@ -78,7 +78,7 @@ class WallController extends Controller
 {
     // Buscar todos os avisos onde o status é diferente de 1 e date_event não é nulo
     // Buscar todos os avisos onde o status é diferente de 1 e date_event não é nulo
-    $walls = Wall::where('status', '!=', 1)
+    $walls = Wall::where('status', 1)
                  ->whereNotNull('date_event')
                  ->select('id', 'title', 'date_event as start', 'url_externa as url', 'content as description')
                  ->get()
