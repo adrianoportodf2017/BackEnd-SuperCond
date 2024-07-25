@@ -68,6 +68,37 @@ class GalleryController extends Controller
         ], 200);
     }
 
+    
+    public function getAllPublic()
+    {
+        $gallerys = Gallery::where('status', '1')->get();
+ // Retornar uma resposta de sucesso com a lista de ocorrencias
+        // Retornar uma resposta de sucesso
+        // Retornar uma resposta de sucesso
+        $cont = '0';
+        foreach ($gallerys as $gallery) {
+            $midias = $gallery->midias;         
+            $gallery['midias'] = $midias;
+            $data[$cont] = $gallery;
+            $cont++;
+        }
+        // Retornar uma mensagem de erro se não houver ocorrencias
+        if (!$gallerys) {
+            return response()->json([
+                'error' => 'Nenhuma Galeria Encontrado',
+                'code' => 404,
+            ], 404);
+        }
+        // Retornar uma resposta de sucesso com a lista de ocorrencias
+        // Retornar uma resposta de sucesso
+      
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $data,
+        ], 200);
+    }
+
     /**
      * Obtém um galeria pelo ID.
      *
