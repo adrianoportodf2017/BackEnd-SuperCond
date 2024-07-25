@@ -76,6 +76,7 @@ class GalleryController extends Controller
         // Retornar uma resposta de sucesso
         // Retornar uma resposta de sucesso
         $cont = '0';
+        $data = [];
         foreach ($gallerys as $gallery) {
             $midias = $gallery->midias;         
             $gallery['midias'] = $midias;
