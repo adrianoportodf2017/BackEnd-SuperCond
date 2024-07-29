@@ -130,7 +130,6 @@ class PagesController extends Controller
         // Validar os dados da request
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
-            'content' => 'required|min:2',
             'thumb' => 'mimes:jpg,png,jpeg'
         ]);
 
