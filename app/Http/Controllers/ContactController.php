@@ -3,23 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Mail;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class ContactController extends Controller
 {
     public function sendEmailContact(Request $request)
     {
-      
-
         $validator = Validator::make($request->all(), [
             'con_name' => 'required|string|max:255',
             'con_email' => 'required|email|max:255',
             'con_message' => 'required|string',
         ]);
 
-        // Retornar uma mensagem de erro se a validação falhar
         if ($validator->fails()) {
             return response()->json([
                 'error' => $validator->errors()->first(),
@@ -33,39 +30,33 @@ class ContactController extends Controller
             'message' => $request->input('con_message'),
         ];
 
+        $mail = new PHPMailer(true);
+        
         try {
-            Mail::send('emails.contact', ['data' => $data], function($message) use ($data) {
-                $message->to('sitesprontobr@gmail.com') // Coloque aqui o e-mail para onde será enviado
-                        ->subject('Nova Mensagem de Contato');
-                $message->from($data['email'], $data['name']);
-            });
+            // Configurações do servidor
+            $mail->isSMTP();                                            // Enviar usando SMTP
+            $mail->Host       = 'sh-pro86.hostgator.com.br';                  // Configure o host do servidor de e-mail
+            $mail->SMTPAuth   = true;                                   // Habilitar autenticação SMTP
+            $mail->Username   = 'contato@agenciatecnet.com.b';              // SMTP username
+            $mail->Password   = '0307199216@Dr';                             // SMTP password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Habilitar criptografia TLS
+            $mail->Port       = 587;                                    // Porta TCP para conexão
+
+            // Recipientes
+            $mail->setFrom($data['email'], $data['name']);
+            $mail->addAddress('sitesprontobr@gmail.com');               // Adicione um destinatário
+
+            // Conteúdo do e-mail
+            $mail->isHTML(true);                                        // Defina o formato do email para HTML
+            $mail->Subject = 'Nova Mensagem de Contato';
+            $mail->Body    = $data['message'];
+            $mail->AltBody = strip_tags($data['message']);              // Texto alternativo para clientes de email sem suporte a HTML
+
+            $mail->send();
 
             return response()->json(['success' => true, 'message' => 'Email sent successfully.']);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => ['error' => $e->getMessage()]]);
-        }
-    }
-
-    public function testEmail()
-    {
-        $data = [
-            'name' => 'Test User',
-            'email' => 'adrianobr00@gmail.com', // Substitua pelo email que deseja usar no campo "From"
-        ];
-
-        try {
-            Mail::raw('This is a simple contact message', function($message) use ($data) {
-                $message->to('sitesprontobr@gmail.com') // Coloque aqui o e-mail para onde será enviado
-                        ->subject('Nova Mensagem de Contato');
-                $message->from($data['email'], $data['name']);
-            });
-
-            Log::info('Email de contato simples enviado', ['data' => $data]);
-
-            return response()->json(['success' => true, 'message' => 'Email sent successfully.']);
-        } catch (\Exception $e) {
-            Log::error('Erro ao enviar email de contato simples', ['error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erro ao enviar email: ' . $e->getMessage()]);
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Erro ao enviar email: ' . $mail->ErrorInfo]);
         }
     }
 }
