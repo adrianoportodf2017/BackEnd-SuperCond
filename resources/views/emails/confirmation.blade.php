@@ -13,7 +13,7 @@
 
     <p>Recebemos sua mensagem e entraremos em contato em breve.</p>
 </div>
-    <p>Atenciosamente,<br>
-    Agência Tecnet</p>
+<p>Atenciosamente,<br>
+{{ $app_name }}</p>
 </body>
 </html>

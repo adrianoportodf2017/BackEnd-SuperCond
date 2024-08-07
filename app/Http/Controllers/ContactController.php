@@ -35,17 +35,17 @@ class ContactController extends Controller
 
         try {
             Mail::send('emails.contact', ['data' => $data], function ($message) use ($data) {
-                $message->to('contato@agenciatecnet.com.br') // Coloque aqui o e-mail para onde será enviado
+                $message->to(config('mail.from.address')) // Coloque aqui o e-mail para onde será enviado
                     ->subject('Nova Mensagem de Contato');
                 $message->from($data['email'], $data['name']);
             });
 
             // Enviar e-mail de confirmação para a pessoa que escreveu
-            Mail::send('emails.confirmation', ['data' => $data], function ($message) use ($data) {
+            Mail::send('emails.confirmation', ['data' => $data, 'app_name' => config('app.name')], function ($message) use ($data) {
                 $message->to($data['email']) // E-mail da pessoa que escreveu
                     ->subject('Recebemos sua mensagem');
-                $message->from('contato@agenciatecnet.com.br', 'Agência Tecnet');
-            });
+                    $message->from(config('mail.from.address'), config('app.name'));
+                });
 
             return response()->json(['success' => true, 'message' => 'Email sent successfully.']);
         } catch (\Exception $e) {
