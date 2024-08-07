@@ -94,6 +94,7 @@ Route::get('/front/folders', [FolderController::class, 'getAll']);
 
 Route::get('/front/galleries', [GalleryController::class, 'getAllPublic']); // Listar todas as fotos
 Route::post('/front/send-email-contact', [ContactController::class, 'sendEmailContact']);
+Route::get('/test-email', [ContactController::class, 'testEmail']);
 
 
 

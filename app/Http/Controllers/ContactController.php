@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
@@ -43,6 +43,29 @@ class ContactController extends Controller
             return response()->json(['success' => true, 'message' => 'Email sent successfully.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => ['error' => $e->getMessage()]]);
+        }
+    }
+
+    public function testEmail()
+    {
+        $data = [
+            'name' => 'Test User',
+            'email' => 'adrianobr00@gmail.com', // Substitua pelo email que deseja usar no campo "From"
+        ];
+
+        try {
+            Mail::raw('This is a simple contact message', function($message) use ($data) {
+                $message->to('sitesprontobr@gmail.com') // Coloque aqui o e-mail para onde será enviado
+                        ->subject('Nova Mensagem de Contato');
+                $message->from($data['email'], $data['name']);
+            });
+
+            Log::info('Email de contato simples enviado', ['data' => $data]);
+
+            return response()->json(['success' => true, 'message' => 'Email sent successfully.']);
+        } catch (\Exception $e) {
+            Log::error('Erro ao enviar email de contato simples', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Erro ao enviar email: ' . $e->getMessage()]);
         }
     }
 }
