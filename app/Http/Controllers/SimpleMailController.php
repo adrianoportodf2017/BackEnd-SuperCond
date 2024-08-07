@@ -11,7 +11,7 @@
             $data["email"] = 'adrianobr00@gmail.com';
             $data["title"] = "Mail Testing";
 
-            Mail::send('emails\simplemail', ['passingDataToView'=> $passingDataToView], function ($message) use ($data){
+            Mail::send('emails.simplemail', ['passingDataToView'=> $passingDataToView], function ($message) use ($data){
                 $message->to($data["email"],'John Doe');
                 $message->subject($data["title"]);
             });;
