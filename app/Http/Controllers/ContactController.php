@@ -37,7 +37,7 @@ class ContactController extends Controller
             $mail->isSMTP();                                            // Enviar usando SMTP
             $mail->Host       = 'sh-pro86.hostgator.com.br';                  // Configure o host do servidor de e-mail
             $mail->SMTPAuth   = true;                                   // Habilitar autenticação SMTP
-            $mail->Username   = 'contato@agenciatecnet.com.br';              // SMTP username
+            $mail->Username   = 'contato@devcondbackend.agenciatecnet.com.br';  // SMTP username
             $mail->Password   = '0307199216@Dr';                             // SMTP password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            // Habilitar criptografia SSL
             $mail->Port       = 465;    
