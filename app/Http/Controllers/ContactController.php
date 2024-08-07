@@ -39,12 +39,18 @@ class ContactController extends Controller
             $mail->SMTPAuth   = true;                                   // Habilitar autenticação SMTP
             $mail->Username   = 'contato@agenciatecnet.com.br';              // SMTP username
             $mail->Password   = '0307199216@Dr';                             // SMTP password
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            // Habilitar criptografia SSL
-            $mail->Port       = 465;                                   // Porta TCP para conexão
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Habilitar criptografia TLS
+            $mail->Port       = 465;    
+            
+               // Habilitar debug
+               $mail->SMTPDebug = 3;                                       // Nível de debug (0 = off, 1 = mensagens de cliente, 2 = mensagens de cliente e servidor, 3 = mensagens completas)
+               $mail->Debugoutput = function($str, $level) {
+                   Log::info("PHPMailer: [$level] $str");
+               };// Porta TCP para conexão
 
             // Recipientes
             $mail->setFrom($data['email'], $data['name']);
-            $mail->addAddress('sitesprontobr@gmail.com');               // Adicione um destinatário
+            $mail->addAddress('adrianobr00@gmail.com');               // Adicione um destinatário
 
             // Conteúdo do e-mail
             $mail->isHTML(true);                                        // Defina o formato do email para HTML
