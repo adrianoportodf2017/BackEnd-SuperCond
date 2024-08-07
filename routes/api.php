@@ -39,7 +39,8 @@ use App\Http\Controllers\{
     ProfileController,
     CategoryController,
     ResetBaseController,
-    PagesController
+    PagesController,
+    ContactController
 };
 use App\Models\Benefits;
 use App\Models\Category;
@@ -56,9 +57,6 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
 Route::post('/admin/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/admin/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
-
-
-
 Route::post('/front/auth/login', [AuthController::class, 'loginUser']);
 Route::post('/front/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/front/auth/reset-password', [AuthController::class, 'reset'])->name('password.reset');
@@ -95,6 +93,8 @@ Route::get('/front/benefit/{id}', [BenefitsController::class, 'getById']); // Ob
 Route::get('/front/folders', [FolderController::class, 'getAll']);
 
 Route::get('/front/galleries', [GalleryController::class, 'getAllPublic']); // Listar todas as fotos
+Route::post('/front/send-email-contact', [ContactController::class, 'sendEmailContact']);
+
 
 
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
