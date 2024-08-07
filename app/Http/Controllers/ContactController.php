@@ -35,7 +35,7 @@ class ContactController extends Controller
 
         try {
             Mail::send('emails.contact', ['data' => $data], function($message) use ($data) {
-                $message->to('sitesprontobr@gmail.com') // Coloque aqui o e-mail para onde será enviado
+                $message->to('contato@agenciatecnet.com.br') // Coloque aqui o e-mail para onde será enviado
                         ->subject('Nova Mensagem de Contato');
                 $message->from($data['email'], $data['name']);
             });
