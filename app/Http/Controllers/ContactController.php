@@ -49,8 +49,8 @@ class ContactController extends Controller
                };// Porta TCP para conexão
 
             // Recipientes
-            $mail->setFrom($data['email'], $data['name']);
-            $mail->addAddress('adrianobr00@gmail.com');               // Adicione um destinatário
+            $mail->setFrom('contato@devcondbackend.agenciatecnet.com.br', $data['name']);
+            $mail->addAddress('contato@devcondbackend.agenciatecnet.com.br');               // Adicione um destinatário
 
             // Conteúdo do e-mail
             $mail->isHTML(true);                                        // Defina o formato do email para HTML
