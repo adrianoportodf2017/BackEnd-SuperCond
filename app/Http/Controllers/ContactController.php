@@ -39,8 +39,8 @@ class ContactController extends Controller
             $mail->SMTPAuth   = true;                                   // Habilitar autenticação SMTP
             $mail->Username   = 'contato@devcondbackend.agenciatecnet.com.br';  // SMTP username
             $mail->Password   = '0307199216@Dr';                             // SMTP password
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            // Habilitar criptografia SSL
-            $mail->Port       = 465;    
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Habilitar criptografia TLS
+            $mail->Port       = 587;    
             
                // Habilitar debug
                $mail->SMTPDebug = 3;                                       // Nível de debug (0 = off, 1 = mensagens de cliente, 2 = mensagens de cliente e servidor, 3 = mensagens completas)
