@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
+use Illuminate\Support\Facades\Log;
 class ContactController extends Controller
 {
     public function sendEmailContact(Request $request)
