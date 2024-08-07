@@ -34,15 +34,15 @@ class ContactController extends Controller
         ];
 
         try {
-            Mail::send('emails.contact', $data, function($message) use ($data) {
+            Mail::send('emails.contact', ['data' => $data], function($message) use ($data) {
                 $message->to('sitesprontobr@gmail.com') // Coloque aqui o e-mail para onde será enviado
-                        ->subject('Nova Mensagem do Site Ouro Vermelho');
+                        ->subject('Nova Mensagem de Contato');
                 $message->from($data['email'], $data['name']);
             });
 
             return response()->json(['success' => true, 'message' => 'Email sent successfully.']);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to send email.']);
+            return response()->json(['success' => false, 'message' => ['error' => $e->getMessage()]]);
         }
     }
 }
