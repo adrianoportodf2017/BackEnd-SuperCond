@@ -35,7 +35,7 @@ class ContactController extends Controller
 
         try {
             Mail::send('emails.contact', ['data' => $data], function ($message) use ($data) {
-                $message->to(config('mail.from.address')) // Coloque aqui o e-mail para onde será enviado
+                $message->to('atendimentocrov2@ourovermelhoweb.com.br') // Coloque aqui o e-mail para onde será enviado
                     ->subject('Nova Mensagem de Contato');
                 $message->from($data['email'], $data['name']);
             });
