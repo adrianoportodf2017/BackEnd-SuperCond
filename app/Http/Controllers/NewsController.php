@@ -15,10 +15,10 @@ class NewsController extends Controller
     public function getAll()
     {
         $array = ['error' => ''];
-        $news = News::all();
-        if (!$news) {
+        $news = News::orderBy('created_at', 'desc')->get();
+        if ($news->isEmpty()) {  // Usando isEmpty() para verificar se a coleção está vazia
             return response()->json([
-                'error' => "Nenhuma notícia não encontrado",
+                'error' => "Nenhuma notícia encontrada",
                 'code' => 404,
             ], 404);
         }
