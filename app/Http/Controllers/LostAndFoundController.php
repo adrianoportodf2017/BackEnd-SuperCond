@@ -123,7 +123,7 @@ class LostAndFoundController extends Controller
             'list' => $result,
         ], 200);
     }
-    }
+ 
 
     /**
      * Obtém um documento pelo ID.
@@ -164,7 +164,7 @@ class LostAndFoundController extends Controller
         // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
-            'file' =>  'required|max:2M',
+           // 'file' =>  'required|max:2M',
             'file.*' => 'mimes:jpg,png,pdf,jpeg',
             'owner_id' => 'required',
         ]);
