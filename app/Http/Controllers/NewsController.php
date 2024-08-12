@@ -202,6 +202,8 @@ class NewsController extends Controller
         $new->tags = $request->input('tags');
         $new->highlight = $request->input('highlight');
         $new->status = $request->input('status');
+        $new->status_thumb = $request->input('status_thumb');
+
           // Salvar o documento no banco de dados
           try {
             $new->save();
