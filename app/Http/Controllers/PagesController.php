@@ -168,6 +168,27 @@ class PagesController extends Controller
         ], 200);
     }
 
+    public function getBySlugPrivate($slug)
+    {
+        $page = Pages::where('status', 1)
+            ->where('restricted_area', 1)
+            ->where('slug', $slug)
+            ->first();
+
+        if (!$page) {
+            return response()->json([
+                'error' => "Página com o slug '{$slug}' não encontrada",
+                'code' => 404,
+            ], 404);
+        }
+
+        return response()->json([
+            'error' => '',
+            'list' => $page,
+            // Outros dados de resultado aqui...
+        ], 200);
+    }
+
     public function insert(Request $request)
     {
         $array = ['error' => ''];
