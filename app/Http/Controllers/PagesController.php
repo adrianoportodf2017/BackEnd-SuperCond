@@ -77,6 +77,28 @@ class PagesController extends Controller
         ], 200);
     }
 
+    public function getAllPrivateAndMenu()
+    {
+        $array = ['error' => ''];
+        $pages = Pages::select('id', 'title', 'slug', 'order')
+                      ->where('status', 1)
+                      ->where('restricted_area', 1)
+                      ->where('main_menu', 1)
+                      ->orderBy('order')
+                      ->get();
+    
+        if ($pages->isEmpty()) {
+            return response()->json([
+                'error' => "Nenhuma página encontrada",
+                'code' => 404,
+            ], 404);
+        }
+    
+        return response()->json([
+            'error' => '',
+            'list' => $pages,
+        ], 200);
+    }
 
     /**
      * Obtém um documento pelo ID.

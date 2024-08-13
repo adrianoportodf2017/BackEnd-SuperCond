@@ -80,7 +80,7 @@ class LostAndFoundController extends Controller
         // Retornar uma mensagem de erro se não houver ocorrencias
         if (!$lostAndFounds) {
             return response()->json([
-                'error' => 'Nenhuma Galeria Encontrado',
+                'error' => 'Nenhuma achado Encontrado',
                 'code' => 404,
             ], 404);
         }
@@ -165,7 +165,7 @@ class LostAndFoundController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
            // 'file' =>  'required|max:2M',
-            'file.*' => 'mimes:jpg,png,pdf,jpeg',
+            //'file.*' => 'mimes:jpg,png,pdf,jpeg',
             'owner_id' => 'required',
         ]);
 
