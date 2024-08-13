@@ -54,6 +54,29 @@ class PagesController extends Controller
         ], 200);
     }
 
+    public function getAllPrivate()
+    {
+        $array = ['error' => ''];
+        $pages = Pages::where('status', 1)
+            ->where('restricted_area', 1)
+            ->orderBy('order')
+            ->orderBy('title')
+            ->get();
+
+        if ($pages->isEmpty()) {
+            return response()->json([
+                'error' => "Nenhuma página encontrada",
+                'code' => 404,
+            ], 404);
+        }
+
+        return response()->json([
+            'error' => '',
+            'list' => $pages,
+            // Outros dados de resultado aqui...
+        ], 200);
+    }
+
     public function getAllPublicAndMenu()
     {
         $array = ['error' => ''];

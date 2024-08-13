@@ -76,6 +76,8 @@ Route::get('/front/menupublic', [PagesController::class, 'getAllPublicAndMenu'])
 Route::get('/front/menuprivate', [PagesController::class, 'getAllPrivateAndMenu']); // Obter uma notícia específica
 
 Route::get('/front/pages', [PagesController::class, 'getAllPublic']); // Obter todas as paginas 
+Route::get('/front/pages/private', [PagesController::class, 'getAllPrivate']); // Obter todas as paginas 
+
 
 Route::get('/front/wall/{id}', [WallController::class, 'getById']); // Obter uma notícia específica
 Route::get('/front/walls', [WallController::class, 'getAllPublic']);
