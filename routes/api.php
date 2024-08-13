@@ -73,7 +73,7 @@ Route::get('/front/categories/{type?}', [CategoryController::class, 'getAll'])->
 
 Route::get('/front/page/{slug}', [PagesController::class, 'getBySlugPublic']); // Obter uma notícia específica
 Route::get('/front/menupublic', [PagesController::class, 'getAllPublicAndMenu']); // Obter uma notícia específica
-Route::get('/front/menupublic', [PagesController::class, 'getAllPrivateAndMenu']); // Obter uma notícia específica
+Route::get('/front/menuprivate', [PagesController::class, 'getAllPrivateAndMenu']); // Obter uma notícia específica
 
 Route::get('/front/pages', [PagesController::class, 'getAllPublic']); // Obter todas as paginas 
 
