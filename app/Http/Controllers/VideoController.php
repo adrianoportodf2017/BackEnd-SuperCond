@@ -43,7 +43,7 @@ class VideoController extends Controller
     public function getAllPrivate()
     {
         $videos = Video::where('status', 1)
-        ->where('restricted_area', 1)
+        ->where('restricted_area', 'true')
         ->orderBy('date_event')
         ->get();
 
