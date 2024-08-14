@@ -44,7 +44,7 @@ class VideoController extends Controller
     {
         $videos = Video::where('status', 1)
         ->where('restricted_area', 'true')
-        ->orderBy('date_event')
+        ->orderBy('date_event', 'desc')
         ->get();
 
         if (!$videos) {
