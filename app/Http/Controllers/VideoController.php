@@ -44,10 +44,9 @@ class VideoController extends Controller
     {
         $videos = Video::where('status', 1)
         ->where('restricted_area', 1)
-        ->orderBy('order')
-        ->orderBy('title')
+        ->orderBy('date_event')
         ->get();
-        
+
         if (!$videos) {
             return response()->json([
                 'error' => 'Nenhum vídeo encontrado',
