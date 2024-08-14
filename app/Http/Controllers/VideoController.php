@@ -40,10 +40,14 @@ class VideoController extends Controller
         ], 200);
     }
 
-    public function getAllPublic()
+    public function getAllPrivate()
     {
-        $videos = Video::where('status', '1')->get();
-
+        $videos = Video::where('status', 1)
+        ->where('restricted_area', 1)
+        ->orderBy('order')
+        ->orderBy('title')
+        ->get();
+        
         if (!$videos) {
             return response()->json([
                 'error' => 'Nenhum vídeo encontrado',

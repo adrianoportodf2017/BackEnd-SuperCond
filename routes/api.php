@@ -130,6 +130,12 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/front/warning/{id}', [WarningController::class, 'update']);
     Route::post('/front/warning', [WarningController::class, 'insert']);
     Route::delete('/front/warning/{id}', [WarningController::class, 'delete']);
+    
+
+    //videos
+    Route::get('/front/menuprivate', [PagesController::class, 'getAllPrivateAndMenu']); // Obter uma notícia específica
+    Route::get('/front/videosprivate', [VideoController::class, 'getAllPrivate']); // Listar todas as fotos
+
 
     // Folder Routes
    
