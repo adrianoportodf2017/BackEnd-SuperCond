@@ -132,6 +132,7 @@ class VideoController extends Controller
         $newVideo->url =  $request->input('url');
         $newVideo->status = $request->input('status');
         $newVideo->date_event = $request->input('date_event');
+        $newVideo->video_duration = $request->input('video_duration');        
         $newVideo->likes = $request->input('likes', '0');
         $newVideo->public_area = $request->input('public_area', '0');
         $newVideo->restricted_area = $request->input('restricted_area', '0');
@@ -201,6 +202,7 @@ class VideoController extends Controller
         $video->status = $request->input('status');
         $video->url =  $request->input('url');
         $video->date_event = $request->input('date_event');
+        $video->video_duration = $request->input('video_duration');   
         $video->likes = $request->input('likes', 0);
         $video->public_area = $request->input('public_area', '0');
         $video->restricted_area = $request->input('restricted_area', '0');
