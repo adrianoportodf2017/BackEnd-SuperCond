@@ -342,6 +342,17 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/gallery/midia/{id}', [GalleryController::class, 'insertMidia']); // Inserir uma nova mídia
     Route::delete('/admin/gallery/midia/{id}', [GalleryController::class, 'deleteMidia']); // Deletar uma  mídia
 
+
+        /**<--Galeria-->*/
+
+        Route::get('/admin/videos', [GalleryController::class, 'getAll']); // Listar todas as fotos
+        Route::get('/admin/video/{id}', [GalleryController::class, 'getById']); // Obter uma foto específica
+        Route::post('/admin/video', [GalleryController::class, 'insert']); // Carregar uma nova foto
+        Route::post('/admin/video/{id}', [GalleryController::class, 'update']); // Atualizar uma foto existente
+        Route::delete('/admin/video/{id}', [GalleryController::class, 'delete']); // Excluir uma foto
+        Route::post('/admin/video/midia/{id}', [GalleryController::class, 'insertMidia']); // Inserir uma nova mídia
+        Route::delete('/admin/video/midia/{id}', [GalleryController::class, 'deleteMidia']); // Deletar uma  mídia
+
     /**<--Enquetes-->*/
 
     Route::get('/admin/polls', [PollsController::class, 'getAll']); // Listar todas as enquetes
