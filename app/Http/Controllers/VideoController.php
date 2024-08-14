@@ -129,7 +129,7 @@ class VideoController extends Controller
         $newVideo->content = $request->input('content');
         $newVideo->thumb = $thumbUrl;
         $newVideo->thumb_file = $arquivo;
-        $newVideo->media_file = $mediaUrl;
+        $newVideo->url =  $request->input('url');
         $newVideo->status = $request->input('status');
         $newVideo->date_event = $request->input('date_event');
         $newVideo->likes = $request->input('likes', '0');
@@ -199,6 +199,7 @@ class VideoController extends Controller
         $video->title = $request->input('title');
         $video->content = $request->input('content');
         $video->status = $request->input('status');
+        $video->url =  $request->input('url');
         $video->date_event = $request->input('date_event');
         $video->likes = $request->input('likes', 0);
         $video->public_area = $request->input('public_area', '0');
