@@ -19,6 +19,7 @@ class VideoController extends Controller
     public function getAll()
     {
         $videos = Video::all();
+        $data = [];
 
         if (!$videos) {
             return response()->json([
@@ -131,7 +132,7 @@ class VideoController extends Controller
         $newVideo->media_file = $mediaUrl;
         $newVideo->status = $request->input('status');
         $newVideo->date_event = $request->input('date_event');
-        $newVideo->likes = $request->input('likes', 0);
+        $newVideo->likes = $request->input('likes', '0');
         $newVideo->public_area = $request->input('public_area', '0');
         $newVideo->restricted_area = $request->input('restricted_area', '0');
         $newVideo->slug = $request->input('slug');
@@ -318,29 +319,14 @@ class VideoController extends Controller
     public function delete($id)
     {
         $video = Video::find($id);
-
         if (!$video) {
             return response()->json([
                 'error' => 'Vídeo inexistente',
                 'code' => 404,
             ], 404);
         }
-
-        try {
-            foreach ($video->midias as $midia) {
-                $midia->delete();
-                Storage::delete($midia->file);
-            }
-            Storage::delete($video->thumb_file);
-            $video->delete();
-        } catch (Exception $e) {
-            return response()->json([
-                'error' => 'Erro ao deletar vídeo!',
-                'detail' => $e->getMessage(),
-                'code' => 500,
-            ], 500);
-        }
-
+        Storage::delete($video->thumb_file);
+        $video->delete();
         return response()->json([
             'error' => '',
             'success' => true,
