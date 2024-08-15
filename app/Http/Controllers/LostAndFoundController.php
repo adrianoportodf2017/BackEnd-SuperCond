@@ -73,9 +73,9 @@ class LostAndFoundController extends Controller
 
 
 
-    public function getAllExceptUserId($userId)
+    public function getAllUserId($userId)
     {
-        $lostAndFounds =  LostAndFound::where('owner_id', '!=', $userId)->get();
+        $lostAndFounds =  LostAndFound::where('owner_id', $userId)->get();
 
         // Retornar uma mensagem de erro se não houver ocorrencias
         if (!$lostAndFounds) {
