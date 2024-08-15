@@ -143,7 +143,7 @@ Route::middleware('auth:api')->group(function () {
 
 
        /**Achados e Perdidos    * **/
-       Route::get('/front/lost-and-found', [LostAndFoundController::class, 'getAllUserId']); // Listar todos os achados e perdidos
+       Route::get('/front/lost-and-found/{id}', [LostAndFoundController::class, 'getAllUserId']); // Listar todos os achados e perdidos
        Route::get('/front/lost-and-found/{id}', [LostAndFoundController::class, 'getById']); // Obter um achado e perdido específico
        Route::post('/front/lost-and-found', [LostAndFoundController::class, 'insert']); // Criar um novo achado e perdido
        Route::post('/front/lost-and-found/{id}', [LostAndFoundController::class, 'update']); // Atualizar um achado e perdido existente
