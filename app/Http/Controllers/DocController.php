@@ -25,15 +25,21 @@ class DocController extends Controller
 
         // Realiza o join entre as tabelas `docs` e `docs_categories`
         $docs = Doc::select('docs.*', 'docs_categories.name as category_name')
-        ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
-        ->get();
+            ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
+            ->get();
 
         foreach ($docs as $docKey => $docValue) {
             // Adiciona a URL do arquivo
-            $docs[$docKey]['fileurl'] = $docValue['fileurl'];
+            $docs[$docKey]['filename'] = $docValue['filename'];
+            // Verifica se o fileurl está no formato JSON e decodifica
+            $fileData = json_decode($docValue['filename'], true);
+            if (json_last_error() === JSON_ERROR_NONE && isset($fileData[0]['download_link'])) {
+                // Captura o download_link e substitui o valor de fileurl
+                $docs[$docKey]['filename'] = $fileData[0]['download_link'];
+            }
             // Concatena o título da categoria com o título do documento
             $docs[$docKey]['title'] = $docValue['category_name'] . ' - ' . $docValue['title'];
-            $docs[$docKey]['fileurl'] = config('app.url').'/public/storage/'.$docValue['filename'];
+            $docs[$docKey]['fileurl'] = config('app.url') . '/public/storage/' . $docValue['filename'];
         }
 
         $array['list'] = $docs;
