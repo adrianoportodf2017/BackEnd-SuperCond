@@ -102,6 +102,9 @@ Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAll
 Route::get('/front/benefit/{id}', [BenefitsController::class, 'getById']); // Obter um Beneficios específico
 Route::get('/front/folders', [FolderController::class, 'getAll']);
 
+Route::get('/front/docs', [DocController::class, 'getAll']);// Obter Documentos Antigos
+
+
 Route::get('/front/galleries', [GalleryController::class, 'getAllPublic']); // Listar todas as fotos
 Route::post('/front/send-email-contact', [ContactController::class, 'sendEmailContact']);
 Route::get('/test-email', [ContactController::class, 'testEmail']);
