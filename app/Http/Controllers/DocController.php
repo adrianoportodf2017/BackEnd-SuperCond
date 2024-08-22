@@ -23,10 +23,12 @@ class DocController extends Controller
     {
         $array = ['error' => ''];
     
-        // Realiza o join entre as tabelas `docs` e `docs_categories`, ordenando pela data mais recente
+        // Realiza o join entre as tabelas `docs` e `docs_categories`, ordenando por categoria e depois por título
         $docs = Doc::select('docs.*', 'docs_categories.name as category_name')
             ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
-            ->orderBy('docs.created_at', 'desc') // Ordena pela data mais recente
+            ->orderBy('docs.created_at', 'desc') // Ordena por nome da categoria em ordem crescente        
+            ->orderBy('docs_categories.name', 'asc') // Ordena por nome da categoria em ordem crescente
+            ->orderBy('docs.title', 'asc') // Ordena por título em ordem crescente
             ->get();
     
         foreach ($docs as $docKey => $docValue) {
