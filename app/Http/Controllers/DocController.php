@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Doc;
+use App\Models\DocsCategory;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Exception;
@@ -22,10 +23,16 @@ class DocController extends Controller
     {
         $array = ['error' => ''];
 
-        $docs = Doc::all();
+        // Realiza o join entre as tabelas `docs` e `docs_categories`
+        $docs = Doc::select('docs.*', 'docs_categories.name as category_name')
+        ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
+        ->get();
 
         foreach ($docs as $docKey => $docValue) {
+            // Adiciona a URL do arquivo
             $docs[$docKey]['fileurl'] = $docValue['fileurl'];
+            // Concatena o título da categoria com o título do documento
+            $docs[$docKey]['title'] = $docValue['category_name'] . ' - ' . $docValue['title'];
         }
 
         $array['list'] = $docs;
