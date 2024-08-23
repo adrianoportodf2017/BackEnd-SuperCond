@@ -49,6 +49,27 @@ class DocController extends Controller
     
         return $array;
     }
+  /**
+     * Obtém uma Lista de Categoria de Documentos
+     *
+     *
+     * @return \App\Models\DocsCategory
+     */
+    public function getAllCategory()
+    {
+        $docs = DocsCategory::all();    
+        if (!$docs) {
+            return response()->json([
+                'error' => "Nenhuma Categoria encontrado",
+                'code' => 404,
+            ], 404);
+        }
+        return response()->json([
+            'error' => '',
+            'list' => $docs,
+        ], 200);
+    }
+
     /**
      * Obtém um documento pelo ID.
      *
