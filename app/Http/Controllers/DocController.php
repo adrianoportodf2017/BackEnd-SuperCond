@@ -55,9 +55,9 @@ class DocController extends Controller
     
         // Realiza o join entre as tabelas `docs` e `docs_categories`, ordenando por categoria e depois por título
         $docs = Doc::select('docs.*', 'docs_categories.name as category_name')
-            ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
-            ->orderBy('docs_categories.created_at', 'asc') // Ordena por nome da categoria em ordem crescente
-            ->get();
+        ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
+        ->orderByRaw("CAST(docs_categories.created_at AS DATETIME) DESC")
+        ->get();
     
         foreach ($docs as $docKey => $docValue) {
             // Adiciona a URL do arquivo
