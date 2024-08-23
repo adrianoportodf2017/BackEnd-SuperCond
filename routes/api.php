@@ -102,7 +102,7 @@ Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAll
 Route::get('/front/benefit/{id}', [BenefitsController::class, 'getById']); // Obter um Beneficios específico
 Route::get('/front/folders', [FolderController::class, 'getAll']);
 
-Route::get('/front/docs', [DocController::class, 'getAll']);// Obter Documentos
+Route::get('/front/docs', [DocController::class, 'getAllPublic']);// Obter Documentos
 
 
 
