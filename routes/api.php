@@ -103,7 +103,6 @@ Route::get('/front/benefit/{id}', [BenefitsController::class, 'getById']); // Ob
 Route::get('/front/folders', [FolderController::class, 'getAll']);
 
 Route::get('/front/docs', [DocController::class, 'getAll']);// Obter Documentos
-Route::get('/front/docs/category', [DocController::class, 'getAllCategory']);// Obter Documentos Categorias
 
 
 
@@ -230,6 +229,8 @@ Route::middleware('auth:api')->group(function () {
 
     /**DOCS**/
     Route::get('/admin/docs', [DocController::class, 'getAll']);
+    Route::get('/admin/docs/category', [DocController::class, 'getAllCategory']);// Obter Documentos Categorias
+
     Route::get('/admin/doc/{id}', [DocController::class, 'getById']);
     Route::post('/admin/doc/{id}', [DocController::class, 'update']);
     Route::post('/admin/doc', [DocController::class, 'insert']);
