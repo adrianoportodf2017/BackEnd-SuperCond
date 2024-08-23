@@ -56,7 +56,7 @@ class DocController extends Controller
         // Realiza o join entre as tabelas `docs` e `docs_categories`, ordenando por categoria e depois por título
         $docs = Doc::select('docs.*', 'docs_categories.name as category_name')
             ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
-            ->orderBy('docs_categories.created_at', 'desc') // Ordena por nome da categoria em ordem crescente
+            ->orderBy('docs_categories.created_at', 'asc') // Ordena por nome da categoria em ordem crescente
             ->get();
     
         foreach ($docs as $docKey => $docValue) {
@@ -165,7 +165,7 @@ class DocController extends Controller
         }
 
         // Salvar o arquivo no armazenamento
-        $arquivo = $request->file('file')->store('public');
+        $arquivo = $request->file('file')->store('public/documentos');
         $url = asset(Storage::url($arquivo));
 
         // Criar um novo documento
