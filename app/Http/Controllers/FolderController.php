@@ -481,7 +481,7 @@ class FolderController extends Controller
             return null;
         }
 
-        $children = Folder::select('id', 'order', 'title', 'thumb', 'created_at', 'updated_at')
+        $children = Folder::select('id', 'order', 'title', 'thumb', 'status', 'created_at', 'updated_at')
             ->where('parent_id', $id)
             ->orderBy('title')
             ->get();
