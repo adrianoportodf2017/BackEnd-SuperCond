@@ -32,7 +32,7 @@ class FolderController extends Controller
 
     public function getAllPublic()
     {
-        $folders = $this->getFolderWithChildren(null, true); // Chame a função com null para obter todas as pastas
+        $folders = $this->getFolderWithChildren(null, '1'); // Chame a função com null para obter todas as pastas
 
         if (!$folders) {
             // Se não houver pastas, retorne um erro 404
@@ -460,7 +460,7 @@ class FolderController extends Controller
            if($public == null){
             $folders = Folder::whereNull('parent_id')->orderBy('title')->get();   
            }else{
-            $folders = Folder::where('status', 1)->whereNull('parent_id')->orderBy('title')->get(); 
+            $folders = Folder::where('status', '1')->whereNull('parent_id')->orderBy('title')->get(); 
            }          
         // Mapeia cada pasta para incluir seus filhos
         $folders = $folders->map(function ($folder) use ($public) {
