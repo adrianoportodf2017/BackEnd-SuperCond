@@ -50,7 +50,7 @@ class FolderController extends Controller
     public function getById($id)
     {
         $folder = Folder::find($id);
-
+    
         if (!$folder) {
             // Se a pasta não for encontrada, retorne um erro 404
             return response()->json([
@@ -58,15 +58,13 @@ class FolderController extends Controller
                 'code' => 404,
             ], 404);
         }
-
-
-
-        // Recupere a coleção de mídias
-        $midias = $folder->midias;
-
+    
+        // Recupere a coleção de mídias e ordene pelo campo 'name'
+        $midias = $folder->midias->sortBy('title');
+    
         // Obtém a URL base para os ícones
         $iconBaseUrl = asset('assets/icons/');
-
+    
         // Itere sobre cada item na coleção e adicione o tipo de arquivo e o ícone com URL completa
         foreach ($midias as $midia) {
             $fileExtension = strtolower(pathinfo($midia->url, PATHINFO_EXTENSION));
@@ -80,21 +78,21 @@ class FolderController extends Controller
                 $midia->type = 'word';
                 $midia->icon = $iconBaseUrl . '/word.png';
             } elseif (in_array($fileExtension, ['xls', 'xlsx'])) {
-                $midia->type = 'word';
+                $midia->type = 'excel';
                 $midia->icon = $iconBaseUrl . '/excel.png';
             } else {
                 $midia->type = 'outro';
                 $midia->icon = $iconBaseUrl . '/outros.png';
             }
         }
-
+    
         if (empty($folder->thumb)) {
-            $folder->thumb =  $iconBaseUrl . '/folder.png';
+            $folder->thumb = $iconBaseUrl . '/folder.png';
         }
-
+    
         $folder['children'] = $this->getFolderWithChildren($id);
         $folder['midias'] = $midias;
-
+    
         return response()->json($folder, 200);
     }
 
