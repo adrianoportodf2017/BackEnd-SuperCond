@@ -100,7 +100,7 @@ Route::delete('/front/warning/midia/{id}', [ClassifiedsController::class, 'delet
 Route::get('/front/classified/user/{id}', [ClassifiedsController::class, 'getAllByUserId']); 
 
 Route::get('/front/benefit/{id}', [BenefitsController::class, 'getById']); // Obter um Beneficios específico
-Route::get('/front/folders', [FolderController::class, 'getAll']);
+Route::get('/front/folders', [FolderController::class, 'getAllPublic']);
 
 Route::get('/front/docs', [DocController::class, 'getAllPublic']);// Obter Documentos
 

@@ -30,6 +30,23 @@ class FolderController extends Controller
         return response()->json($folders, 200); // Adicione o código de status HTTP 200
     }
 
+    public function getAllPublic()
+    {
+        $folders = $this->getFolderWithChildren(null, true); // Chame a função com null para obter todas as pastas
+
+        if (!$folders) {
+            // Se não houver pastas, retorne um erro 404
+            return response()->json([
+                'error' => 'Nenhuma pasta encontrada',
+                'code' => 404,
+            ], 404);
+        }
+
+        return response()->json($folders, 200); // Adicione o código de status HTTP 200
+    }
+
+
+
     public function getById($id)
     {
         $folder = Folder::find($id);
@@ -435,14 +452,19 @@ class FolderController extends Controller
      * @param int $id O ID da pasta para buscar suas pastas filhas.
      * @return \Illuminate\Database\Eloquent\Collection|null Coleção de pastas filhas com campos específicos ou null se a pasta não for encontrada.
      */
-    private function getFolderWithChildren($id = null)
+    private function getFolderWithChildren($id = null, $public = null)
     {
         // Verifica se um ID foi fornecido
         if ($id == null) {
-            // Busca todas as pastas raiz (sem pai)
-            $folders = Folder::whereNull('parent_id')->orderBy('title')->get();            
-            $folders = $folders->map(function ($folder) {
-                $folder->children = $this->getFolderWithChildren($folder->id);
+            // Busca todas as pastas raiz (sem pai)::where('status', 1)->orderBy('created_at', 'desc')->get();
+           if($public == null){
+            $folders = Folder::whereNull('parent_id')->orderBy('title')->get();   
+           }else{
+            $folders = Folder::where('status', 1)->whereNull('parent_id')->orderBy('title')->get(); 
+           }          
+        // Mapeia cada pasta para incluir seus filhos
+        $folders = $folders->map(function ($folder) use ($public) {
+            $folder->children = $this->getFolderWithChildren($folder->id, $public);
                 // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
                 $folder->icon =  asset('assets/icons/folder.png');
 
@@ -464,8 +486,8 @@ class FolderController extends Controller
             ->orderBy('title')
             ->get();
 
-            $children = $children->map(function ($child) {
-            $child->children = $this->getFolderWithChildren($child->id);
+            $children = $children->map(function ($child)  use ($public) {
+            $child->children = $this->getFolderWithChildren($child->id, $public);
 
             // Verifica se a propriedade "thumb" é null e cria o objeto "icon" com um valor padrão se for null
             $child->icon = asset('assets/icons/folder.png');
