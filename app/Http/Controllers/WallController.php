@@ -24,8 +24,7 @@ class WallController extends Controller
     public function getAll()
     {
         // Buscar todos os avisos
-        $walls = Wall::all();
-    
+        $walls = Wall::orderBy('created_at', 'desc')->get();    
         // Retornar uma mensagem de erro se não houver avisos
         if (!$walls) {
             return response()->json([
@@ -56,8 +55,7 @@ class WallController extends Controller
     public function getAllPublic()
     {
         // Buscar todos os avisos
-        $walls = Wall::all();
-    
+        $walls = Wall::orderBy('created_at', 'desc')->get();    
         // Retornar uma mensagem de erro se não houver avisos
         if (!$walls) {
             return response()->json([
