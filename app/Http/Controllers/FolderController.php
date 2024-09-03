@@ -74,7 +74,7 @@ class FolderController extends Controller
             } elseif ($fileExtension === 'pdf') {
                 $midia->type = 'pdf';
                 $midia->icon = $iconBaseUrl . '/pdf.png';
-                $midia->file = config('app.url') . 'storage/reader-pdf?file=' . $midia->file;
+                $midia->file = config('app.url') . 'reader-pdf?file=storage/' . $midia->file;
             } elseif (in_array($fileExtension, ['doc', 'docx'])) {
                 $midia->type = 'word';
                 $midia->icon = $iconBaseUrl . '/word.png';
