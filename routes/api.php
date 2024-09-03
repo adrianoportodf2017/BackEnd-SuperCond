@@ -473,4 +473,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/myreservations', [ReservationController::class, 'getMyReservations']);
     Route::post('/myreservations', [ReservationController::class, 'setMyReservations']);
     Route::delete('/myreservations/{id}', [ReservationController::class, 'delMyReservations']);
+
+
+    Route::get('/reader-pdf', function () {
+        return view('/leitorPdf');
+    });
+
+
 });
