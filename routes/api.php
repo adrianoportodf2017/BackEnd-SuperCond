@@ -54,9 +54,6 @@ Route::get('/ping', function () {
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 
 
-Route::get('/reader-pdf', function () {
-    return view('/leitorPdf');
-});
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
