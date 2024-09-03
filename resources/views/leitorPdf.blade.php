@@ -1,9 +1,3 @@
-<?php
-
-use App\Models\Permission;
-use Illuminate\Support\Facades\Storage;
-
-?>
 
 <!DOCTYPE html>
 <html lang="en">
