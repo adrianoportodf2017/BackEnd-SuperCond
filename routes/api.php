@@ -54,6 +54,10 @@ Route::get('/ping', function () {
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 
 
+Route::get('/reader-pdf', function () {
+    return view('/leitorPdf');
+});
+
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
@@ -475,9 +479,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/myreservations/{id}', [ReservationController::class, 'delMyReservations']);
 
 
-    Route::get('/reader-pdf', function () {
-        return view('/leitorPdf');
-    });
+ 
 
 
 });
