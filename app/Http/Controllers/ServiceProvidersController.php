@@ -15,23 +15,23 @@ class ServiceProvidersController extends Controller
 {
     public function getAll()
     {
-        $polls = ServiceProvider::all();
-
-
-        // Retornar uma mensagem de erro se não houver ocorrencias
-        if (!$polls) {
+        $providers = ServiceProvider::leftJoin('users', 'service_providers.indication_by', '=', 'users.id')
+            ->select('service_providers.*', 'users.name as indicated_by_name')
+            ->get();
+    
+        // Retornar uma mensagem de erro se não houver ocorrências
+        if ($providers->isEmpty()) {
             return response()->json([
-                'error' => 'Nenhuma Prestador de Serviço Encontrado',
+                'error' => 'Nenhum Prestador de Serviço Encontrado',
                 'code' => 404,
             ], 404);
         }
-        // Retornar uma resposta de sucesso com a lista de ocorrencias
-
-
+    
+        // Retornar uma resposta de sucesso com a lista de ocorrências
         return response()->json([
             'error' => '',
             'success' => true,
-            'list' => $polls,
+            'list' => $providers,
         ], 200);
     }
 
