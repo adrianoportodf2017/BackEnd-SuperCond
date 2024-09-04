@@ -78,6 +78,7 @@ class ServiceProvidersController extends Controller
             'address' => 'required|string',
             'website' => 'required|url',
             'thumb' => 'mimes:jpg,png,jpeg',
+            'indication_by' => 'required|string',
 
         ]);
 
@@ -221,7 +222,7 @@ class ServiceProvidersController extends Controller
         $provider->thumb = $url;
         $provider->thumb_file = $arquivo;
         $provider->status = $request->input('status');
-        $provider->indication_by = $request->input('indication_by');
+        //$provider->indication_by = $request->input('indication_by');
 
 
 
