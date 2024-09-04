@@ -398,6 +398,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/service-providers', [ServiceProvidersController::class, 'insert']); // Criar um novo prestador de serviços
     Route::post('/admin/service-providers/{id}', [ServiceProvidersController::class, 'update']); // Atualizar um prestador de serviços existente
     Route::delete('/admin/service-providers/{id}', [ServiceProvidersController::class, 'delete']); // Excluir um prestador de serviços
+    Route::post('/admin/service-providers/{id}/status', [ServiceProvidersController::class, 'updateStatus']);
 
 
 
