@@ -120,7 +120,7 @@ class ServiceProvidersController extends Controller
         $newProvider->thumb = $url;
         $newProvider->thumb_file = $arquivo;
         $newProvider->status = $request->input('status');
-        $newProvider->indicated_by = $request->input('indicated_by');
+        $newProvider->indication_by = $request->input('indication_by');
 
 
 
@@ -221,7 +221,7 @@ class ServiceProvidersController extends Controller
         $provider->thumb = $url;
         $provider->thumb_file = $arquivo;
         $provider->status = $request->input('status');
-        $provider->indication_by = $request->input('indicated_by');
+        $provider->indication_by = $request->input('indication_by');
 
 
 
