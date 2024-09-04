@@ -73,11 +73,11 @@ class ServiceProvidersController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'phone' => 'required|string',
-            'service_type' => 'required|string',
-            'description' => 'required|string',
-            'address' => 'required|string',
-            'website' => 'required|url',
-            'thumb' => 'mimes:jpg,png,jpeg',
+            //'service_type' => 'required|string',
+            //'description' => 'required|string',
+            ///'address' => 'required|string',
+            //'website' => 'required|url',
+           // 'thumb' => 'mimes:jpg,png,jpeg',
             'indication_by' => 'required|string',
 
         ]);
