@@ -168,9 +168,9 @@ class ServiceProvidersController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string',
             'service_type' => 'required|string',
-            'description' => 'required|string',
-            'address' => 'required|string',
-            'website' => 'required|url',
+            //'description' => 'required|string',
+            //'address' => 'required|string',
+            //'website' => 'required|url',
             'thumb' => 'mimes:jpg,png,jpeg',
 
         ]);
