@@ -217,6 +217,8 @@ class ServiceProvidersController extends Controller
         $provider->work_hours = $request->input('work_hours');
         $provider->thumb = $url;
         $provider->thumb_file = $arquivo;
+        $provider->status = $request->input('status');;
+
         // Salvar o documento no banco de dados
         try {
             $provider->save();
