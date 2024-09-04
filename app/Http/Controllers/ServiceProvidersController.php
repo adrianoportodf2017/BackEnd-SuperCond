@@ -119,6 +119,9 @@ class ServiceProvidersController extends Controller
         $newProvider->work_hours = $request->input('work_hours');
         $newProvider->thumb = $url;
         $newProvider->thumb_file = $arquivo;
+        $newProvider->status = $request->input('status');
+        $newProvider->indicated_by = $request->input('indicated_by');
+
 
 
 
@@ -217,7 +220,10 @@ class ServiceProvidersController extends Controller
         $provider->work_hours = $request->input('work_hours');
         $provider->thumb = $url;
         $provider->thumb_file = $arquivo;
-        $provider->status = $request->input('status');;
+        $provider->status = $request->input('status');
+        $provider->indicated_by = $request->input('indicated_by');
+
+
 
         // Salvar o documento no banco de dados
         try {
