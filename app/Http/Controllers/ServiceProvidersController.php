@@ -221,7 +221,7 @@ class ServiceProvidersController extends Controller
         $provider->thumb = $url;
         $provider->thumb_file = $arquivo;
         $provider->status = $request->input('status');
-        $provider->indicated_by = $request->input('indicated_by');
+        $provider->indication_by = $request->input('indicated_by');
 
 
 
