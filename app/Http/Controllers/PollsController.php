@@ -16,7 +16,7 @@ class PollsController extends Controller
 {
     public function getAll()
     {
-        $polls = Poll::getAll();
+        $polls = Poll::all();
 
 
         // Retornar uma mensagem de erro se não houver ocorrencias
