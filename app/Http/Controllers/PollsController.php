@@ -16,13 +16,13 @@ class PollsController extends Controller
 {
     public function getAll()
     {
-        $polls = Poll::with('questions.answers')->get();
+        $polls = Poll::getAll();
 
 
         // Retornar uma mensagem de erro se não houver ocorrencias
         if (!$polls) {
             return response()->json([
-                'error' => 'Nenhuma Galeria Encontrado',
+                'error' => 'Nenhuma Enquete encontrada',
                 'code' => 404,
             ], 404);
         }
