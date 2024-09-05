@@ -133,88 +133,110 @@ class PollsController extends Controller
 
 
     public function update(Request $request, $id)
-    {
-        // Implemente a lógica para atualizar uma enquete existente
+{
+    // Buscar o documento pelo ID
+    $poll = Poll::find($id);
 
-// Faça o var_dump dos dados da requisição
-var_dump($request->all()); 
-        $array['id'] =  $id;
-        // Buscar o documento pelo ID
-        $poll = Poll::find($id);
-        $arquivo = $poll->thumb_file;
-        $url =  $poll->thumb;
+    // Se a enquete não for encontrada, retornar uma mensagem de erro
+    if (!$poll) {
+        return response()->json([
+            'error' => 'Enquete inexistente',
+            'code' => 404,
+        ], 404);
+    }
 
+    // Validar os dados da requisição
+    $validator = Validator::make($request->all(), [
+        'title' => 'required|min:2',
+    ]);
 
+    if ($validator->fails()) {
+        return response()->json([
+            'error' => $validator->errors()->first(),
+            'code' => 400,
+        ], 400);
+    }
 
-        // Se o aviso não for encontrado, retornar uma mensagem de erro
-        if (!$poll) {
-            return response()->json([
-                'error' => 'Enquete inexistente',
-                'code' => 404,
-            ], 404);
-        }
+    // Manipulação do arquivo de imagem
+    $arquivo = $poll->thumb_file;
+    $url = $poll->thumb;
 
+    if ($request->file('thumb')) {
         // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
-            'title' => 'required|min:2',
+            'thumb' => 'mimes:jpg,png,jpeg',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => $validator->errors()->first(),
+                'error' => 'O arquivo enviado não é válido',
                 'code' => 400,
             ], 400);
         }
 
-        if ($request->file('thumb')) {
-            // Validar os dados da requisição
-            $validator = Validator::make($request->all(), [
-                'thumb' => 'mimes:jpg,png,jpeg',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'error' => 'O arquivo enviado não é válido',
-                    'code' => 400,
-                ], 400);
-            }
-
-            // Salvar o arquivo no armazenamento
-            $arquivo = $request->file('thumb')->store('public/poll/thumb');
-            $url = asset(Storage::url($arquivo));
-            $thumb_delete = $poll->thumb_file;
-            Storage::delete($thumb_delete);
-        }
-
-
-        $poll->title = $request->input('title');
-        $poll->content = $request->input('content');
-        $poll->thumb_file = $arquivo;
-        $poll->thumb = $url;
-        $poll->status = $request->input('status');
-        $poll->type = $request->input('type');
-        $poll->date_start = $request->input('date_start');
-        $poll->date_expiration = $request->input('date_expiration');
-        // Salvar o documento no banco de dados
-        try {
-            $poll->save();
-        } catch (Exception $e) {
-            // Tratar o erro
-            return response()->json([
-                'error' => 'Erro ao salvar Enquete!',
-                'detail' => $e->getMessage(),
-                'code' => 500,
-            ], 500);
-        }
-
-        // Retornar uma resposta de sucesso
-
-        return response()->json([
-            'error' => '',
-            'success' => true,
-            'list' => $poll,
-        ], 200);
+        // Salvar o arquivo no armazenamento
+        $arquivo = $request->file('thumb')->store('public/poll/thumb');
+        $url = asset(Storage::url($arquivo));
+        // Apagar o arquivo antigo
+        $thumb_delete = $poll->thumb_file;
+        Storage::delete($thumb_delete);
     }
+
+    // Atualizar as informações da enquete
+    $poll->title = $request->input('title');
+    $poll->content = $request->input('content');
+    $poll->thumb_file = $arquivo;
+    $poll->thumb = $url;
+    $poll->status = $request->input('status');
+    $poll->type = $request->input('type');
+    $poll->date_start = $request->input('date_start');
+    $poll->date_expiration = $request->input('date_expiration');
+
+    // Salvar o documento no banco de dados
+    try {
+        $poll->save();
+    } catch (Exception $e) {
+        // Tratar o erro
+        return response()->json([
+            'error' => 'Erro ao salvar Enquete!',
+            'detail' => $e->getMessage(),
+            'code' => 500,
+        ], 500);
+    }
+
+    // Atualizar as opções da enquete
+    $options = json_decode($request->input('options'), true);
+
+    if (is_array($options)) {
+        // Buscar as opções atuais da enquete
+        $currentOptions = $poll->options->pluck('id')->toArray();
+
+        // Encontrar as IDs das opções recebidas
+        $receivedOptionIds = array_column($options, 'id');
+        
+        // Encontrar as opções a serem removidas
+        $optionsToRemove = array_diff($currentOptions, $receivedOptionIds);
+        if (!empty($optionsToRemove)) {
+            QuestionPoll::whereIn('id', $optionsToRemove)->delete();
+        }
+
+        // Atualizar ou adicionar as opções
+        foreach ($options as $option) {
+            QuestionPoll::updateOrCreate(
+                ['id' => $option['id']],
+                ['poll_id' => $poll->id, 'title' => $option['title']]
+            );
+        }
+    }
+
+    // Retornar uma resposta de sucesso
+    return response()->json([
+        'error' => '',
+        'success' => true,
+        'list' => $poll,
+        'options' => $options,
+    ], 200);
+}
 
 
     public function delete($id)
