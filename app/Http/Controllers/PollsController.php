@@ -16,7 +16,7 @@ class PollsController extends Controller
 {
     public function getAll()
     {
-        $polls = Poll::with('questions.answers')->get();
+        $polls = Poll::with('options.answers')->get();
 
 
         // Retornar uma mensagem de erro se não houver ocorrencias
