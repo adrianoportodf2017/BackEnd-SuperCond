@@ -136,6 +136,8 @@ class PollsController extends Controller
     {
         // Implemente a lógica para atualizar uma enquete existente
 
+        var_dump($_POST);die;
+
         $array['id'] =  $id;
         // Buscar o documento pelo ID
         $poll = Poll::find($id);

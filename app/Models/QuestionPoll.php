@@ -9,6 +9,7 @@ class QuestionPoll extends Model
 {
     use HasFactory;
     protected $table = 'questions_polls';
+    
     public function answers()
     {
         return $this->hasMany(VotePoll::class, 'question_poll_id', 'id');
