@@ -383,6 +383,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/admin/poll/{id}/question', [PollsController::class, 'insertQuestion']); // Criar uma nova opções realacionada a uma enquete
     Route::post('/admin/poll/question/{id}', [PollsController::class, 'updateQuestion']); // Atualizar uma opções existente
     Route::delete('/admin/poll/question/{id}', [PollsController::class, 'deleteQuestion']); // Excluir uma opções
+    Route::post('/admin/poll/{id}/status', [PollsController::class, 'updateStatus']);
 
 
     /**<--Enquetes Respostas-->*/
