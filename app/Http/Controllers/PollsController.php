@@ -135,7 +135,7 @@ class PollsController extends Controller
     public function update(Request $request, $id)
 {
     // Buscar o documento pelo ID
-    $poll = Poll::find($id);
+    $poll = Poll::with('options.answers')->find($id);
 
     // Se a enquete não for encontrada, retornar uma mensagem de erro
     if (!$poll) {
@@ -177,9 +177,11 @@ class PollsController extends Controller
         // Salvar o arquivo no armazenamento
         $arquivo = $request->file('thumb')->store('public/poll/thumb');
         $url = asset(Storage::url($arquivo));
-        // Apagar o arquivo antigo
-        $thumb_delete = $poll->thumb_file;
-        Storage::delete($thumb_delete);
+
+        // Apagar o arquivo antigo, se existir
+        if ($poll->thumb_file && Storage::exists($poll->thumb_file)) {
+            Storage::delete($poll->thumb_file);
+        }
     }
 
     // Atualizar as informações da enquete
@@ -209,7 +211,7 @@ class PollsController extends Controller
 
     if (is_array($options)) {
         // Buscar as opções atuais da enquete
-        $currentOptions = $poll->options->pluck('id')->toArray();
+        $currentOptions = $poll->options ? $poll->options->pluck('id')->toArray() : [];
 
         // Encontrar as IDs das opções recebidas
         $receivedOptionIds = array_column($options, 'id');
@@ -237,6 +239,8 @@ class PollsController extends Controller
         'options' => $options,
     ], 200);
 }
+
+  
 
 
     public function delete($id)
