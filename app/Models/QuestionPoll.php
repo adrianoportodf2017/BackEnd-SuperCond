@@ -20,4 +20,4 @@ class QuestionPoll extends Model
         return $this->hasMany(VotePoll::class, 'question_poll_id', 'id');
     }
 
- 
+}
