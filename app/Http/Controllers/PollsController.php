@@ -222,10 +222,13 @@ class PollsController extends Controller
             QuestionPoll::whereIn('id', $optionsToRemove)->delete();
         }
 
-        // Atualizar ou adicionar as opções
         foreach ($options as $option) {
+            // Se o ID não estiver definido, defina-o como null
+            $id = isset($option['id']) ? $option['id'] : null;
+        
+            // Atualizar ou criar a opção
             QuestionPoll::updateOrCreate(
-                ['id' => $option['id']],
+                ['id' => $id], // Se $id for null, a função criará um novo registro
                 ['poll_id' => $poll->id, 'title' => $option['title']]
             );
         }
