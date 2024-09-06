@@ -211,7 +211,7 @@ class PollsController extends Controller
 
     if (is_array($options)) {
         // Buscar as opções atuais da enquete
-        $currentOptions = $poll->options ? $poll->options->pluck('id')->toArray() : [];
+        $currentOptions = $poll->options ? $poll->options : [];
 
         // Encontrar as IDs das opções recebidas
         $receivedOptionIds = array_column($options, 'id');
