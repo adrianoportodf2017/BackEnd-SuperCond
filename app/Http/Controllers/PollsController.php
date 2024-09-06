@@ -211,7 +211,7 @@ $options = json_decode($request->input('options'), true);
 
 if (is_array($options)) {
     // Buscar as opções atuais da enquete
-    $currentOptions = $poll->options->pluck('id')->toArray(); // Obter apenas os IDs das opções atuais
+    $currentOptions = $poll->options ? $poll->options->pluck('id')->toArray() : []; // Garantir que $currentOptions seja um array vazio se não houver opções
 
     // Encontrar as IDs das opções recebidas
     $receivedOptionIds = array_column($options, 'id');
