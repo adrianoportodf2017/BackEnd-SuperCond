@@ -243,7 +243,9 @@ class PollsController extends Controller
         'error' => '',
         'success' => true,
         'list' => $poll,
-        'optionsRemove' => $receivedOptionIds,
+        'optionsNotRemove' => $receivedOptionIds,
+        'optionsRemove' => $currentOptions,
+
     ], 200);
 }
 
