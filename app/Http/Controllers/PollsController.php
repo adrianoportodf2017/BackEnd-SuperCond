@@ -234,6 +234,7 @@ class PollsController extends Controller
              ['poll_id' => $poll->id, 'title' => $option['title']]
          );
      }
+    }
 
     // Retornar uma resposta de sucesso
     return response()->json([
