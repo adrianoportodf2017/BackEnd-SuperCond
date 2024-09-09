@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Visit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class VisitController extends Controller
 {
@@ -25,4 +26,54 @@ class VisitController extends Controller
             'data' => $visit
         ], 201);
     }
+
+    public function getLastOnlineUsers()
+{
+    // Busca os últimos 5 usuários online com base na última visita
+    $onlineUsers = DB::table('visits')
+        ->join('users', 'visits.user_id', '=', 'users.id')
+        ->select('users.id', 'users.name', 'visits.visited_at as lastOnline')
+        ->whereNotNull('visits.user_id') // Apenas onde o user_id não é nulo
+        ->orderBy('visits.visited_at', 'desc')
+        ->distinct('users.id') // Garante que o mesmo usuário não apareça mais de uma vez
+        ->take(5) // Limita para os últimos 5 usuários
+        ->get();
+
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $onlineUsers,
+        ], 200);
+}
+
+public function getAccessStats()
+{
+    // Obtém o total geral de visitas
+    $totalVisits = DB::table('visits')->count();
+
+    // Agrupa as visitas diárias para os últimos 5 dias
+    $accessStats = DB::table('visits')
+        ->selectRaw('DATE(visited_at) as date, count(*) as total_visits')
+        ->groupBy('date')
+        ->orderBy('date', 'desc')
+        ->take(5)
+        ->get();
+
+    // Estrutura semelhante ao que você espera
+    $dates = $accessStats->pluck('date');
+    $counts = $accessStats->pluck('total_visits');
+
+    return response()->json([
+        'error' => '',
+        'success' => true,
+        'totalVisits' => $totalVisits, // Total geral de visitas
+        'dates' => $dates,
+        'counts' => $counts
+
+
+    ], 200);
+}
+
+
+
 }
