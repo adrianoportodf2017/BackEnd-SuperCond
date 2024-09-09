@@ -44,7 +44,7 @@ class PollsController extends Controller
  // Buscar o documento pelo ID
  $poll = Poll::with('options.answers')->find($id);
 
- dd($poll);
+ var_dump($poll);
    
         if (!$poll) {
             return response()->json([
@@ -54,7 +54,7 @@ class PollsController extends Controller
         }
         return response()->json([
             'error' => '',
-            'list' => $poll,
+            'list' => $poll->options->toArray(),
             // Outros dados de resultado aqui...
         ], 200);
     }
