@@ -136,9 +136,10 @@ class PollsController extends Controller
 {
     // Buscar o documento pelo ID
     $poll = Poll::with('options.answers')->find($id);
+    var_dump($poll);
 
  return response()->json([
-            'poll' => $poll,
+            'poll' => $poll['0'],
             'code' => 200,
         ], 200);die;
     // Se a enquete não for encontrada, retornar uma mensagem de erro
