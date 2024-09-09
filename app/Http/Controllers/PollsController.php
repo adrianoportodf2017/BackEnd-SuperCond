@@ -40,8 +40,12 @@ class PollsController extends Controller
     {
         // Implemente a lógica para obter uma enquete específica por ID
 
-        $poll = Poll::where('id', $id)->with('questions.answers')->first();
+    // Buscar o documento pelo ID
+ // Buscar o documento pelo ID
+ $poll = Poll::with('options.answers')->find($id);
 
+ dd($poll);
+   
         if (!$poll) {
             return response()->json([
                 'error' => "Enquete não encontrada",
