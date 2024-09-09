@@ -42,7 +42,8 @@ use App\Http\Controllers\{
     ResetBaseController,
     PagesController,
     ContactController,
-    SimpleMailController
+    SimpleMailController,
+    VisitController
 };
 use App\Models\Benefits;
 use App\Models\Category;
@@ -115,6 +116,9 @@ Route::get('/sendmail', [SimpleMailController::class, 'index']);
 
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);
 Route::middleware('auth:api')->group(function () {
+
+    Route::post('/visits', [VisitController::class, 'visits']);
+
 
     // User Routes
     Route::get('/front/user/{id}', [UserController::class, 'getById']);
