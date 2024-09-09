@@ -53,7 +53,7 @@ Route::get('/ping', function () {
 
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 
-Route::get('/admin/poll/{id}', [PollsController::class, 'getById']); // Obter uma enquete específica
+Route::get('/enquete/{id}', [PollsController::class, 'getById']); // Obter uma enquete específica
 
 
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -372,7 +372,7 @@ Route::middleware('auth:api')->group(function () {
     /**<--Enquetes-->*/
 
     Route::get('/admin/polls', [PollsController::class, 'getAll']); // Listar todas as enquetes
-    Route::get('/admin/poll/{id}', [PollsController::class, 'getById']); // Obter uma enquete específica
+   // Route::get('/admin/poll/{id}', [PollsController::class, 'getById']); // Obter uma enquete específica
     Route::post('/admin/poll', [PollsController::class, 'insert']); // Criar uma nova enquete
     Route::post('/admin/poll/{id}', [PollsController::class, 'update']); // Atualizar uma enquete existente
     Route::delete('/admin/poll/{id}', [PollsController::class, 'delete']); // Excluir uma enquete
