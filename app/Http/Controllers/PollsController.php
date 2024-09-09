@@ -205,11 +205,42 @@ class PollsController extends Controller
             'code' => 500,
         ], 500);
     }
+
+ // Atualizar as opções da enquete
+ $options = json_decode($request->input('options'), true);
+
+ if (is_array($options)) {
+     // Buscar as opções atuais da enquete
+     $currentOptions = $poll->options ? $poll->options->pluck('id')->toArray() : []; // Garantir que $currentOptions seja um array vazio se não houver opções
+ 
+     // Encontrar as IDs das opções recebidas
+     $receivedOptionIds = array_column($options, 'id');
+ 
+     // Encontrar as opções a serem removidas
+     $optionsToRemove = array_diff($currentOptions, $receivedOptionIds);
+ 
+     if (!empty($optionsToRemove)) {
+         QuestionPoll::whereIn('id', $optionsToRemove)->delete(); // Remover opções que não estão mais presentes
+     }
+ 
+     // Atualizar ou criar as opções recebidas
+     foreach ($options as $option) {
+         // Se o ID não estiver definido, defina-o como null
+         $id = isset($option['id']) ? $option['id'] : null;
+ 
+         // Atualizar ou criar a opção
+         QuestionPoll::updateOrCreate(
+             ['id' => $id], // Se $id for null, a função criará um novo registro
+             ['poll_id' => $poll->id, 'title' => $option['title']]
+         );
+     }
+
     // Retornar uma resposta de sucesso
     return response()->json([
         'error' => '',
         'success' => true,
         'list' => $poll,
+        'options' => $options,
     ], 200);
 }
 
