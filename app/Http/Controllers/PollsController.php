@@ -140,7 +140,7 @@ class PollsController extends Controller
 
  return response()->json([
             'poll' => $poll['0'],
-            'poll2' => $poll->poll,
+            'poll2' => 200,
         ], 200);die;
     // Se a enquete não for encontrada, retornar uma mensagem de erro
     if (!$poll) {
