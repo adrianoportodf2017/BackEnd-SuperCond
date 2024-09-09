@@ -135,11 +135,14 @@ class PollsController extends Controller
     public function update(Request $request, $id)
 {
     // Buscar o documento pelo ID
-    $poll = Poll::with('options.answers')->find($id);
-    var_dump($poll);
+ // Buscar o documento pelo ID
+$poll = Poll::with('options.answers')->find($id);
+
+dd($poll);
+  
 
  return response()->json([
-            'poll' => $poll['0'],
+            'poll' => $poll->options,
             'poll2' => 200,
         ], 200);die;
     // Se a enquete não for encontrada, retornar uma mensagem de erro
