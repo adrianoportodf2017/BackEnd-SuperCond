@@ -217,7 +217,7 @@ class PollsController extends Controller
     $receivedOptionIds = array_column(array_filter($options, fn($option) => isset($option['id'])), 'id');
     
     // Encontrar as opções a serem removidas
-    $optionsToRemove = array_diff($currentOptions, $receivedOptionIds);
+    //$optionsToRemove = array_diff($currentOptions, $receivedOptionIds);
 
 
 
