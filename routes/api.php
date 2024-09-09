@@ -53,6 +53,7 @@ Route::get('/ping', function () {
 
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 
+Route::get('/admin/poll/{id}', [PollsController::class, 'getById']); // Obter uma enquete específica
 
 
 Route::post('/auth/login', [AuthController::class, 'login']);
