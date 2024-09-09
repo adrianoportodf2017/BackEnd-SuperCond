@@ -138,8 +138,8 @@ class PollsController extends Controller
     $poll = Poll::with('options.answers')->find($id);
 
  return response()->json([
-            'poll' => $poll->options,
-            'code' => 404,
+            'poll' => $poll,
+            'code' => 200,
         ], 200);die;
     // Se a enquete não for encontrada, retornar uma mensagem de erro
     if (!$poll) {
