@@ -219,15 +219,13 @@ class PollsController extends Controller
     // Encontrar as opções a serem removidas
     $optionsToRemove = array_diff($currentOptions, $receivedOptionIds);
 
+
+
     if (!empty($optionsToRemove)) {
         QuestionPoll::whereIn('id', $optionsToRemove)->delete(); // Remover opções que não estão mais presentes
     }
  
-     if (!empty($optionsToRemove)) {
-         QuestionPoll::whereIn('id', $optionsToRemove)->delete(); // Remover opções que não estão mais presentes
-     }
- 
-     // Atualizar ou criar as opções recebidas
+          // Atualizar ou criar as opções recebidas
      foreach ($options as $option) {
          // Se o ID não estiver definido, defina-o como null
          $id = isset($option['id']) ? $option['id'] : null;
@@ -245,7 +243,7 @@ class PollsController extends Controller
         'error' => '',
         'success' => true,
         'list' => $poll,
-        'options' => $options,
+        'optionsRemove' =>  $optionsToRemove,
     ], 200);
 }
 
