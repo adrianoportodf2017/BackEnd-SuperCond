@@ -212,12 +212,15 @@ class PollsController extends Controller
  if (is_array($options)) {
      // Buscar as opções atuais da enquete
      $currentOptions = $poll->options()->get(); // Garantir que $currentOptions seja um array vazio se não houver opções
+
+// Extrair apenas os IDs das opções atuais
+$currentOptionIds = $currentOptions->pluck('id')->toArray();
  
       // Encontrar as IDs das opções recebidas, excluindo as que não têm ID
     $receivedOptionIds = array_column(array_filter($options, fn($option) => isset($option['id'])), 'id');
     
     // Encontrar as opções a serem removidas
-    $optionsToRemove = array_diff($currentOptions, $receivedOptionIds);
+    $optionsToRemove = array_diff($currentOptionIds, $receivedOptionIds);
 
 
 
