@@ -40,12 +40,8 @@ class PollsController extends Controller
     {
         // Implemente a lógica para obter uma enquete específica por ID
 
-    // Buscar o documento pelo ID
- // Buscar o documento pelo ID
- $poll = Poll::with('options.answers')->find($id);
- $options = $poll->options()->get(); 
- var_dump( $options);
-   
+        $poll = Poll::where('id', $id)->with('questions.answers')->first();
+
         if (!$poll) {
             return response()->json([
                 'error' => "Enquete não encontrada",
@@ -54,7 +50,7 @@ class PollsController extends Controller
         }
         return response()->json([
             'error' => '',
-            'list' =>  $options,
+            'list' => $poll,
             // Outros dados de resultado aqui...
         ], 200);
     }
@@ -139,16 +135,8 @@ class PollsController extends Controller
     public function update(Request $request, $id)
 {
     // Buscar o documento pelo ID
- // Buscar o documento pelo ID
-$poll = Poll::with('options.answers')->find($id);
+    $poll = Poll::with('options.answers')->find($id);
 
-dd($poll);
-  
-
- return response()->json([
-            'poll' => $poll->options,
-            'poll2' => 200,
-        ], 200);die;
     // Se a enquete não for encontrada, retornar uma mensagem de erro
     if (!$poll) {
         return response()->json([
@@ -223,18 +211,18 @@ dd($poll);
 
  if (is_array($options)) {
      // Buscar as opções atuais da enquete
-     $currentOptions = $poll->options; // Garantir que $currentOptions seja um array vazio se não houver opções
+     $currentOptions = $poll->options()->get(); // Garantir que $currentOptions seja um array vazio se não houver opções
  
       // Encontrar as IDs das opções recebidas, excluindo as que não têm ID
     $receivedOptionIds = array_column(array_filter($options, fn($option) => isset($option['id'])), 'id');
     
     // Encontrar as opções a serem removidas
-    //$optionsToRemove = array_diff($currentOptions, $receivedOptionIds);
+    $optionsToRemove = array_diff($currentOptions, $receivedOptionIds);
 
 
 
     if (!empty($optionsToRemove)) {
-        //QuestionPoll::whereIn('id', $optionsToRemove)->delete(); // Remover opções que não estão mais presentes
+        QuestionPoll::whereIn('id', $optionsToRemove)->delete(); // Remover opções que não estão mais presentes
     }
  
           // Atualizar ou criar as opções recebidas
@@ -256,7 +244,7 @@ dd($poll);
         'success' => true,
         'list' => $poll,
         'optionsNotRemove' => $receivedOptionIds,
-        'optionsRemove' => json_decode($currentOptions),
+        'optionsRemove' => $currentOptions,
 
     ], 200);
 }
