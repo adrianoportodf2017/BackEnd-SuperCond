@@ -167,7 +167,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/admin/seed', [ResetBaseController::class, 'seed']);
 
 
-    Route::get('/admin/online-users', [VisitController::class, 'getLastOnlineUsers']);
+Route::get('/admin/online-users', [VisitController::class, 'getLastOnlineUsers']);
 Route::get('/admin/access-stats', [VisitController::class, 'getAccessStats']);
 
     /**USERS**/

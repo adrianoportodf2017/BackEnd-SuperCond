@@ -28,23 +28,23 @@ class VisitController extends Controller
     }
 
     public function getLastOnlineUsers()
-{
-    // Busca os últimos 5 usuários online com base na última visita
-    $onlineUsers = DB::table('visits')
-        ->join('users', 'visits.user_id', '=', 'users.id')
-        ->select('users.id', 'users.name', 'visits.visited_at as lastOnline')
-        ->whereNotNull('visits.user_id') // Apenas onde o user_id não é nulo
-        ->orderBy('visits.visited_at', 'desc')
-        ->distinct('users.id') // Garante que o mesmo usuário não apareça mais de uma vez
-        ->take(5) // Limita para os últimos 5 usuários
-        ->get();
-
+    {
+        // Busca os últimos 5 usuários online com base na última visita
+        $onlineUsers = DB::table('visits')
+            ->join('users', 'visits.user_id', '=', 'users.id')
+            ->select('users.id', 'users.name', DB::raw('MAX(visits.visited_at) as lastOnline'))
+            ->whereNotNull('visits.user_id') // Apenas onde o user_id não é nulo
+            ->groupBy('users.id', 'users.name') // Agrupa pelos campos do usuário
+            ->orderBy('lastOnline', 'desc') // Ordena pela última visita
+            ->take(5) // Limita para os últimos 5 usuários
+            ->get();
+    
         return response()->json([
             'error' => '',
             'success' => true,
             'list' => $onlineUsers,
         ], 200);
-}
+    }
 
 public function getAccessStats()
 {
