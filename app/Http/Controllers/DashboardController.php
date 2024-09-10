@@ -50,8 +50,8 @@ class DashboardController extends Controller
 
     // Obtém as 10 páginas mais visitadas
     $mostVisitedPages = DB::table('visits')
-        ->select('page_url', DB::raw('count(*) as visit_count'))
-        ->groupBy('page_url')
+        ->select('url', DB::raw('count(*) as visit_count'))
+        ->groupBy('url')
         ->orderBy('visit_count', 'desc')
         ->take(10)
         ->get();
