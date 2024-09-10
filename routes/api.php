@@ -163,6 +163,12 @@ Route::middleware('auth:api')->group(function () {
        Route::post('/front/lost-and-found/midia/{id}', [LostAndFoundController::class, 'insertMidia']); // Inserir uma nova mídia
        Route::delete('/front/lost-and-found/midia/{id}', [LostAndFoundController::class, 'deleteMidia']); // Deletar uma  mídia
 
+
+       /**Cadastrar Prestadores de Serviço   * **/
+       Route::post('/front/service-providers', [ServiceProvidersController::class, 'insert']); // Criar um novo prestador de serviços
+
+
+
        
        // Admin Routes
     Route::get('/admin/migrate', [ResetBaseController::class, 'migrate']);
