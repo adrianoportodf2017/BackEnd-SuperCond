@@ -73,8 +73,8 @@ class WarningController extends Controller
     }
 
 
-    public function getAllByUserId($id)    
-    
+    public function getAllByUserId($id)
+
     {
         $warnings =  Warning::where('owner_id', $id)->get();
 
@@ -176,21 +176,16 @@ class WarningController extends Controller
         }
 
         // Verificar se o arquivo existe
-        if (!$request->hasfile('file')) {
-            return response()->json([
-                'error' => 'Nenhum arquivo enviado',
-                'code' => 400,
-            ], 400);
-        }
-
-        // Verificar se o arquivo é válido
-        $files = $request->file('file');
-        foreach ($files as $file) {
-            if (!$file->isValid()) {
-                return response()->json([
-                    'error' => 'O arquivo enviado não é válido',
-                    'code' => 400,
-                ], 400);
+        if ($request->hasfile('file')) {
+            // Verificar se o arquivo é válido
+            $files = $request->file('file');
+            foreach ($files as $file) {
+                if (!$file->isValid()) {
+                    return response()->json([
+                        'error' => 'O arquivo enviado não é válido',
+                        'code' => 400,
+                    ], 400);
+                }
             }
         }
 
@@ -269,6 +264,7 @@ class WarningController extends Controller
             'list' => $newWarning,
         ], 201);
     }
+
     public function update($id, Request $request)
     {
         $array['id'] =  $id;
