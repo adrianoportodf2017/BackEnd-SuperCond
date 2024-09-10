@@ -43,7 +43,7 @@ use App\Http\Controllers\{
     PagesController,
     ContactController,
     SimpleMailController,
-    VisitController
+    DashboardController
 };
 use App\Models\Benefits;
 use App\Models\Category;
@@ -167,8 +167,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/admin/seed', [ResetBaseController::class, 'seed']);
 
 
-Route::get('/admin/online-users', [VisitController::class, 'getLastOnlineUsers']);
-Route::get('/admin/access-stats', [VisitController::class, 'getAccessStats']);
+Route::get('/admin/online-users', [DashboardController::class, 'getLastOnlineUsers']);
+Route::get('/admin/access-stats', [DashboardController::class, 'getAccessStats']);
 
     /**USERS**/
     Route::get('/admin/users', [UserController::class, 'getAll']);

@@ -2,31 +2,15 @@
 
 namespace App\Http\Controllers;
 use App\Models\Visit;
+use App\Models\User;
+use App\Models\Warning;
+use App\Models\Wall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function visits(Request $request)
-    {
-        
-
-        // Registrar a visita
-        $visit = Visit::create([
-            'user_id' => Auth::check() ? Auth::id() : null,  // Verifica se o usuário está logado
-            'ip_address' => $request->ip(),
-            'url' => $request->input('url'),
-            'visited_at' => now(),
-        ]);
-
-        // Retornar uma resposta de sucesso
-        return response()->json([
-            'message' => 'Visita registrada com sucesso!',
-            'data' => $visit
-        ], 201);
-    }
-
     public function getLastOnlineUsers()
     {
         // Busca os últimos 5 usuários online com base na última visita
@@ -46,7 +30,7 @@ class DashboardController extends Controller
         ], 200);
     }
 
-public function getAccessStats()
+    public function getAccessStats()
 {
     // Obtém o total geral de visitas
     $totalVisits = DB::table('visits')->count();
@@ -59,21 +43,29 @@ public function getAccessStats()
         ->take(5)
         ->get();
 
-    // Estrutura semelhante ao que você espera
-    $dates = $accessStats->pluck('date');
-    $counts = $accessStats->pluck('total_visits');
+    // Obtém o total de usuários, avisos e ocorrências
+    $totalUsers = User::count();
+    $totalWarnings = Warning::count();// Ajuste conforme a tabela de ocorrências
+    $totalAvisos = Wall::count(); 
+
+    // Obtém as 10 páginas mais visitadas
+    $mostVisitedPages = DB::table('visits')
+        ->select('page_url', DB::raw('count(*) as visit_count'))
+        ->groupBy('page_url')
+        ->orderBy('visit_count', 'desc')
+        ->take(10)
+        ->get();
 
     return response()->json([
         'error' => '',
         'success' => true,
         'totalVisits' => $totalVisits, // Total geral de visitas
-        'dates' => $dates,
-        'counts' => $counts
-
-
+        'totalUsers' => $totalUsers, // Total de usuários
+        'totalWarnings' => $totalWarnings, // Total de avisos
+        'totalWalls' => $totalAvisos, // Total de ocorrências
+        'dates' => $accessStats->pluck('date'),
+        'counts' => $accessStats->pluck('total_visits'),
+        'mostVisitedPages' => $mostVisitedPages // 10 páginas mais visitadas
     ], 200);
 }
-
-
-
 }
