@@ -161,7 +161,8 @@ class WarningController extends Controller
         // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
-            'file' => 'required',
+            'category' => 'required|min:2',
+            //'file' => 'required',
             'file.*' => 'mimes:jpg,png,pdf,jpeg',
             'owner_id' => 'required',
         ]);
@@ -197,6 +198,7 @@ class WarningController extends Controller
         $newWarning = new Warning();
         $newWarning->title = $request->input('title');
         $newWarning->content = $request->input('content');
+        $newWarning->category = $request->input('category');
         $newWarning->notes = $request->input('notes');
         $newWarning->owner_id = $request->input('owner_id');
         $newWarning->unit_id = $request->input('unit_id');
