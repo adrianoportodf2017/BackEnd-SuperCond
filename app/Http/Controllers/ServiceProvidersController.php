@@ -35,6 +35,29 @@ class ServiceProvidersController extends Controller
         ], 200);
     }
 
+    public function getAllActive()
+    {
+        $providers = ServiceProvider::leftJoin('users', 'service_providers.indication_by', '=', 'users.id')
+            ->where('service_providers.status', 1) // Filtra apenas os prestadores ativos
+            ->select('service_providers.*', 'users.name as indicated_by_name')
+            ->get();
+    
+        // Retornar uma mensagem de erro se não houver ocorrências
+        if ($providers->isEmpty()) {
+            return response()->json([
+                'error' => 'Nenhum Prestador de Serviço Ativo Encontrado',
+                'code' => 404,
+            ], 404);
+        }
+    
+        // Retornar uma resposta de sucesso com a lista de ocorrências
+        return response()->json([
+            'error' => '',
+            'success' => true,
+            'list' => $providers,
+        ], 200);
+    }
+
     public function getById($id)
     {
         // Implemente a lógica para obter uma Prestador de Serviços específica por ID

@@ -165,7 +165,9 @@ Route::middleware('auth:api')->group(function () {
 
 
        /**Cadastrar Prestadores de Serviço   * **/
+       Route::get('/front/service-providers', [ServiceProvidersController::class, 'getAllActive']); // Criar um novo prestador de serviços
        Route::post('/front/service-providers', [ServiceProvidersController::class, 'insert']); // Criar um novo prestador de serviços
+
 
 
 
