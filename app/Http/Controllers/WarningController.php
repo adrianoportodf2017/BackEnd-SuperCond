@@ -289,6 +289,7 @@ class WarningController extends Controller
                 $warning->notes = $request->input('notes');
                 $warning->owner_id = $request->input('owner_id');
                 $warning->unit_id = $request->input('unit_id');
+                $warning->category = $request->input('category');
                 $warning->status = $request->input('status');
                 // Salvar o documento no banco de dados
                 try {
