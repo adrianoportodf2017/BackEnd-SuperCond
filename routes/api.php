@@ -43,7 +43,9 @@ use App\Http\Controllers\{
     PagesController,
     ContactController,
     SimpleMailController,
-    DashboardController
+    DashboardController,
+    VisitController
+
 };
 use App\Models\Benefits;
 use App\Models\Category;
