@@ -41,7 +41,7 @@ class DocController extends Controller
             }
             
             // Concatena o título da categoria com o título do documento
-            $docs[$docKey]['title'] = $docValue['category_name'] . ' - ' . $docValue['title'];
+            $docs[$docKey]['title'] = $docValue['title'];
             $docs[$docKey]['filename'] = config('app.url') . 'public/storage/' . $docValue['filename'];
         }
     
