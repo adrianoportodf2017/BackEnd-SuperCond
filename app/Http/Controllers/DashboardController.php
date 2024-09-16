@@ -15,9 +15,9 @@ class DashboardController extends Controller
     {
         // Busca os últimos 5 usuários online com base na última visita
         $onlineUsers = DB::table('visits_site_log')
-            ->join('users', 'visits.user_id', '=', 'users.id')
-            ->select('users.id', 'users.name', DB::raw('MAX(visits.visited_at) as lastOnline'))
-            ->whereNotNull('visits.user_id') // Apenas onde o user_id não é nulo
+            ->join('users', 'visits_site_log.user_id', '=', 'users.id')
+            ->select('users.id', 'users.name', DB::raw('MAX(visits_site_log.visited_at) as lastOnline'))
+            ->whereNotNull('visits_site_log.user_id') // Apenas onde o user_id não é nulo
             ->groupBy('users.id', 'users.name') // Agrupa pelos campos do usuário
             ->orderBy('lastOnline', 'desc') // Ordena pela última visita
             ->take(5) // Limita para os últimos 5 usuários
