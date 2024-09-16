@@ -428,7 +428,12 @@ Route::get('/admin/access-stats', [DashboardController::class, 'getAccessStats']
     Route::post('/admin/benefit/{id}/status', [BenefitsController::class, 'updateStatus']);
     Route::delete('/admin/benefit/{id}', [BenefitsController::class, 'delete']); // Excluir um Beneficio
 
-
+    Route::get('/admin/visitas', [BenefitsController::class, 'getAll']); // Listar todos os Beneficios
+    Route::get('/admin/visita/{id}', [BenefitsController::class, 'getById']); // Obter um Beneficios específico
+    Route::post('/admin/visita', [BenefitsController::class, 'insert']); // Criar um novo Beneficios
+    Route::post('/admin/visita/{id}', [BenefitsController::class, 'update']); // Atualizar um Beneficio existente
+    Route::post('/admin/visita/{id}/status', [BenefitsController::class, 'updateStatus']);
+    Route::delete('/admin/visita/{id}', [BenefitsController::class, 'delete']); // Excluir um Beneficio
 
 
 

@@ -14,7 +14,7 @@ class DashboardController extends Controller
     public function getLastOnlineUsers()
     {
         // Busca os últimos 5 usuários online com base na última visita
-        $onlineUsers = DB::table('visits')
+        $onlineUsers = DB::table('visits_site_log')
             ->join('users', 'visits.user_id', '=', 'users.id')
             ->select('users.id', 'users.name', DB::raw('MAX(visits.visited_at) as lastOnline'))
             ->whereNotNull('visits.user_id') // Apenas onde o user_id não é nulo
@@ -33,10 +33,10 @@ class DashboardController extends Controller
     public function getAccessStats()
 {
     // Obtém o total geral de visitas
-    $totalVisits = DB::table('visits')->count();
+    $totalVisits = DB::table('visits_site_log')->count();
 
     // Agrupa as visitas diárias para os últimos 5 dias
-    $accessStats = DB::table('visits')
+    $accessStats = DB::table('visits_site_log')
         ->selectRaw('DATE(visited_at) as date, count(*) as total_visits')
         ->groupBy('date')
         ->orderBy('date', 'desc')
@@ -49,7 +49,7 @@ class DashboardController extends Controller
     $totalAvisos = Wall::count(); 
 
     // Obtém as 10 páginas mais visitadas
-    $mostVisitedPages = DB::table('visits')
+    $mostVisitedPages = DB::table('visits_site_log')
         ->select('url', DB::raw('count(*) as visit_count'))
         ->groupBy('url')
         ->orderBy('visit_count', 'desc')
