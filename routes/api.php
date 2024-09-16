@@ -44,7 +44,7 @@ use App\Http\Controllers\{
     ContactController,
     SimpleMailController,
     DashboardController,
-    VisitController
+    VisitSiteLogController
 
 };
 use App\Models\Benefits;
@@ -114,7 +114,7 @@ Route::post('/front/send-email-contact', [ContactController::class, 'sendEmailCo
 Route::get('/test-email', [ContactController::class, 'testEmail']);
 Route::get('/sendmail', [SimpleMailController::class, 'index']);
 
-Route::post('/front/visits', [VisitController::class, 'visits']);
+Route::post('/front/visits', [VisitSiteLogController::class, 'visits']);
 
 
 //Route::post('/admin/auth/validate', [AuthController::class, 'validateToken']);

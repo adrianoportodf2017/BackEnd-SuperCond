@@ -7,10 +7,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Visit extends Model
+class VisitSiteLog extends Model
 {
     use HasFactory;
-
+    protected $table = 'visits_site_log';
     protected $fillable = [
         'user_id',
         'ip_address',

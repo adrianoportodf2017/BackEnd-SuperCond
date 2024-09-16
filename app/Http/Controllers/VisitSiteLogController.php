@@ -1,19 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Visit;
+use App\Models\VisitSiteLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class VisitController extends Controller
+class VisitSiteLogController extends Controller
 {
     public function visits(Request $request)
     {
         
 
         // Registrar a visita
-        $visit = Visit::create([
+        $visit = VisitSiteLog::create([
             'user_id' => Auth::check() ? Auth::id() : null,  // Verifica se o usuário está logado
             'ip_address' => $request->ip(),
             'url' => $request->input('url'),
@@ -30,7 +30,7 @@ class VisitController extends Controller
     public function getLastOnlineUsers()
     {
         // Busca os últimos 5 usuários online com base na última visita
-        $onlineUsers = DB::table('visits')
+        $onlineUsers = DB::table('visits_site_log')
             ->join('users', 'visits.user_id', '=', 'users.id')
             ->select('users.id', 'users.name', DB::raw('MAX(visits.visited_at) as lastOnline'))
             ->whereNotNull('visits.user_id') // Apenas onde o user_id não é nulo
@@ -49,10 +49,10 @@ class VisitController extends Controller
 public function getAccessStats()
 {
     // Obtém o total geral de visitas
-    $totalVisits = DB::table('visits')->count();
+    $totalVisits = DB::table('visits_site_log')->count();
 
     // Agrupa as visitas diárias para os últimos 5 dias
-    $accessStats = DB::table('visits')
+    $accessStats = DB::table('visits_site_log')
         ->selectRaw('DATE(visited_at) as date, count(*) as total_visits')
         ->groupBy('date')
         ->orderBy('date', 'desc')
