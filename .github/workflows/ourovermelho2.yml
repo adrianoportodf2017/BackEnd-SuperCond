@@ -1,0 +1,23 @@
+on:
+  push : 
+    branches:
+       - ourovermelho2
+name: deploy plataforma  DevCond - BackEnd on push
+jobs:
+   web-deploy:
+     name: 🎉 Deploy
+     runs-on: ubuntu-latest
+     steps:
+     - name: 🚚 Get latest code
+       uses: actions/checkout@v2
+     
+     - name: 📂 Sync files
+       uses: SamKirkland/FTP-Deploy-Action@4.2.0
+       with:
+         server: ${{ secrets.REMOTE_HOST_OUROVERMELHO2 }}
+         username: ${{ secrets.REMOTE_USER_OUROVERMELHO2 }}
+         password: ${{ secrets.REMOTE_PASSWORD_OUROVERMELHO2 }}
+         server-dir: 
+
+
+        
