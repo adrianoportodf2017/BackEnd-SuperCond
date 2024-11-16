@@ -137,7 +137,7 @@ class DocController extends Controller
         // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
-            'file' => 'required|mimes:jpg,png,pdf,jpeg',
+            'file' => 'required|mimes:jpg,png,pdf,jpeg,mp4',
         ]);
 
         // Retornar uma mensagem de erro se a validação falhar
