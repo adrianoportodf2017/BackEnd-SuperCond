@@ -318,7 +318,7 @@ class FolderController extends Controller
         $folder = Folder::find($id);
 
         $validator = Validator::make($request->all(), [
-            'file.*' => 'required|max:200000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
+            'file.*' => 'required|max:200000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx,mp4',
             // 'file' => 'max:10000|mimes:jpg,png,jpeg,doc,docx,pdf,xls,xlsx',
             //'user_id' => 'required',
         ]);
