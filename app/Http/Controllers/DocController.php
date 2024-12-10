@@ -165,8 +165,8 @@ class DocController extends Controller
         }
 
         // Salvar o arquivo no armazenamento
-        $arquivo = $request->file('file')->store('documentos');
-        $url = asset(Storage::url($arquivo));
+         $arquivo = $request->file('file')->store('public/documentos/');
+         $url = asset(Storage::url($arquivo));
 
         // Criar um novo documento
         $newDoc = new Doc();
