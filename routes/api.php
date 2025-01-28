@@ -48,7 +48,8 @@ use App\Http\Controllers\{
     WebhookController,
     IntegrationsController,
     SettingsController,
-
+    MailController
+ 
 
 
 
@@ -483,9 +484,12 @@ Route::get('/admin/access-stats', [DashboardController::class, 'getAccessStats']
     Route::get('/billets', [BilletController::class, 'getAll']);
 
     //achados e perdidos
-    Route::get('/foundandlost', [FoundAndLostController::class, 'getAll']);
-    Route::post('/foundandlost', [FoundAndLostController::class, 'insert']);
-    Route::put('/foundandlost/{id}', [FoundAndLostController::class, 'update']);
+    Route::get('/foundandlost', [LostAndFoundController::class, 'getAll']);
+    Route::post('/foundandlost', [LostAndFoundController::class, 'insert']);
+    Route::put('/foundandlost/{id}', [LostAndFoundController::class, 'update']);
+
+
+    Route::post('/admin/sendmail', [MailController::class, 'enviarEmail']);
 
     //Unidade
     Route::get('/unit/{id}', [UnitController::class, 'getInfo']);
