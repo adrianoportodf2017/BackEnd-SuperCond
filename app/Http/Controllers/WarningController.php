@@ -203,6 +203,18 @@ class WarningController extends Controller
         // Salvar o documento no banco de dados
         try {
             $newWarning->save();
+            $mailController = new MailController();
+            $emailRequest = new Request([
+                'to' => 'sitesprontobr@gmail.com',
+                'subject' => 'Nova Ocorrência: ' . $newWarning->title,
+                'content' => "Uma nova ocorrência foi registrada:\n\n" .
+                            "Título: {$newWarning->title}\n" .
+                            "Categoria: {$newWarning->category}\n" .
+                            "Conteúdo: {$newWarning->content}\n" .
+                            "Notas: {$newWarning->notes}",
+            ]);
+            
+            $mailController->enviarEmail($emailRequest);
         } catch (Exception $e) {
             // Tratar o erro
             return response()->json([
