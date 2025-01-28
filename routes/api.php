@@ -44,7 +44,13 @@ use App\Http\Controllers\{
     ContactController,
     SimpleMailController,
     DashboardController,
-    VisitSiteLogController
+    VisitSiteLogController,
+    WebhookController,
+    IntegrationsController,
+    SettingsController,
+
+
+
 
 };
 use App\Models\Benefits;
@@ -57,7 +63,8 @@ Route::get('/ping', function () {
 Route::get('/401', [AuthController::class, 'unauthorized'])->name('login');
 
 
-
+Route::get('/admin/settings/company', [SettingsController::class, 'getCompanySettings']);
+Route::get('/admin/settings/appearance', [SettingsController::class, 'getAppearanceSettings']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/admin/auth/login', [AuthController::class, 'loginAdmin']);
@@ -501,7 +508,31 @@ Route::get('/admin/access-stats', [DashboardController::class, 'getAccessStats']
     Route::delete('/myreservations/{id}', [ReservationController::class, 'delMyReservations']);
 
 
- 
+  // Company Settings
+  Route::post('/admin/settings/company', [SettingsController::class, 'updateCompanySettings']);
+
+  // Email Settings
+  Route::get('/admin/settings/email', [SettingsController::class, 'getEmailSettings']);
+  Route::post('/admin/settings/email', [SettingsController::class, 'updateEmailSettings']);
+  Route::post('/admin/settings/email/test', [SettingsController::class, 'testEmailSettings']);
+
+  // Appearance Settings   
+  Route::post('/admin/settings/appearance', [SettingsController::class, 'updateAppearanceSettings']);
+
+  /**INTEGRATIONS**/
+  // Payment Settings
+  Route::get('/admin/settings/payment', [IntegrationsController::class, 'getPaymentSettings']);
+  Route::post('/admin/settings/payment/stripe', [IntegrationsController::class, 'updateStripeSettings']);
+  Route::post('/admin/settings/payment/assas', [IntegrationsController::class, 'updateAssasSettings']);
+  Route::post('/admin/settings/payment/{gateway}/test-webhook', [IntegrationsController::class, 'testPaymentWebhook']);
+
+  // Webhooks
+  Route::get('/admin/webhooks', [WebhookController::class, 'index']);
+  Route::post('/admin/webhooks', [WebhookController::class, 'store']);
+  Route::get('/admin/webhooks/{id}', [WebhookController::class, 'show']);
+  Route::put('/admin/webhooks/{id}', [WebhookController::class, 'update']);
+  Route::delete('/admin/webhooks/{id}', [WebhookController::class, 'destroy']);
+  Route::post('/admin/webhooks/{id}/test', [WebhookController::class, 'testWebhook']);
 
 
 });
