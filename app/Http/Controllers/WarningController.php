@@ -161,7 +161,7 @@ class WarningController extends Controller
         // Validar os dados da requisição
         $validator = Validator::make($request->all(), [
             'title' => 'required|min:2',
-            'category' => 'required|min:2',
+           // 'category' => 'required|min:2',
             //'file' => 'required',
             'file.*' => 'mimes:jpg,png,pdf,jpeg',
             'owner_id' => 'required',
@@ -203,18 +203,44 @@ class WarningController extends Controller
         // Salvar o documento no banco de dados
         try {
             $newWarning->save();
-            $mailController = new MailController();
-            $emailRequest = new Request([
-                'to' => 'sitesprontobr@gmail.com',
-                'subject' => 'Nova Ocorrência: ' . $newWarning->title,
-                'content' => "Uma nova ocorrência foi registrada:\n\n" .
-                            "Título: {$newWarning->title}\n" .
-                            "Categoria: {$newWarning->category}\n" .
-                            "Conteúdo: {$newWarning->content}\n" .
-                            "Notas: {$newWarning->notes}",
-            ]);
-            
-            $mailController->enviarEmail($emailRequest);
+             // Preparar o conteúdo do email com uma mensagem mais elaborada
+        $emailContent = "
+        <h2>Nova Ocorrência Registrada</h2>
+        <p><strong>Título:</strong> {$newWarning->title}</p>
+        <p><strong>Categoria:</strong> {$newWarning->category}</p>
+        " . ($newWarning->content ? "<p><strong>Conteúdo:</strong> {$newWarning->content}</p>" : "") . "
+        " . ($newWarning->notes ? "<p><strong>Observações:</strong> {$newWarning->notes}</p>" : "") . "
+        <p><strong>Data de Registro:</strong> " . date('d/m/Y H:i:s') . "</p>
+    ";
+
+    // Se houver arquivos anexados, adicionar informação no email
+    if($newWarning->midias && count($newWarning->midias) > 0) {
+        $emailContent .= "<p><strong>Arquivos Anexados:</strong> " . count($newWarning->midias) . "</p>";
+    }
+
+    // Preparar a requisição para o envio do email
+    $emailRequest = new Request([
+        'to' => 'destinatario@seudominio.com', // Altere para o email desejado
+        'subject' => "Nova Ocorrência: {$newWarning->title}",
+        'content' => $emailContent,
+        'client_name' => 'Destinatário', // Nome do destinatário
+    ]);
+
+    // Instanciar e chamar o MailController
+    try {
+        $mailController = app(MailController::class);
+        $emailResponse = $mailController->enviarEmail($emailRequest);
+
+        // Verificar se o email foi enviado com sucesso
+        if (!$emailResponse->getData()->error) {
+            \Log::info("Email enviado com sucesso para a ocorrência #{$newWarning->id}");
+        } else {
+            \Log::warning("Falha ao enviar email para a ocorrência #{$newWarning->id}");
+        }
+    } catch (\Exception $emailError) {
+        // Log do erro no envio do email, mas não impede a conclusão do registro
+        \Log::error("Erro ao enviar email para ocorrência #{$newWarning->id}: " . $emailError->getMessage());
+    }
         } catch (Exception $e) {
             // Tratar o erro
             return response()->json([
