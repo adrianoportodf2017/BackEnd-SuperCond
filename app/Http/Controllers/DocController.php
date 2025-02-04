@@ -42,8 +42,17 @@ class DocController extends Controller
             
             // Concatena o título da categoria com o título do documento
             $docs[$docKey]['title'] = $docValue['title'];
-            $docs[$docKey]['filename'] = config('app.url') . 'public/storage/' . $docValue['filename'];
-        }
+            $appUrl = config('app.url');
+    
+            // Verifica se o filename já começa com a URL base
+            if (!str_starts_with($docValue['filename'], $appUrl)) {
+                // Se não começar com a URL base, concatena
+                $docs[$docKey]['filename'] = $appUrl . 'public/storage/' . $docValue['filename'];
+            } else {
+                // Se já tiver a URL base, mantém o filename original
+                $docs[$docKey]['filename'] = $docValue['filename'];
+            }        }
+        
     
         $array['list'] = $docs;
     
