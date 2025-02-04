@@ -22,69 +22,74 @@ class DocController extends Controller
     public function getAllPublic()
     {
         $array = ['error' => ''];
-
+    
         // Realiza o join entre as tabelas `docs` e `docs_categories`, ordenando por categoria e depois por título
         $docs = Doc::select('docs.*', 'docs_categories.name as category_name')
             ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
             ->orderBy('docs_categories.name', 'asc') // Ordena por nome da categoria em ordem crescente
             ->get();
-
+    
         foreach ($docs as $docKey => $docValue) {
             // Adiciona a URL do arquivo
             $docs[$docKey]['filename'] = $docValue['filename'];
-
+            
             // Verifica se o fileurl está no formato JSON e decodifica
             $fileData = json_decode($docValue['filename'], true);
             if (json_last_error() === JSON_ERROR_NONE && isset($fileData[0]['download_link'])) {
                 // Captura o download_link e substitui o valor de fileurl
                 $docs[$docKey]['filename'] = $fileData[0]['download_link'];
             }
-
+            
             // Concatena o título da categoria com o título do documento
             $docs[$docKey]['title'] = $docValue['title'];
             $docs[$docKey]['filename'] = config('app.url') . 'public/storage/' . $docValue['filename'];
         }
-
+    
         $array['list'] = $docs;
-
+    
         return $array;
     }
     public function getAll()
     {
         $array = ['error' => ''];
-
+    
         // Realiza o join entre as tabelas `docs` e `docs_categories`, ordenando por categoria e depois por título
         $docs = Doc::select('docs.*', 'docs_categories.name as category_name')
-            ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
-            ->orderByRaw("CAST(docs_categories.created_at AS DATETIME) DESC")
-            ->get();
-
+        ->leftJoin('docs_categories', 'docs.category_id', '=', 'docs_categories.id')
+        ->orderByRaw("CAST(docs_categories.created_at AS DATETIME) DESC")
+        ->get();
+    
         foreach ($docs as $docKey => $docValue) {
             // Adiciona a URL do arquivo
             $docs[$docKey]['filename'] = $docValue['filename'];
-            $appUrl = config('app.url') . 'public/storage/';
-
+            
             // Verifica se o fileurl está no formato JSON e decodifica
             $fileData = json_decode($docValue['filename'], true);
             if (json_last_error() === JSON_ERROR_NONE && isset($fileData[0]['download_link'])) {
                 // Captura o download_link e substitui o valor de fileurl
                 $docs[$docKey]['filename'] = $fileData[0]['download_link'];
             }
-
+            
             // Concatena o título da categoria com o título do documento
             $docs[$docKey]['title'] = $docValue['category_name'] . ' - ' . $docValue['title'];
-            // Remove URL base duplicada se existir
-            $filename = str_replace($appUrl, '', $docValue['filename']);
-
-            // Adiciona URL base uma única vez
-            $docs[$docKey]['filename'] = $appUrl . $filename;
-        }
-
+            
+            
+            $appUrl = config('app.url');
+    
+            // Verifica se o filename já começa com a URL base
+            if (!str_starts_with($docValue['filename'], $appUrl)) {
+                // Se não começar com a URL base, concatena
+                $docs[$docKey]['filename'] = $appUrl . 'public/storage/' . $docValue['filename'];
+            } else {
+                // Se já tiver a URL base, mantém o filename original
+                $docs[$docKey]['filename'] = $docValue['filename'];
+            }        }
+    
         $array['list'] = $docs;
-
+    
         return $array;
     }
-    /**
+  /**
      * Obtém uma Lista de Categoria de Documentos
      *
      *
@@ -92,7 +97,7 @@ class DocController extends Controller
      */
     public function getAllCategory()
     {
-        $docs = DocsCategory::all();
+        $docs = DocsCategory::all();    
         if (!$docs) {
             return response()->json([
                 'error' => "Nenhuma Categoria encontrado",
@@ -170,8 +175,8 @@ class DocController extends Controller
         }
 
         // Salvar o arquivo no armazenamento
-        $arquivo = $request->file('file')->store('public/documentos/');
-        $url = asset(Storage::url($arquivo));
+         $arquivo = $request->file('file')->store('public/documentos/');
+         $url = asset(Storage::url($arquivo));
 
         // Criar um novo documento
         $newDoc = new Doc();
